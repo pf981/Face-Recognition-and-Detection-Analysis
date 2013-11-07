@@ -33,12 +33,12 @@ void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<in
         // for (int photoNum = 1;
         //      photoNum <= (int)(params::training::trainingToValidationRatio*countImages(sample));
         //      ++photoNum) // FIXME: This is using the training data
-        for (int photoNum = 1;
-             ;
-             ++photoNum) // FIXME: This is using the ALL data
-        // for (int photoNum = (int)(params::training::trainingToValidationRatio*countImages(sample)) + 1;
+        // for (int photoNum = 1;
         //      ;
-        //      ++photoNum) // FIXME: Use this one
+        //      ++photoNum) // FIXME: This is using the ALL data
+        for (int photoNum = (int)(params::training::trainingToValidationRatio*countImages(sample)) + 1;
+             ;
+             ++photoNum) // FIXME: Use this one
         {
             // Filenames are in the form "face_samples/sample_A/A1.JPG"
             std::string filename =
