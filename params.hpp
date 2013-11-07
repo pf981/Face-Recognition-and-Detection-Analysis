@@ -45,14 +45,17 @@ namespace params
     {
 //        const double scaleFactor = 1.1;
 //        const double scaleFactor = 1.01;
-        const double scaleFactor = 1.08;
-//        const int minNeighbors = 3;
-        const int minNeighbors = 7; // 7 is the smallest that removes the jacket mis-hit
+//        const double scaleFactor = 1.08;
+        const double scaleFactor = 1.017;// 1.01 good
+        const int minNeighbors = 9; // 3 is good, 7 good, 9 good.
+//      const int minNeighbors = 7; // 7 is the smallest that removes the jacket mis-hit
 //        const int minNeighbors = 1; // 7 is the smallest that removes the jacket mis-hit
         const int flags = 0;
-        const cv::Size minSize(10,10); // FIXME: Don't need min size
+//        const cv::Size minSize(10,10); // FIXME: Don't need min size
+        const cv::Size minSize; // FIXME: Don't need min size
 //        const cv::Size maxSize(1, 1);
-        const cv::Size maxSize(11, 11); // FIXME: This doesn't do anything :-(
+//        const cv::Size maxSize(11, 11); // FIXME: This doesn't do anything :-(
+        const cv::Size maxSize; // FIXME: This doesn't do anything :-(
     }
 }
 
