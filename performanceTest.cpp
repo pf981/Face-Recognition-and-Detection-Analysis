@@ -24,7 +24,8 @@
 
 void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>& labels)
 {
-    for (char sample = 'A'; sample <= 'W'; ++sample)
+//    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: USE THIS
+    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Use other
 //    for (char sample = 'A'; sample <= 'B'; ++sample) // FIXME: Use other
     {
         // FIXME: Of the images, we need to RANDOMLY select 60% of them for training
@@ -32,12 +33,12 @@ void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<in
         // for (int photoNum = 1;
         //      photoNum <= (int)(params::training::trainingToValidationRatio*countImages(sample));
         //      ++photoNum) // FIXME: This is using the training data
-        // for (int photoNum = 1;
-        //      ;
-        //      ++photoNum) // FIXME: This is using the ALL data
-        for (int photoNum = (int)(params::training::trainingToValidationRatio*countImages(sample)) + 1;
+        for (int photoNum = 1;
              ;
-             ++photoNum) // FIXME: Use this one
+             ++photoNum) // FIXME: This is using the ALL data
+        // for (int photoNum = (int)(params::training::trainingToValidationRatio*countImages(sample)) + 1;
+        //      ;
+        //      ++photoNum) // FIXME: Use this one
         {
             // Filenames are in the form "face_samples/sample_A/A1.JPG"
             std::string filename =
@@ -60,7 +61,8 @@ void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<in
             // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
             // equalizeHist(grayscale, grayscale); // FIXME: Why do this?
 
-            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
+//            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
+            cv::Mat image(cv::imread(filename, 0));// FIXME: Attempt to fix
             scaleImage(image);
             cv::Mat grayscale(image.clone());
             // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
@@ -94,11 +96,11 @@ void performanceTest()
     std::cout << "Loading trained_eigen.xml..." << std::endl;
     modelEigen->load("trained_eigen.xml"); // FIXME: How the heck do I error-check loading??
 
-    // cv::Ptr<cv::FaceRecognizer> modelFisher = cv::createFisherFaceRecognizer(
-    //     params::fisherFace::numComponents,
-    //     params::fisherFace::threshold);
-    // std::cout << "Loading trained_fisher.xml..." << std::endl;
-    // modelFisher->load("trained_fisher.xml"); // FIXME: How the heck do I error-check loading??
+    cv::Ptr<cv::FaceRecognizer> modelFisher = cv::createFisherFaceRecognizer(
+        params::fisherFace::numComponents,
+        params::fisherFace::threshold);
+    std::cout << "Loading trained_fisher.xml..." << std::endl;
+    modelFisher->load("trained_fisher.xml"); // FIXME: How the heck do I error-check loading??
 
     cv::Ptr<cv::FaceRecognizer> modelLbp = cv::createLBPHFaceRecognizer( // FIXME: This should be its own function
         params::lbphFace::radius,
@@ -129,11 +131,11 @@ void performanceTest()
         // FIXME: cerr chosen so not buffered. You need to use cout but flush the buffer
         std::cerr << labels[i] << "\t" << result;
 
-        // result = modelFisher->predict(images[i]);
-        // if (result != labels[i])
-        //     ++failsFisher;
+        result = modelFisher->predict(images[i]);
+        if (result != labels[i])
+            ++failsFisher;
 
-        // std::cerr << "\t" << result;
+        std::cerr << "\t" << result;
 
         result = modelLbp->predict(images[i]);
         if (result != labels[i])

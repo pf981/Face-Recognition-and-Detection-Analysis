@@ -43,7 +43,8 @@
 void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>& labels)
 {
     // For each training image
-    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: Use this
+//    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: Use this
+    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Comment out
 //    for (char sample = 'A'; sample <= 'B'; ++sample)
     {
         // FIXME: Of the images, we need to RANDOMLY select 60% of them for training
@@ -76,7 +77,8 @@ void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>&
             // equalizeHist(grayscale, grayscale); // FIXME: Why do this?
 
             // FIXME: Added this to try and fix eigen and fisher not working
-            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
+//            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
+            cv::Mat image(cv::imread(filename, 0)); // FIXME: Attempt to fix
             scaleImage(image);
             cv::Mat grayscale(image.clone());
             // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
@@ -113,14 +115,15 @@ void train()
     model->train(images, labels);
     model->save("trained_eigen.xml");
 
-    // std::cout << "Training Fisher Face Recogniser..." << std::endl;
-    // // Note that Ptr handles reference counting when we use the assignment operator,
-    // // so there won't be a memory leak
-    // model = cv::createFisherFaceRecognizer(
-    //     params::fisherFace::numComponents,
-    //     params::fisherFace::threshold);
-    // model->train(images, labels);
-    // model->save("trained_fisher.xml");
+    // FIXME: Uncomment below
+    std::cout << "Training Fisher Face Recogniser..." << std::endl;
+    // Note that Ptr handles reference counting when we use the assignment operator,
+    // so there won't be a memory leak
+    model = cv::createFisherFaceRecognizer(
+        params::fisherFace::numComponents,
+        params::fisherFace::threshold);
+    model->train(images, labels);
+    model->save("trained_fisher.xml");
 
     std::cout << "Training LBP Face Recogniser..." << std::endl;
     model = cv::createLBPHFaceRecognizer(
