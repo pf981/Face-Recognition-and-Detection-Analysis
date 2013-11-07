@@ -61,7 +61,27 @@ Data Prep
 \subsection{Haar}
 Technical description
 \subsubsection{Parameter Optimisation}
-Data Prep
+There were four parameters to consider with the Haar classifier: double scaleFactor, int minNeighbors, Size minSize and Size maxSize.
+
+I found that more faces were detected (either correctly or as false positives) as scaleFactor was increased and minNeighbors was decreased.
+
+Starting at minNeighbors=3, I incrementally increased its value until a sufficient amount of noise (false positives) was removed. I chose the value that was the largest that still detected every face in the image. This value was 9.
+
+Similarly for scaleFactor, I started at 1.01 and increased its value until every face was detected and there were no false positives. I found this value to be 1.017. 
+
+I used opencv's pre-trained xml file.
+
+I chose to leave minSize and maxSize unspecified as this would allow for detection of people at significantly varying distances to the camera.
+scaleFactor=0.017; minNeighbors=9
+
+\begin{figure}
+\centering
+%\includegraphics[width=0.7\linewidth]{./waiting_room_detected}
+\includegraphics{./waiting_room_detected} % FIXME: Too big
+\caption{Haar Cascade Classifier}
+\label{fig:haar_cascade}
+\end{figure}
+
 
 \subsection{Local Binary Patterns}
 Technical description

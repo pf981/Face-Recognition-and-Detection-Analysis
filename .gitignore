@@ -2,7 +2,6 @@ faceDetection
 trainer
 performanceTest
 face_samples/
-*.JPG
 *.o
 *~
 *.pdf
@@ -12,3 +11,4 @@ face_samples/
 *.log
 *.gz
 *.xml
+Thumbs.db
