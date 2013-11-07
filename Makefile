@@ -5,15 +5,15 @@ LDFLAGS=`pkg-config opencv --cflags --libs`
 
 all: trainer performanceTest faceDetection
 
-faceDetection: main.o images.o train.o detect.o performanceTest.o countImages.o
+faceDetection: main.o images.o train.o detect.o performanceTest.o countImages.o lid.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 # training is just the executable with TRAINING defined
-trainer: mainTrainer.o images.o train.o detect.o performanceTest.o countImages.o
+trainer: mainTrainer.o images.o train.o detect.o performanceTest.o countImages.o lid.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 # performanceTest is just the executable with PERFORMANCE_TEST defined
-performanceTest: mainPerformanceTest.o images.o train.o detect.o performanceTest.o countImages.o
+performanceTest: mainPerformanceTest.o images.o train.o detect.o performanceTest.o countImages.o lid.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 # mainTrainer.o is just for training
@@ -40,6 +40,9 @@ coutImages.o: countImages.cpp countImages.hpp concatenate.hpp
 	$(CC) $(CFLAGS) -o $@ $<
 
 performanceTest.o: performanceTest.cpp performanceTest.hpp countImages.hpp
+	$(CC) $(CFLAGS) -o $@ $<
+
+lid.o: lid.cpp lid.hpp
 	$(CC) $(CFLAGS) -o $@ $<
 
 
