@@ -12,3 +12,6 @@ face_samples/
 *.gz
 *.xml
 Thumbs.db
+waiting_room.JPG
+\#*
+.\#*
