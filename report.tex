@@ -1,0 +1,169 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{authblk}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{natbib}
+%\usepackage[style=authoryear,backend=biber]{biblatex}
+
+% FIXME: This is for automatic sizing of nested parentheses
+%\usepackage{nath}
+%\delimgrowth=1
+
+\usepackage{nth}
+\usepackage{soul}
+
+\begin{document}
+
+\title{CSCI435 Project}
+\author{Paul Foster
+	\thanks{Email: \texttt{pf981@uowmail.edu.au}}
+	\thanks{Student Number: \texttt{3648370}}}
+\affil{University of Wollongong}
+\date{2013 Spring}
+
+\maketitle
+
+\renewcommand\abstractname{Executive Summary}
+\begin{abstract}
+Gwynville Airport Authority has requested evaluation of some computer vision
+technologies that they plan to deploy as part of their security and surveillance system.
+The system should be able to count the number of people in a waiting room area based
+on the image captured by a camera suitably located to `see'' the faces of passengers. Furthermore the Authority would like to recognize a speci.c group of people that are known
+to be frequent users. The idea is to update their `Frequent Users'' card whenever they
+are recognized in the Airport premises. In this case they intend to use a face recognition
+algorithm that can learn from a dataset comprising the faces of these citizens.
+\end{abstract}
+
+Definitions: face space
+
+\section{Introduction}
+Here is the text of your introduction.
+
+\section{Data Preparation}
+The data given consisted of between 9 and 14 photos each of the faces of 11 students. We needed all the training and test images to have the same dimensions so the images were scaled down and cropped to \hl{FIXME:SOMETHING}.
+
+\subsection{Training/Testing Split}
+The student photos were split into two sets: a training set and a validation set. They are used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
+
+The proportion of the size of the training set to the size of the validation set was chosen to be \hl{FIXME:SOMETHING}. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
+
+Note that the majority of individuals in the dataset followed the same pattern: the first image was front-on and the subsequent images involved tilting their head with varying amounts. Because of this, when we split the samples into training and test, we \textit{cannot} say the first \hl{60\%} are training and the rest are for testing. We must take a \textit{random sample}.
+
+
+%\citep{guyon1997scaling}
+%http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.33.1337&rep=rep1&type=pdf} % \citep{}
+
+\section{People Counting Algorithms}
+Data Prep
+
+\subsection{Haar}
+Technical description
+\subsubsection{Parameter Optimisation}
+Data Prep
+
+\subsection{Local Binary Patterns}
+Technical description
+\subsubsection{Parameter Optimisation}
+Data Prep
+
+\subsection{Comparison}
+Advantages and disadvantages of each algorithm with side-by-side images after parameter optimisation
+
+
+\section{Face Recognition Algorithms}
+Data Prep
+
+\subsection{Eigen Face}
+If we describe the collection of all images of the face of an individual as a vector space, then we can describe every such image through a linear combination of the spanning vectors of that space.
+%\hl{For an individual, we have M training images. We treat the set of training images as a single, high-dimensional vector and find the eigenvectors of the covariance matrix.} % FIXME
+The goal is to find the principal components of the training data, called eigenfaces. These eigenfaces form a basis for every image of this person’s face. That is, every image of this person’s face can be described exactly as a linear combination of the eigenfaces. Furthermore, every image of this person’s face can be approximated by a linear combination of the eigenfaces with the largest eigenvalues.
+
+\vspace{12pt} \noindent Let $S$ be the set of the $M$ training images.
+\begin{equation}
+	S = \left\{\Gamma_1, \Gamma_2, \Gamma_3, \ldots, \Gamma_M\right\}
+\end{equation}
+Let $\Psi$ denote the average face of $S$. That is,
+\begin{equation}
+	\Psi = \frac{1}{M}\cdot\sum_{n=1}^{M}\Gamma_n
+\end{equation}
+Let $\Phi_i$ denote the difference between the $i$\textsuperscript{th} training face and the average.
+\begin{equation}
+	\Phi_i = \Gamma_i - \Psi
+\end{equation}
+Constructing the covariance matrix, $C$, we get
+\begin{equation}
+	C = \frac{1}{M}\cdot\sum_{n=1}^{M}\Phi_n \Phi_n^T
+\end{equation}
+
+\subsubsection{Parameter Optimisation}
+Data Prep
+
+\subsection{Fisher Face}
+The main advantage of this method is that it is invariant to different light sources. Extensive experimental results show that Fisherface has lower error rates than eigenface on the havard and yale face detection databases. (See the abstract of the pdf).
+
+Although this method has advantages when subject to different lighting conditions, this advantage is not really applicable to our purposes as the camera will likely be uniformly lit. (Maybe it will be important if it is sometimes lit by natural light and sometimes lit by artificial light depending on the time of day.
+
+
+Technical description
+\subsubsection{Parameter Optimisation}
+Data Prep
+
+\subsection{Local Binary Patterns}
+Technical description
+\subsubsection{Parameter Optimisation}
+Data Prepsssss
+
+\subsection{Local Intensity Distribution}
+Local Intesity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similarly to LBP descriptors, LID descriptors are insensitive to illumination changes.
+
+Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of an image with $N$ pixels and let $p = (x,y) \in \mathbb{Z}^2$ be an arbitrary point in the domain of $I$. We define $LID_{N,R}(p) : \mathbb{Z}^2 \rightarrow \mathbb{R}^N$ as
+\begin{equation}
+   % \label{simple_equation}
+   LID_{N,R}(p) = \langle d(p_1,p), \ldots, d(p_n,p)\rangle
+\end{equation}
+where $d(p_i,p) = I(p_i) - I(p)$ and $p_i = (x_i, y_i) \in \mathbb{Z}$ is such that $max\{|x_i - x|, |y_i - y|\} = R$. % FIXME: There must be a better way to describe this rectangle (perimeter) than using this max.
+
+We can determine the dissimilarity $D(I_1, I_2)$ between two images through the Kullback-Leibler (KL) distance \cite{kullback1951information}.
+\begin{equation}
+   % \label{simple_equation}
+	D(I_1, I_2) = \frac{KL\left(p_{I_1}(v) \| p_{I_2}(v)\right) +
+	              KL\left(p_{I_2}(v) \| p_{I_1}(v)\right)}{2}
+\end{equation}
+\hl{FIXME: Do some handwaving, then}
+\begin{equation}
+   % \label{simple_equation}
+	KL(p_1(v) \| p_2(v)) = \sum_{i=1}^{N}KL(p_1(v_i) \| p_2(v_i))
+\end{equation}
+
+\subsubsection{Parameter Optimisation}
+Data Prep
+
+\subsection{Comparison}
+Advantages and disadvantages of each algorithm with side-by-side images after parameter optimisation
+
+
+\section{Recommendation}
+conc
+
+When implementing the airline actual thingo, you should constantly add to your training data.
+So when you see a person and you confidently classify them as known, add that image to the training data.
+If you see the same unknown face, calculate its characteristics and make it known. This is what they want because then they would be able to tell who is frequent without having to manually train.
+
+
+\section{Conclusion}
+Write your conclusion here. \citep{guyon1997scaling} \citep{belhumeur1997eigenfaces}
+\hl{bias-variance dilemma; Maybe use ROC curve to evaluate performance (IS THIS EVEN APPLICABLE?)
+
+Will not detect clipped faces or faces rotated.
+
+All these faces were trained with the same illumination and facial hair etc on the same day. It will likely not perform well on images of different illumination.
+}
+
+\nocite{*} % List uncited references % FIXME: Doesn't work
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
+% FIXME: There is a problem: The page numbers restart in the middle :-( Don't know why

@@ -1,0 +1,48 @@
+For the numComponents of eigen/fisherFace it was set to 0 in openCV which means the algorithm will pick c-1 which is optimal, maybe?
+However, when given numComponents=0, threshold = DBL_MAX it resulted in an xml file of 1.1GB. This size file would crash the program and be unable to load. So the params were reduced to something more computationally feasible.
+
+Mention that after every successful ID, you would update the model (ongoing training). And you would also learn unknown faces and add them to a new model to determine new frequent patrons.
+
+2 people on the right were unable to be identified. One person was too obscured - his mouth and most of his nose were obscured. The second person did not have his photo taken.
+Wait... This doesn't make any sense. This wasn't even trained with the training data... This was from OpenCV haarcascade
+
+Need to add to report how this would be applied: use cascade classifier to find the faces and then use the face recognizer to id it.
+FIXME: The program is failing to correctly ID the TRAINING data!!!
+This is only for fisher/eigen... why? bad param somewhere?
+
+FIXME: You have not fixed the cropping issue: Faces are being cut off
+FIXME: What you need to do is have TWO possible resolutions. 480*600 for the group detection and another for individual
+FIXME: Note that I had to rename some of the images (namely C)
+
+First we scale all training and test images to 480*600. 480*600 was chosen because it was large enough to retain detail but small enough to be computationally feasible.
+// This function resizes the image to exactly 480(columns)*600(rows). It does this by first
+// uniformly scaling the image and then cropping it.
+//
+// The reason we must crop it is because we have a choice between scaling isotropically or cropping.
+// We chose cropping over isotropic scaling because some of the face detectors are not invariant
+// to isotropic scaling. This has a disadvantage that images with a significantly different ratio
+// to 480*600 will experience significant cropping.
+//
+// The reason we need the mat to be EXACTLY 480*600 (and not approximately) is because the face
+// detectors require training/test images to be of equal size.
+
+
+TRAINING:
+I started by using all the images as training data, but then there would be no way of testing it!
+Because if we give it an image it has been trained for, of course it will get it right!
+
+So I gave it some fraction of the total images to train and the rest were for testing. Random selection.
+
+
+When chosing cascades for face counting opencv gives us 2 algorithms: LBP and Haar. LBP is faster (a few times) but less accurate (10-20% less than Haar).
+Training LBP is significantly faster in training, however as we will only be training once this does not matter because when it is implemented it won't affect runtime efficiency.
+
+https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_frontalface_default.xml
+
+
+
+cascade params:
+maxSize was chosen because the classifier was picking up large false positives. By limiting the size of the faces, we eliminated these false positives. (Insert image). Setting a maximum face size would be problematic if people were to go very close the the camera, however as this is to be applied to photos in a waiting room, we can assume that people cannot be too close to the camera.
+DO CALCULATIONS TO SHOW HOW FAR AWAY THEY HAVE TO BE based on the max size of the bounding box.
+
+https://www.sharelatex.com/project/5270fde066f944961b0031f8

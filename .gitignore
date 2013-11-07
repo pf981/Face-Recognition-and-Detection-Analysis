@@ -1,0 +1,14 @@
+faceDetection
+trainer
+performanceTest
+face_samples/
+*.JPG
+*.o
+*~
+*.pdf
+*.aux
+*.bbl
+*.blg
+*.log
+*.gz
+*.xml
