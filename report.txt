@@ -1,3 +1,6 @@
+For the LID descriptors, we needed to look at the surrounding pixels. This is a problem if we are on the boundary because we do not want to look at pixels outside the domain of the image. If the keypoint was sufficiently close to a boundary, the inspected region for the LID descriptor was cropped to be within the bounds of the image. I do not imagine how we handle these boundary keypoints would have much impact on the results as it only applies to points very close to the edge - of which there aren't many.
+
+
 For the numComponents of eigen/fisherFace it was set to 0 in openCV which means the algorithm will pick c-1 which is optimal, maybe?
 However, when given numComponents=0, threshold = DBL_MAX it resulted in an xml file of 1.1GB. This size file would crash the program and be unable to load. So the params were reduced to something more computationally feasible.
 

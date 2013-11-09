@@ -23,10 +23,10 @@ private:
     std::vector<cv::Mat> mCodebook;
     cv::Mat mLabels;
 
-    void detectKeypoints(
-        cv::InputArrayOfArrays src,
-        std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,
-        cv::Mat& descriptors);
+void detectKeypointsAndDescriptors(
+    cv::InputArrayOfArrays src,
+    std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,
+    cv::Mat& descriptors);
 
 public:
     using cv::FaceRecognizer::save;

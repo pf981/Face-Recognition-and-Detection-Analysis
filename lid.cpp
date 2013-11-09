@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <iostream> // FIXME: Remove
 #include <vector>
 
@@ -19,8 +20,6 @@
 #include "lid.hpp"
 #include "params.hpp"
 
-namespace lid
-{
 
 void normalizeHistograms(std::vector<cv::Mat>& hists)
 {
@@ -33,8 +32,10 @@ void normalizeHistograms(std::vector<cv::Mat>& hists)
 }
 
 
- // Populates allKeyPoints and descriptors
-void Lidfaces::detectKeypoints(
+namespace lid
+{
+// Populates allKeyPoints and descriptors
+void Lidfaces::detectKeypointsAndDescriptors(
     cv::InputArrayOfArrays src,
     std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,// FIXME: Put into a single array
     cv::Mat& descriptors)
@@ -69,14 +70,13 @@ void Lidfaces::detectKeypoints(
 
     // We only want to check asserts when we are debugging
     // If we aren't debugging then the loop is a waste of time
-#ifndef NDEBUG
+#ifndef NDEBUG // FIXME: Uncomment
     int totalNumberOfKeyPoints = 0;
     for (unsigned int i = 0; i < allKeyPoints.size(); ++i)
         totalNumberOfKeyPoints += allKeyPoints[i].size();
     assert(descriptors.rows == totalNumberOfKeyPoints);
 #endif
-//    assert(descriptors.cols = 128); // FIXME: This isn't true of LID - remove
-    assert(descriptors.cols = (2*mInradius + 1)*(2*mInradius + 1) - 1); // Ensure that each descriptors size is the number of neighbors
+    assert(descriptors.cols = 8*mInradius); // Ensure that each descriptors size is the number of neighbors
 }
 
 
@@ -100,11 +100,15 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
     assert(src.type() == CV_8UC1);
     assert(inradius >= 1);
 
-    // For illustration, if p is the point and X are the neighbors of inradius=1
-    // XXX
-    // XpX
-    // XXX
-    int totalNeighbors = (2*inradius + 1)*(2*inradius + 1) - 1;
+    // For illustration, if p is the point and X are the neighbors of inradius=2 (N=16) and o are ignored points
+    // XXXXX
+    // XoooX
+    // XopoX
+    // XoooX
+    // XXXXX
+//    int totalNeighbors = (2*inradius + 1)*(2*inradius + 1) - 1; // FIXME: NO THIS IS WRONG. FIX EVERYTHING
+    int totalNeighbors = 8*inradius; // This is the formula for the perimeter of a square given the inradius
+
     cv::Mat lidDescriptor(1, totalNeighbors, CV_8UC1);
 
     // Calculate the real bounds (making sure not to go off the end of the image)
@@ -113,23 +117,58 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
     const int MAX_X = std::min(p.x + inradius, src.cols);
     const int MIN_Y = std::max(p.y - inradius, 0);
     const int MAX_Y = std::min(p.y + inradius, src.cols);
+    const unsigned char centerIntensity = src.at<unsigned char>(p.y, p.x);
 
     // neighborIndex is i where p_i is the ith neighbor
     // It goes from 0 to totalNeighbors-1
     int neighborIndex = 0;
 
-    // For each pixel in the square
-    for (int x = MIN_X; x <= MAX_X; ++x)
+    // For each pixel in the square perimeter (going clockwise from the top right)
+    // Set the nth descriptor element
+    // Top (left to rigth)
+    for (int x = MIN_X; x < MAX_X; ++x)
     {
-        for (int y = MIN_Y; y <= MAX_Y; ++y)
-        {
-            if (x == p.x && y == p.y) // Don't calculate d(pi, p) when pi==p
-                continue;
-
-            // Set the nth descriptor element
-            lidDescriptor.at<unsigned char>(neighborIndex++) = std::max(src.at<unsigned char>(y, x) - src.at<unsigned char>(p.y, p.x), 0);
-        }
+        lidDescriptor.at<unsigned char>(neighborIndex++) = std::max(
+            src.at<unsigned char>(MIN_Y, x) - centerIntensity,
+            0);
     }
+    // Right (top to bottom)
+    for (int y = MIN_Y; y < MAX_Y; ++y)
+    {
+        lidDescriptor.at<unsigned char>(neighborIndex++) = std::max(
+            src.at<unsigned char>(y, MAX_X) - centerIntensity,
+            0);
+    }
+    // Bottom (right to left)
+    for (int x = MAX_X; x > MIN_X; --x)
+    {
+        // Set the nth descriptor element
+        lidDescriptor.at<unsigned char>(neighborIndex++) = std::max(
+            src.at<unsigned char>(MIN_Y, x) - src.at<unsigned char>(p.y, p.x),
+            0);
+    }
+    // Left (bottom to top)
+    for (int y = MAX_Y; y > MIN_Y; --y)
+    {
+        // Set the nth descriptor element
+        lidDescriptor.at<unsigned char>(neighborIndex++) = std::max(
+            src.at<unsigned char>(y, MIN_X) - src.at<unsigned char>(p.y, p.x),
+            0);
+    }
+
+
+
+    // for (int x = MIN_X; x <= MAX_X; ++x) // FIXME:
+    // {
+    //     for (int y = MIN_Y; y <= MAX_Y; ++y)
+    //     {
+    //         if (x == p.x && y == p.y) // Don't calculate d(pi, p) when pi==p
+    //             continue;
+
+    //         // Set the nth descriptor element
+    //         lidDescriptor.at<unsigned char>(neighborIndex++) = std::max(src.at<unsigned char>(y, x) - src.at<unsigned char>(p.y, p.x), 0);
+    //     }
+    // }
 
     // FIXME: Are you getting INTENSITIES???
     // FIXME: Are we meant to equalise intensities? (Note that I think I DONT equalised them elsewhere)
@@ -143,7 +182,12 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
  // FIXME:
 void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
 {
-    // Get SIFT descriptors
+    std::vector<std::vector<cv::KeyPoint> > allKeyPoints;
+    cv::Mat descriptors;
+
+    // Get SIFT keypoints and LID descriptors
+    detectKeypointsAndDescriptors(src, allKeyPoints, descriptors);
+    // FIXME: TODO
 }
 
 // Predicts the label of a query image in src.

@@ -158,6 +158,6 @@ void train()
     model = lid::createLidFaceRecognizer(
         params::lidFace::inradius,
         params::lidFace::threshold);
-    // model->train(images, labels);
+    model->train(images, labels); // FIXME: Maybe won't work
     // model->save("trained_lid.xml"); // FIXME: Uncomment
 }
