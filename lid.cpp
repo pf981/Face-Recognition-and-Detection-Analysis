@@ -31,7 +31,14 @@ cv::Ptr<cv::FaceRecognizer> createLidFaceRecognizer(int inradius, double thresho
 // where d(pi, p) = I(pi) - I(p)
 cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
 {
-    cv::Mat toReturn;
+    assert(src.type() == CV_8UC1);
+
+    // For illustration, if p is the point and X are the neighbors of inradius=1
+    // XXX
+    // XpX
+    // XXX
+    int totalNeighbors = (2*inradius + 1)*(2*inradius + 1) - 1;
+    cv::Mat lidDescriptor(1, totalNeighbors, CV_8UC1);
 
     // Calculate the real bounds (making sure not to go off the end of the image)
     // These are the bounds of the square with appropriate inradius centred about p
@@ -40,6 +47,9 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
     const int MIN_Y = std::min(p.y - inradius, 0);
     const int MAX_Y = std::max(p.y + inradius, src.cols);
 
+    // neighborIndex is i where p_i is the ith neighbor
+    // It goes from 0 to totalNeighbors-1
+    int neighborIndex = 0;
 
     // For each pixel in the square
     for (int x = MIN_X; x <= MAX_X; ++x)
@@ -48,12 +58,14 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
         {
             if (x == p.x && y == p.y) // Don't calculate d(pi, p) when pi==p
                 continue;
-//            src.at<something>(y, x);
+            lidDescriptor.at<unsigned char>(0, neighborIndex++) = src.at<unsigned char>(y, x) - src.at<unsigned char>(p.y, p.x);
         }
     }
 
-
-    return toReturn;
+    // FIXME: Are you getting INTENSITIES???
+    // FIXME: Are we meant to equalise intensities? (Note that I think I equalised them elsewhere)
+    // FIXME: Note that reading in as CV_LOAD_IMAGE_GRAYSCALE(0) loads image as an intensity image (What we want)
+    return lidDescriptor;
 }
 
 

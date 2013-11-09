@@ -17,6 +17,7 @@
 #include "concatenate.hpp"
 #include "countImages.hpp"
 #include "images.hpp"
+#include "lid.hpp"
 #include "performanceTest.hpp"
 #include "params.hpp"
 #include "train.hpp"
@@ -168,7 +169,24 @@ void performanceTest()
     }
 
     // FIXME: DEBUGGING
-    std::cerr << "Type: " << images[0].type() << std::endl;
+    switch (images[0].type())
+    {
+    case CV_8SC1:
+        std::cerr << "Type: " << "8sc1" << std::endl;
+        break;
+    case CV_8UC1: // FIXME: IT IS THIS!!!
+        std::cerr << "Type: " << "8uc1" << std::endl;
+        break;
+    case CV_16SC1:
+        std::cerr << "Type: " << "16sc1" << std::endl;
+        break;
+    case CV_16UC1:
+        std::cerr << "Type: " << "16uc1" << std::endl;
+        break;
+    default:
+        std::cerr << "Type: " << "other" << std::endl;
+    }
+//    std::cerr << lid::lid(images[0], cv::Point(50, 50), 1) << std::endl; // FIXME:
 
     // Add small number to denominator to prevent division by 0 and prevent integer division
     std::cout << "\nEigen failures: " << failsEigen*100/(images.size() + 0.000001) << "%" << std::endl;

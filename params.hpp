@@ -20,12 +20,13 @@ namespace params
     }
     namespace eigenFace
     {
-        const int numComponents = 15;
+//        const int numComponents = 0;
+        const int numComponents = 3;
         // const double threshold = 10.0;
         // FIXME: Below are the good params
 //        const int numComponents = 0; // Setting this to 0 means the algorithm will automatically pick c-1 // FIXME: WHY IS THIS STILL CRASHING!!?? // Still crash with 8 and 5 and 4 and 3 and 2. Only 1 works. WHY??? I get "killed" message. HUH??!?? Even TRAINING data is failing!!
-        const double threshold = 50.0;
-//        const double threshold = DBL_MAX;
+//        const double threshold = 50.0;
+        const double threshold = DBL_MAX; // FIXME: There is a BIG BUG in your code. Your distances for eigen and fisher are WAY too big.
 //        const double threshold = 100.0; // FIXME: This should NOT be DBL_MAX. I think that will mean it will ALWAYS classify a face (never return -1). Furthermore, reducing this WILL NOT reduce the training time / file size. This value needs to be tuned so that it correctly classifies faces but doesn't have false hits. Also must be able to say -1 for faces not in the training set.
     }
     namespace fisherFace
