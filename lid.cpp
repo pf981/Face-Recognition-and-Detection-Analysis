@@ -1,4 +1,5 @@
 #include <iostream> // FIXME: Remove
+#include <vector>
 
 // FIXME: Only include what you need
 #include "opencv2/core/core.hpp"
@@ -21,10 +22,24 @@
 namespace lid
 {
 
-void detectKeypoints(
-    cv::InputArrayOfArrays imgs,
-    std::vector<cv::KeyPoint>& allKeyPoints)
+void normalizeHistograms(std::vector<cv::Mat>& hists)
 {
+    cv::Mat normalizedMat;
+    for (std::vector<cv::Mat>::const_iterator it = hists.begin(); it !=  hists.end(); ++it)
+    {
+        cv::normalize(*it, normalizedMat);
+        normalizedMat.copyTo(*it);
+    }
+}
+
+
+ // Populates allKeyPoints and descriptors
+void Lidfaces::detectKeypoints(
+    cv::InputArrayOfArrays src,
+    std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,// FIXME: Put into a single array
+    cv::Mat& descriptors)
+{
+    // FIXME: TODO: Check that it is 8 bit grayscale
     cv::SIFT detector(
         params::sift::nfeatures,
         params::sift::nOctaveLayers,
@@ -32,26 +47,43 @@ void detectKeypoints(
         params::sift::edgeThreshold,
         params::sift::sigma);
 
-//     for (unsigned int i = 0; i < imgs.size(); ++i)
-//     {
-//         std::vector<cv::KeyPoint> keyPointsForCurrentImage;
-//         cv::Mat singleImgDescriptors;
-//         detector(imgs[i], cv::noArray(), keyPointsForCurrentImage, singleImgDescriptors);
-//         allKeyPoints.push_back(keyPointsForCurrentImage);
-//         descriptors.push_back(singleImgDescriptors);
-//     }
+    std::vector<cv::Mat> images;
+    src.getMatVector(images);// FIXME: This might crash
 
-//     // We only want to check asserts when we are debugging
-//     // If we aren't debugging then the loop is a waste of time
-// #ifndef NDEBUG
-//     int totalNumberOfKeyPoints = 0;
-//     for (unsigned int i = 0; i < allKeyPoints.size(); ++i)
-//         totalNumberOfKeyPoints += allKeyPoints[i].size();
-//     assert(descriptors.rows == totalNumberOfKeyPoints);
-// #endif
-//     assert(descriptors.cols = 128);
+    for (unsigned int i = 0; i < images.size(); ++i)
+    {
+        // Determine the SIFT keypoints (but discard SIFT descriptors)
+        std::vector<cv::KeyPoint> keyPointsForCurrentImage;
+        detector(
+            images[i], // Get keypoints in the current image
+            cv::noArray(), // No mask
+            keyPointsForCurrentImage,
+            cv::noArray()); // We don't care about the SIFT descriptors (We will use LID descriptors)
+        allKeyPoints.push_back(keyPointsForCurrentImage);
+
+        // For each of the keypoints, calculate the LID descriptor
+        cv::Mat singleImgDescriptors;
+        for (size_t j = 0; j < keyPointsForCurrentImage.size(); ++j)
+            descriptors.push_back(lid(images[i], keyPointsForCurrentImage[j].pt, mInradius));
+    }
+
+    // We only want to check asserts when we are debugging
+    // If we aren't debugging then the loop is a waste of time
+#ifndef NDEBUG
+    int totalNumberOfKeyPoints = 0;
+    for (unsigned int i = 0; i < allKeyPoints.size(); ++i)
+        totalNumberOfKeyPoints += allKeyPoints[i].size();
+    assert(descriptors.rows == totalNumberOfKeyPoints);
+#endif
+//    assert(descriptors.cols = 128); // FIXME: This isn't true of LID - remove
+    assert(descriptors.cols = (2*mInradius + 1)*(2*mInradius + 1) - 1); // Ensure that each descriptors size is the number of neighbors
 }
 
+
+// void computeDescriptors(
+//     const std::vector<std::vector<cv::KeyPoint> >& allKeyPoints, // FIXME: After this, we don't specifically care what the keypoints are. We just need to know how many keypoints are associated with each image. Ie allKeypoints[i].size()
+//     cv::Mat& descriptors
+//     )
 
 cv::Ptr<cv::FaceRecognizer> createLidFaceRecognizer(int inradius, double threshold)
 {
