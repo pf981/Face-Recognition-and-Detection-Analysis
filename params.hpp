@@ -59,6 +59,15 @@ namespace params
         const cv::Size minSize;
         const cv::Size maxSize;
     }
+    namespace sift
+    {
+        // There is a bug in 2.4.2 where this parameter does not work, so I have to leave it at 0
+        const int nfeatures = 0; // Default 0
+        const int nOctaveLayers = 5; // Default 3
+        const double contrastThreshold = 0.06; // Default 0.04
+        const double edgeThreshold = 10; // Default 10
+        const double sigma = 3; // Default 1.6
+    }
 }
 
 #endif

@@ -3,7 +3,9 @@
 // FIXME: Only include what you need
 #include "opencv2/core/core.hpp"
 #include "opencv2/contrib/contrib.hpp"
+#include "opencv2/features2d/features2d.hpp"
 #include "opencv2/highgui/highgui.hpp"
+#include "opencv2/nonfree/nonfree.hpp"
 #include "opencv2/objdetect/objdetect.hpp"
 // #include <opencv2/imgproc/imgproc.hpp>  // Gaussian Blur
 // #include <opencv2/core/core.hpp>        // Basic OpenCV structures (cv::Mat, Scalar)
@@ -14,10 +16,42 @@
 
 
 #include "lid.hpp"
-
+#include "params.hpp"
 
 namespace lid
 {
+
+void detectKeypoints(
+    cv::InputArrayOfArrays imgs,
+    std::vector<cv::KeyPoint>& allKeyPoints)
+{
+    cv::SIFT detector(
+        params::sift::nfeatures,
+        params::sift::nOctaveLayers,
+        params::sift::contrastThreshold,
+        params::sift::edgeThreshold,
+        params::sift::sigma);
+
+//     for (unsigned int i = 0; i < imgs.size(); ++i)
+//     {
+//         std::vector<cv::KeyPoint> keyPointsForCurrentImage;
+//         cv::Mat singleImgDescriptors;
+//         detector(imgs[i], cv::noArray(), keyPointsForCurrentImage, singleImgDescriptors);
+//         allKeyPoints.push_back(keyPointsForCurrentImage);
+//         descriptors.push_back(singleImgDescriptors);
+//     }
+
+//     // We only want to check asserts when we are debugging
+//     // If we aren't debugging then the loop is a waste of time
+// #ifndef NDEBUG
+//     int totalNumberOfKeyPoints = 0;
+//     for (unsigned int i = 0; i < allKeyPoints.size(); ++i)
+//         totalNumberOfKeyPoints += allKeyPoints[i].size();
+//     assert(descriptors.rows == totalNumberOfKeyPoints);
+// #endif
+//     assert(descriptors.cols = 128);
+}
+
 
 cv::Ptr<cv::FaceRecognizer> createLidFaceRecognizer(int inradius, double threshold)
 {
@@ -77,6 +111,7 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
  // FIXME:
 void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
 {
+    // Get SIFT descriptors
 }
 
 // Predicts the label of a query image in src.
