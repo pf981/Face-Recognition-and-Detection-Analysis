@@ -167,6 +167,9 @@ void performanceTest()
         std::cerr << "\t" << result << "(" << dist << ")" << std::endl;
     }
 
+    // FIXME: DEBUGGING
+    std::cerr << "Type: " << images[0].type() << std::endl;
+
     // Add small number to denominator to prevent division by 0 and prevent integer division
     std::cout << "\nEigen failures: " << failsEigen*100/(images.size() + 0.000001) << "%" << std::endl;
     std::cout << "Fisher failures: " << failsFisher*100/(images.size() +  + 0.000001) << "%" << std::endl;

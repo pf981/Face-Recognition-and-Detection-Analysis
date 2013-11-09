@@ -25,10 +25,34 @@ cv::Ptr<cv::FaceRecognizer> createLidFaceRecognizer(int inradius, double thresho
     return cv::Ptr<Lidfaces>(new Lidfaces(inradius, threshold)); // This is equivalent to makePtr
 }
 
-// FIXME: TODO
-cv::Mat lid(cv::Point p)
+// Returns the LID descriptor of mat about p
+// For an image I : Z^2 -> R
+// lid(I, p) = [d(p1, p), ..., d(pn, p)]
+// where d(pi, p) = I(pi) - I(p)
+cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
 {
     cv::Mat toReturn;
+
+    // Calculate the real bounds (making sure not to go off the end of the image)
+    // These are the bounds of the square with appropriate inradius centred about p
+    const int MIN_X = std::min(p.x - inradius, 0);
+    const int MAX_X = std::max(p.x + inradius, src.cols);
+    const int MIN_Y = std::min(p.y - inradius, 0);
+    const int MAX_Y = std::max(p.y + inradius, src.cols);
+
+
+    // For each pixel in the square
+    for (int x = MIN_X; x <= MAX_X; ++x)
+    {
+        for (int y = MIN_Y; y <= MAX_Y; ++y)
+        {
+            if (x == p.x && y == p.y) // Don't calculate d(pi, p) when pi==p
+                continue;
+//            src.at<something>(y, x);
+        }
+    }
+
+
     return toReturn;
 }
 
