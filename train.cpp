@@ -79,9 +79,26 @@ void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>&
 
             // FIXME: Added this to try and fix eigen and fisher not working
 //            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
-            cv::Mat image(cv::imread(filename, 0)); // FIXME: Attempt to fix
+
+
+
+            // FIXME: Original
+            // cv::Mat image(cv::imread(filename, 0)); // FIXME: Attempt to fix
+            // scaleImage(image);
+            // cv::Mat grayscale(image.clone());
+
+
+            // FIXME: Attempt fix
+            cv::Mat image(cv::imread(filename));
             scaleImage(image);
             cv::Mat grayscale(image.clone());
+            cv::cvtColor(image, grayscale, CV_BGR2GRAY);
+            equalizeHist(grayscale, grayscale);
+
+
+
+
+
             // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
             //equalizeHist(grayscale, grayscale); // FIXME: Why do this?
 
