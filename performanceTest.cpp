@@ -62,9 +62,28 @@ void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<in
             // equalizeHist(grayscale, grayscale); // FIXME: Why do this?
 
 //            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
-            cv::Mat image(cv::imread(filename, 0));// FIXME: Attempt to fix
+
+
+
+
+
+
+
+            // FIXME: THIS WAS THE CONFIGURATION THAT DIDN'T WORK
+            // cv::Mat image(cv::imread(filename, 0));// FIXME: Attempt to fix
+            // scaleImage(image);
+            // cv::Mat grayscale(image.clone());
+            // FIXME: This is an attempt to fix eigen and fisher. I think you train with color, test with grayscale
+            cv::Mat image(cv::imread(filename));
             scaleImage(image);
             cv::Mat grayscale(image.clone());
+            cv::cvtColor(image, grayscale, CV_BGR2GRAY);
+            equalizeHist(grayscale, grayscale);
+
+
+
+
+
             // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
             // equalizeHist(grayscale, grayscale); // FIXME: Why do this?
 
