@@ -136,6 +136,8 @@ Technical description
 Data Prepsssss
 
 \subsection{Local Intensity Distribution}
+\hl{LID does 2 things: uses a computationally efficient distance measure for kmeans clustering, Defines a LID descriptor, other stuff. Insert diagram to illustrate what neighboring pixels are in LID. Do the same for LBP}
+
 Local Intesity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similarly to LBP descriptors, LID descriptors are insensitive to illumination changes.
 
 Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of an image with $N$ pixels and let $p = (x,y) \in \mathbb{Z}^2$ be an arbitrary point in the domain of $I$. We define $LID_{N,R}(p) : \mathbb{Z}^2 \rightarrow \mathbb{R}^N$ as
@@ -170,6 +172,8 @@ conc
 When implementing the airline actual thingo, you should constantly add to your training data.
 So when you see a person and you confidently classify them as known, add that image to the training data.
 If you see the same unknown face, calculate its characteristics and make it known. This is what they want because then they would be able to tell who is frequent without having to manually train.
+The implementation you are looking for would be to use the face counter and then send each face into the second algorithm which will attempt to identify them.
+It is critical that the camera have a frontal face view as the training data for the Haar cascade classifier was frontal faces.
 
 
 \section{Conclusion}
@@ -179,6 +183,8 @@ Write your conclusion here. \citep{guyon1997scaling} \citep{belhumeur1997eigenfa
 Will not detect clipped faces or faces rotated.
 
 All these faces were trained with the same illumination and facial hair etc on the same day. It will likely not perform well on images of different illumination.
+
+We found that eigen and fisher took significantly longer to train and compute
 }
 
 \nocite{*} % List uncited references % FIXME: Doesn't work
@@ -187,3 +193,4 @@ All these faces were trained with the same illumination and facial hair etc on t
 
 \end{document}
 % FIXME: There is a problem: The page numbers restart in the middle :-( Don't know why
+% FIXME: For training, we don't really test false positives. We could give it some faces not in the dataset.
