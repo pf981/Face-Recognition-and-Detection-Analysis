@@ -188,6 +188,60 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     // Get SIFT keypoints and LID descriptors
     detectKeypointsAndDescriptors(src, allKeyPoints, descriptors);
     // FIXME: TODO
+
+    // FIXME: Don't know if you normalize descriptors...
+
+    // kmeans function requires points to be CV_32F
+    descriptors.convertTo(descriptors, CV_32FC1);
+
+    // Do k-means clustering
+    const int clusterCount = descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors
+    cv::Mat histogramLabels;
+
+    // This function populates histogram bin labels
+    // The nth element of histogramLabels is an integer which represents the cluster that the
+    // nth element of allKeyPoints is a member of.
+    kmeans(
+        descriptors, // The points we are clustering are the descriptors
+        clusterCount, // The number of clusters (K)
+        histogramLabels, // The label of the corresponding keypoint
+        params::kmeans::termCriteria,
+        params::kmeans::attempts,
+        params::kmeans::flags);
+
+
+    // Convert to single channel 32 bit float as the matrix needs to be in a form supported
+    // by calcHist
+    histogramLabels.convertTo(histogramLabels, CV_32FC1);
+
+    // // We end up with a histogram for each image
+    // std::vector<cv::Mat> hists(imgs.size());
+
+    // // The histogramLabels vector contains ALL the points from EVERY image. We need to split
+    // // it up into groups of points for each image.
+    // // Because there are the same number of points in each image, and the points were put
+    // // into the labels vector in order, we can simply divide the labels vector evenly to get
+    // // the individual image's points.
+    // std::vector<cv::Mat> separatedLabels;
+    // for (unsigned int i = 0, startRow = 0; i < imgs.size(); ++i)
+    // {
+    //     separatedLabels.push_back(
+    //         histogramLabels.rowRange(
+    //             startRow,
+    //             startRow + allKeyPoints[i].size()));
+    //     startRow += allKeyPoints[i].size();
+    // }
+
+    // // Populate the hists vector
+    // generateHistograms(hists, separatedLabels, clusterCount);
+
+    // // Make the magnitude of each histogram equal to 1
+    // normalizeHistograms(hists);
+
+    // // Create and display the dissimilarity matrix
+    // std::cout << "\nK = " << fractionOfKeyPoints*100 << "% of total number of keypoints = "
+    //           << clusterCount << "\nDissimilarity Matrix\n";
+    // printDissimilarityMatrix(hists, &argv[1]);
 }
 
 // Predicts the label of a query image in src.

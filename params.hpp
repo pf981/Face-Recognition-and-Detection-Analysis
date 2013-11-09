@@ -68,6 +68,14 @@ namespace params
         const double edgeThreshold = 10; // Default 10
         const double sigma = 3; // Default 1.6
     }
+    namespace kmeans
+    {
+        const cv::TermCriteria termCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 1000, 0.01);
+        const int attempts = 5;
+        const int flags = cv::KMEANS_PP_CENTERS;
+        // K (the number of clusters) is not specified here as it is determined by the number of
+        // keypoints (and not a compile-time constant)
+    }
 }
 
 #endif
