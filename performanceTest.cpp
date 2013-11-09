@@ -25,20 +25,20 @@
 void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>& labels)
 {
 //    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: USE THIS
-    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Use other
-//    for (char sample = 'A'; sample <= 'B'; ++sample) // FIXME: Use other
+//    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Use other
+    for (char sample = 'A'; sample <= 'B'; ++sample) // FIXME: Use other
     {
         // FIXME: Of the images, we need to RANDOMLY select 60% of them for training
         std::cerr << sample << ": " << countImages(sample) << std::endl; // FIXME: Remove
         // for (int photoNum = 1;
         //      photoNum <= (int)(params::training::trainingToValidationRatio*countImages(sample));
         //      ++photoNum) // FIXME: This is using the training data
-        // for (int photoNum = 1;
-        //      ;
-        //      ++photoNum) // FIXME: This is using the ALL data
-        for (int photoNum = (int)(params::training::trainingToValidationRatio*countImages(sample)) + 1;
+        for (int photoNum = 1;
              ;
-             ++photoNum) // FIXME: Use this one
+             ++photoNum) // FIXME: This is using the ALL data
+        // for (int photoNum = (int)(params::training::trainingToValidationRatio*countImages(sample)) + 1;
+        //      ;
+        //      ++photoNum) // FIXME: Use this one
         {
             // Filenames are in the form "face_samples/sample_A/A1.JPG"
             std::string filename =
@@ -120,28 +120,32 @@ void performanceTest()
     int failsEigen = 0, failsFisher = 0, failsLbp = 0;
 
     int result = 0;
+    double dist = 0.0f;
 
     assert(images.size() == labels.size());
     for (size_t i = 0; i < images.size(); ++i)
     {
-        result = modelEigen->predict(images[i]);
+//        result = modelEigen->predict(images[i]);
+        modelEigen->predict(images[i], result, dist);
         if (result != labels[i])
             ++failsEigen;
 
         // FIXME: cerr chosen so not buffered. You need to use cout but flush the buffer
-        std::cerr << labels[i] << "\t" << result;
+        std::cerr << labels[i] << "\t" << result << "(" << dist << ")";
 
-        result = modelFisher->predict(images[i]);
+//        result = modelFisher->predict(images[i]);
+        modelFisher->predict(images[i], result, dist);
         if (result != labels[i])
             ++failsFisher;
 
-        std::cerr << "\t" << result;
+        std::cerr << "\t" << result << "(" << dist << ")";
 
-        result = modelLbp->predict(images[i]);
+//        result = modelLbp->predict(images[i]);
+        modelLbp->predict(images[i], result, dist);
         if (result != labels[i])
             ++failsLbp;
 
-        std::cerr << "\t" << result << std::endl;
+        std::cerr << "\t" << result << "(" << dist << ")" << std::endl;
     }
 
     // Add small number to denominator to prevent division by 0 and prevent integer division

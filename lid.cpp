@@ -16,6 +16,8 @@
 #include "lid.hpp"
 
 
+namespace lid
+{
 
 cv::Ptr<cv::FaceRecognizer> createLidFaceRecognizer(int inradius, double threshold)
 {
@@ -68,3 +70,5 @@ cv::AlgorithmInfo* Lidfaces::info() const
 {
     return NULL;
 }
+
+} // namespace lid

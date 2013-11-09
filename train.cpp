@@ -18,6 +18,7 @@
 #include "concatenate.hpp"
 #include "countImages.hpp"
 #include "images.hpp"
+#include "lid.hpp"
 #include "params.hpp"
 #include "train.hpp"
 
@@ -44,8 +45,8 @@ void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>&
 {
     // For each training image
 //    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: Use this
-    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Comment out
-//    for (char sample = 'A'; sample <= 'B'; ++sample)
+//    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Comment out
+    for (char sample = 'A'; sample <= 'B'; ++sample)
     {
         // FIXME: Of the images, we need to RANDOMLY select 60% of them for training
         std::cerr << sample << ": " << countImages(sample) << std::endl; // FIXME: Remove
@@ -135,6 +136,11 @@ void train()
     model->train(images, labels);
     model->save("trained_lbp.xml");
 
-
     // FIXME: Train LID Face Recogniser
+    std::cout << "Training LID Face Recogniser..." << std::endl;
+    model = lid::createLidFaceRecognizer(
+        params::lidFace::inradius,
+        params::lidFace::threshold);
+    // model->train(images, labels);
+    // model->save("trained_lid.xml"); // FIXME: Uncomment
 }
