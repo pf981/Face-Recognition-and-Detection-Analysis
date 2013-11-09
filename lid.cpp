@@ -21,6 +21,34 @@
 #include "params.hpp"
 
 
+// Generates the histograms for each label and puts them in the hists vector
+void generateHistograms(std::vector<cv::Mat>& hists, const std::vector<cv::Mat>& separatedLabels, int clusterCount)
+{
+    // Histogram paramaters
+    const int nimages = 1; // Only 1 image (The labels)
+    const int channels[] = {0}; // Use the 0 index channel (none)
+    const int dims = 1; // Only 1 channel
+    const int histSize[] = {clusterCount}; // The number of bins is the number of clusters
+    const float hranges[] = {0,clusterCount}; // Cluster group varies from 0 to the number of clusters
+    const float* ranges[] = {hranges};
+
+    // For each image, calculate its histogram
+    for (unsigned int i = 0; i < separatedLabels.size(); ++i)
+    {
+        cv::calcHist(
+            &separatedLabels[i],
+            nimages,
+            channels,
+            cv::Mat(), // Do not use a mask
+            hists[i],
+            dims,
+            histSize,
+            ranges,
+            true, // The histogram is uniform
+            false); // Do not accumulate
+    }
+}
+
 void normalizeHistograms(std::vector<cv::Mat>& hists)
 {
     cv::Mat normalizedMat;
@@ -31,6 +59,12 @@ void normalizeHistograms(std::vector<cv::Mat>& hists)
     }
 }
 
+size_t getSize(cv::InputArrayOfArrays src)
+{
+    std::vector<cv::Mat> images;
+    src.getMatVector(images);
+    return images.size();
+}
 
 namespace lid
 {
@@ -195,7 +229,7 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     descriptors.convertTo(descriptors, CV_32FC1);
 
     // Do k-means clustering
-    const int clusterCount = descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors
+    const int CLUSTER_COUNT = descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors
     cv::Mat histogramLabels;
 
     // This function populates histogram bin labels
@@ -203,7 +237,7 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     // nth element of allKeyPoints is a member of.
     kmeans(
         descriptors, // The points we are clustering are the descriptors
-        clusterCount, // The number of clusters (K)
+        CLUSTER_COUNT, // The number of clusters (K)
         histogramLabels, // The label of the corresponding keypoint
         params::kmeans::termCriteria,
         params::kmeans::attempts,
@@ -214,34 +248,31 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     // by calcHist
     histogramLabels.convertTo(histogramLabels, CV_32FC1);
 
-    // // We end up with a histogram for each image
-    // std::vector<cv::Mat> hists(imgs.size());
+    // We end up with a histogram for each image
+//    std::vector<cv::Mat> hists(imgs.size()); // FIXME: How do we get the size of src???
+    const size_t NUM_IMAGES = getSize(src);
+    std::vector<cv::Mat> hists(NUM_IMAGES); // FIXME: How do we get the size of src???
 
-    // // The histogramLabels vector contains ALL the points from EVERY image. We need to split
-    // // it up into groups of points for each image.
-    // // Because there are the same number of points in each image, and the points were put
-    // // into the labels vector in order, we can simply divide the labels vector evenly to get
-    // // the individual image's points.
-    // std::vector<cv::Mat> separatedLabels;
-    // for (unsigned int i = 0, startRow = 0; i < imgs.size(); ++i)
-    // {
-    //     separatedLabels.push_back(
-    //         histogramLabels.rowRange(
-    //             startRow,
-    //             startRow + allKeyPoints[i].size()));
-    //     startRow += allKeyPoints[i].size();
-    // }
+    // The histogramLabels vector contains ALL the points from EVERY image. We need to split
+    // it up into groups of points for each image.
+    // Because there are the same number of points in each image, and the points were put
+    // into the labels vector in order, we can simply divide the labels vector evenly to get
+    // the individual image's points.
+    std::vector<cv::Mat> separatedLabels;
+    for (unsigned int i = 0, startRow = 0; i < NUM_IMAGES; ++i)
+    {
+        separatedLabels.push_back(
+            histogramLabels.rowRange(
+                startRow,
+                startRow + allKeyPoints[i].size()));
+        startRow += allKeyPoints[i].size();
+    }
 
-    // // Populate the hists vector
-    // generateHistograms(hists, separatedLabels, clusterCount);
+    // Populate the hists vector
+    generateHistograms(hists, separatedLabels, CLUSTER_COUNT); // FIXME: Uncomment
 
-    // // Make the magnitude of each histogram equal to 1
-    // normalizeHistograms(hists);
-
-    // // Create and display the dissimilarity matrix
-    // std::cout << "\nK = " << fractionOfKeyPoints*100 << "% of total number of keypoints = "
-    //           << clusterCount << "\nDissimilarity Matrix\n";
-    // printDissimilarityMatrix(hists, &argv[1]);
+    // Make the magnitude of each histogram equal to 1
+    normalizeHistograms(hists); // FIXME: Are we meant to normalise the histograms (Yes I think so - especially if you have a different number of keypoints for each image
 }
 
 // Predicts the label of a query image in src.
