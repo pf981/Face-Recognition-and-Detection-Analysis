@@ -19,11 +19,9 @@ class Lidfaces : public cv::FaceRecognizer
 private:
     int mInradius;
     double mThreshold;
-    // std::vector<Mat> _projections;
-    // Mat _labels;
-    // Mat _eigenvectors;
-    // Mat _eigenvalues;
-    // Mat _mean;
+    // The size of mCodebook will be the number of classifications.
+    std::vector<cv::Mat> mCodebook;
+    cv::Mat mLabels;
 
 public:
     using cv::FaceRecognizer::save;
@@ -32,7 +30,9 @@ public:
     // Initializes an empty Lidfaces model.
     Lidfaces(int inradius = 1, double threshold = DBL_MAX) :
         mInradius(inradius),
-        mThreshold(threshold)
+        mThreshold(threshold),
+        mCodebook(),
+        mLabels()
     {
     }
 
@@ -42,7 +42,9 @@ public:
     Lidfaces(cv::InputArrayOfArrays src, cv::InputArray labels,
                int inradius = 1, double threshold = DBL_MAX) :
         mInradius(inradius),
-        mThreshold(threshold)
+        mThreshold(threshold),
+        mCodebook(),
+        mLabels(labels.getMat()) // FIXME: are these labels meaning the same thing?
     {
         train(src, labels);
     }
