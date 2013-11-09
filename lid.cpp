@@ -1,4 +1,4 @@
-
+#include <iostream> // FIXME: Remove
 
 // FIXME: Only include what you need
 #include "opencv2/core/core.hpp"
@@ -32,6 +32,7 @@ cv::Ptr<cv::FaceRecognizer> createLidFaceRecognizer(int inradius, double thresho
 cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
 {
     assert(src.type() == CV_8UC1);
+    assert(inradius >= 1);
 
     // For illustration, if p is the point and X are the neighbors of inradius=1
     // XXX
@@ -42,10 +43,10 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
 
     // Calculate the real bounds (making sure not to go off the end of the image)
     // These are the bounds of the square with appropriate inradius centred about p
-    const int MIN_X = std::min(p.x - inradius, 0);
-    const int MAX_X = std::max(p.x + inradius, src.cols);
-    const int MIN_Y = std::min(p.y - inradius, 0);
-    const int MAX_Y = std::max(p.y + inradius, src.cols);
+    const int MIN_X = std::max(p.x - inradius, 0);
+    const int MAX_X = std::min(p.x + inradius, src.cols);
+    const int MIN_Y = std::max(p.y - inradius, 0);
+    const int MAX_Y = std::min(p.y + inradius, src.cols);
 
     // neighborIndex is i where p_i is the ith neighbor
     // It goes from 0 to totalNeighbors-1
@@ -58,12 +59,14 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
         {
             if (x == p.x && y == p.y) // Don't calculate d(pi, p) when pi==p
                 continue;
-            lidDescriptor.at<unsigned char>(0, neighborIndex++) = src.at<unsigned char>(y, x) - src.at<unsigned char>(p.y, p.x);
+
+            // Set the nth descriptor element
+            lidDescriptor.at<unsigned char>(neighborIndex++) = std::max(src.at<unsigned char>(y, x) - src.at<unsigned char>(p.y, p.x), 0);
         }
     }
 
     // FIXME: Are you getting INTENSITIES???
-    // FIXME: Are we meant to equalise intensities? (Note that I think I equalised them elsewhere)
+    // FIXME: Are we meant to equalise intensities? (Note that I think I DONT equalised them elsewhere)
     // FIXME: Note that reading in as CV_LOAD_IMAGE_GRAYSCALE(0) loads image as an intensity image (What we want)
     return lidDescriptor;
 }

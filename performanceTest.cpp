@@ -71,15 +71,15 @@ void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<in
 
 
             // FIXME: THIS WAS THE CONFIGURATION THAT DIDN'T WORK
-            // cv::Mat image(cv::imread(filename, 0));// FIXME: Attempt to fix
-            // scaleImage(image);
-            // cv::Mat grayscale(image.clone());
-            // FIXME: This is an attempt to fix eigen and fisher. I think you train with color, test with grayscale
-            cv::Mat image(cv::imread(filename));
+            cv::Mat image(cv::imread(filename, 0));// FIXME: Attempt to fix
             scaleImage(image);
             cv::Mat grayscale(image.clone());
-            cv::cvtColor(image, grayscale, CV_BGR2GRAY);
-            equalizeHist(grayscale, grayscale);
+            // FIXME: This is an attempt to fix eigen and fisher. I think you train with color, test with grayscale
+            // cv::Mat image(cv::imread(filename));
+            // scaleImage(image);
+            // cv::Mat grayscale(image.clone());
+            // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
+            // equalizeHist(grayscale, grayscale);
 
 
 
@@ -186,7 +186,7 @@ void performanceTest()
     default:
         std::cerr << "Type: " << "other" << std::endl;
     }
-//    std::cerr << lid::lid(images[0], cv::Point(50, 50), 1) << std::endl; // FIXME:
+    std::cerr << lid::lid(images[0], cv::Point(50, 50), 1) << std::endl; // FIXME:
 
     // Add small number to denominator to prevent division by 0 and prevent integer division
     std::cout << "\nEigen failures: " << failsEigen*100/(images.size() + 0.000001) << "%" << std::endl;

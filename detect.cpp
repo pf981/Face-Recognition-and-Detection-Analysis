@@ -66,11 +66,22 @@ void detect(const std::string& imageFile)
 
 
     // Scale the image so that its area is approximately 480*600
-    cv::Mat groupImage(original.clone());
+    // cv::Mat groupImage(original.clone());
+    // scaleGroupImage(groupImage);
+    // cv::Mat grayscale;
+    // cv::cvtColor(groupImage, grayscale, CV_BGR2GRAY);
+    // equalizeHist(grayscale, grayscale);
+    cv::Mat groupImage(original.clone(), 0);
     scaleGroupImage(groupImage);
-    cv::Mat grayscale;
-    cv::cvtColor(groupImage, grayscale, CV_BGR2GRAY);
-    equalizeHist(grayscale, grayscale);
+    cv::Mat grayscale(groupImage.clone());
+//    cv::cvtColor(groupImage, grayscale, CV_BGR2GRAY);
+//    equalizeHist(grayscale, grayscale);
+
+
+
+
+
+
 
 //    scaleImage(original); // FIXME: Maybe need different dimensions to training data (unless it is an individual picture)
     // scaleGroupImage(original); // FIXME: Maybe need different dimensions to training data (unless it is an individual picture)
