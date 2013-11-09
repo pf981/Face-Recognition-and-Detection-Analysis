@@ -39,7 +39,7 @@ images.o: images.cpp images.hpp
 coutImages.o: countImages.cpp countImages.hpp concatenate.hpp
 	$(CC) $(CFLAGS) -o $@ $<
 
-performanceTest.o: performanceTest.cpp performanceTest.hpp countImages.hpp
+performanceTest.o: performanceTest.cpp performanceTest.hpp countImages.hpp params.hpp
 	$(CC) $(CFLAGS) -o $@ $<
 
 lid.o: lid.cpp lid.hpp
