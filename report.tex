@@ -131,14 +131,17 @@ Technical description
 Data Prep
 
 \subsection{Local Binary Patterns}
-Technical description
+The LBP descriptor describes a pixel as an 8-bit binary number based on the values of its 8 closest neighbors. This number becomes its label.
+Because LBP converts pixels to an 8-bit binary number, computations can be done with integer arithmetic which results in significant performance advantages over the other methods which use floating-point arithmetic.
 \subsubsection{Parameter Optimisation}
 Data Prepsssss
 
 \subsection{Local Intensity Distribution}
-\hl{LID does 2 things: uses a computationally efficient distance measure for kmeans clustering, Defines a LID descriptor, other stuff. Insert diagram to illustrate what neighboring pixels are in LID. Do the same for LBP}
+\hl{LID does 2 things: uses a computationally efficient distance measure for kmeans clustering, Defines a LID descriptor, other stuff. Insert diagram to illustrate what neighboring pixels are in LID. Do the same for LBP.
 
-Local Intesity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similarly to LBP descriptors, LID descriptors are insensitive to illumination changes.
+You could use SI}
+
+Local Intensity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similarly to LBP descriptors, LID descriptors are insensitive to illumination changes.
 
 Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of an image with $N$ pixels and let $p = (x,y) \in \mathbb{Z}^2$ be an arbitrary point in the domain of $I$. We define $LID_{N,R}(p) : \mathbb{Z}^2 \rightarrow \mathbb{R}^N$ as
 \begin{equation}
