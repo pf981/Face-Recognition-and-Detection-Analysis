@@ -64,42 +64,14 @@ void detect(const std::string& imageFile)
         exit(1);
     }
 
-
-    // Scale the image so that its area is approximately 480*600
-    // cv::Mat groupImage(original.clone());
-    // scaleGroupImage(groupImage);
-    // cv::Mat grayscale;
-    // cv::cvtColor(groupImage, grayscale, CV_BGR2GRAY);
-    // equalizeHist(grayscale, grayscale);
-    cv::Mat groupImage(original.clone(), 0);
+    // Scale/crop the group image
+    cv::Mat groupImage(original.clone());
     scaleGroupImage(groupImage);
+
+    // Convert to grayscale (required by FaceRecognizer)
     cv::Mat grayscale(groupImage.clone());
-//    cv::cvtColor(groupImage, grayscale, CV_BGR2GRAY);
-//    equalizeHist(grayscale, grayscale);
-
-
-
-
-
-
-
-//    scaleImage(original); // FIXME: Maybe need different dimensions to training data (unless it is an individual picture)
-    // scaleGroupImage(original); // FIXME: Maybe need different dimensions to training data (unless it is an individual picture)
-
-    // // Convert to grayscale (required by FaceRecognizer)
-    // cv::Mat grayscale;
-    // cv::cvtColor(original, grayscale, CV_BGR2GRAY);
-    // equalizeHist(grayscale, grayscale);
-
-
-    // // Convert to grayscale (required by FaceRecognizer)
-    // cv::Mat grayscale;
-    // cv::cvtColor(original, grayscale, CV_BGR2GRAY);
-
-    // scaleGroupImage(grayscale); // FIXME: Maybe need different dimensions to training data (unless it is an individual picture)
-
-    // equalizeHist(grayscale, grayscale);
-
+    cv::cvtColor(groupImage, grayscale, CV_BGR2GRAY);
+    equalizeHist(grayscale, grayscale); // FIXME: THIS IS ABSOLUTELY NEEDED - MISSES A FACE OTHERWISE
 
 
     std::vector<cv::Rect> faces;
