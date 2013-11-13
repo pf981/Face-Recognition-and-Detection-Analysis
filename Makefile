@@ -48,14 +48,18 @@ lid.o: lid.cpp lid.hpp params.hpp
 
 report: report.pdf purge
 
+# This strange order of latex, bitex, latex, latex is required for the bibliography to be compiled correctly
 report.pdf: report.tex references.bib
+	pdflatex report.tex
+	bibtex report
+	pdflatex report.tex
 	pdflatex report.tex
 
 
 # Remove the stuff that pdflatex created
 .PHONY: purge
 purge:
-	-rm report.aux report.log
+	-rm report.aux *.log *.dvi *.bbl *.blg
 
 .PHONY: clean
 clean:
