@@ -39,14 +39,26 @@ namespace params
     }
     namespace lbphFace
     {
+        // FIXME: Start current best
+        // FIXME: End current best
+        const int radius = 1;
+        const int neighbors = 8;
+        const int gridX = 7; // 7,7 is by far the best
+        const int gridY = 7; // FIXME: 7 better than 8 7=>11.236%
+
 //        const int radius = 4;
 //        const int neighbors = 28; // FIXME: This is too big
 //        const int neighbors = 10; // FIXME: This is too big
-        // FIXME: Defaults below
-        const int radius = 1;
-        const int neighbors = 8;
-        const int gridX = 8;
-        const int gridY = 8;
+        // // FIXME: These next ones were the ones in the paper - But they actually suck (58.427%)
+        // const int radius = 2;
+        // const int neighbors = 8;
+        // // const int gridX = 18;
+        // // const int gridY = 21; // FIXME: 7 better than 8 7=>11.236%
+        // // FIXME: Defaults below
+        // // const int radius = 1;
+        // // const int neighbors = 8;
+        // const int gridX = 8;
+        // const int gridY = 8;
         const double threshold = DBL_MAX;
     }
     namespace lidFace
