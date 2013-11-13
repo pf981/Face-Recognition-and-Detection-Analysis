@@ -87,6 +87,8 @@ void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<in
 
             // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
             // equalizeHist(grayscale, grayscale); // FIXME: Why do this?
+//            equalizeHist(grayscale, grayscale); // FIXME: ABSOLUTELY REMOVE THIS
+
 
 
 

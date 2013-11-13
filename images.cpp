@@ -80,8 +80,10 @@ void scaleImage(cv::Mat& mat)
 {
 //    const int ROWS = 600;
 //    const int COLS = 480;
-    const int ROWS = 128; // FIXME: We need to CENTRE the image - not just chop off the ends
-  const int COLS = 128;// FIXME: Test
+    const int ROWS = 128; // FIXME: I think 128 is fine
+    const int COLS = 128;
+  //   const int ROWS = 120; // FIXME: Use above
+  // const int COLS = 96;// FIXME: Test
    // const int ROWS = 60;
    // const int COLS = 48;// FIXME: Test
 

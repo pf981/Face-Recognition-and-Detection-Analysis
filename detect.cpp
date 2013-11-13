@@ -115,7 +115,9 @@ void detect(const std::string& imageFile)
             params::eigenFace::threshold);
         model->load("trained_eigen.xml"); // FIXME: How the heck do I error-check loading??
 
-        int prediction = model->predict(grayscale);
+        double dist = 0.0f;
+        int prediction = 0;
+        model->predict(grayscale, prediction, dist);
         std::cout << "Eigen Face: Person is " << getPrediction(prediction) << std::endl;
 
         // Fisher
@@ -124,7 +126,7 @@ void detect(const std::string& imageFile)
             params::fisherFace::threshold);
         model->load("trained_fisher.xml"); // FIXME: How the heck do I error-check loading??
 
-        prediction = model->predict(grayscale);
+        model->predict(grayscale, prediction, dist);
         std::cout << "Fisher Face: Person is "<< getPrediction(prediction) << std::endl;
 
         // LBP
@@ -136,8 +138,9 @@ void detect(const std::string& imageFile)
         params::lbphFace::threshold);
         model->load("trained_lbp.xml"); // FIXME: How the heck do I error-check loading??
 
-        prediction = model->predict(grayscale);
+        model->predict(grayscale, prediction, dist);
         std::cout << "LBP: Person is " << getPrediction(prediction) << std::endl;
+        std::cout << "DIST " << dist << std::endl; // FIXME:REMOVE
 
 
         imshow("INFO435 Project", individualImage);

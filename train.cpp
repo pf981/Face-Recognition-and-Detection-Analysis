@@ -88,6 +88,8 @@ void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>&
             cv::Mat grayscale(image.clone());
 
 
+//            equalizeHist(grayscale, grayscale); // FIXME: ABSOLUTELY REMOVE
+
             // FIXME: Attempt fix
             // cv::Mat image(cv::imread(filename));
             // scaleImage(image);
