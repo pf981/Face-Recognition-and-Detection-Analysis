@@ -42,14 +42,15 @@ Definitions: face space
 Here is the text of your introduction.
 
 \section{Data Preparation}
-The data given consisted of between 9 and 14 photos each of the faces of 11 students. We needed all the training and test images to have the same dimensions so the images were scaled down and cropped to \hl{FIXME:SOMETHING}.
+The data given consisted of between 9 and 14 photos each of the faces of 11 students. The images were converted to grayscale then were scaled down and cropped to 128*128. This was achieved by uniformly scaling the image such that the smaller dimension was equal to 128 pixels. The 128*128 rectangle centred at the centre of the image was then used as the cropped image. 128*128 was chosen because it was large enough to provide good results but not so large as to be computationally problematic.
+
 
 \subsection{Training/Testing Split}
-The student photos were split into two sets: a training set and a validation set. They are used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
+The student photos were split into two sets: a training set and a validation set. They were used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
 
-The proportion of the size of the training set to the size of the validation set was chosen to be \hl{FIXME:SOMETHING}. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
+The proportion of the size of the training set to the size of the validation set was chosen to be \hl{FIXME:SOMETHING, look at cross validation}. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
 
-Note that the majority of individuals in the dataset followed the same pattern: the first image was front-on and the subsequent images involved tilting their head with varying amounts. Because of this, when we split the samples into training and test, we \textit{cannot} say the first \hl{60\%} are training and the rest are for testing. We must take a \textit{random sample}.
+\hl{some\%} of the data were used to train the model and the other \hl{some\%} were used to test its performance.
 
 
 %\citep{guyon1997scaling}
@@ -76,14 +77,18 @@ scaleFactor=0.017; minNeighbors=9
 
 \begin{figure}
 \centering
-%\includegraphics[width=0.7\linewidth]{waiting_room_detected.jpg}
-\includegraphics[width=0.7\linewidth,natwidth=642,natheight=642]{waiting_room_detected.jpg}
-%\includegraphics{waiting_room_detected.jpg} % FIXME: Too big
-\caption{Haar Cascade Classifier}
+%\includegraphics[width=0.7\linewidth,natwidth=10,natheight=10]{waiting_room_detected.jpg}
+%\includegraphics[width=0.1\linewidth]{waiting_room_detected.jpg} % FIXME: If this is too big it ends up restarting the page numbering
+\includegraphics[scale=1]{waiting_room_detected.jpg}
+%\includegraphics[width=250px,height=250px]{waiting_room_detected.jpg}
+\caption{Haar Cascade Classifier FIXME: If this is big it resets page num for some reason}
 \label{fig:haar_cascade}
 \end{figure}
-%\includegraphics[scale=1]{waiting_room_detected.jpg} 
 
+
+%\includegraphics[width=0.7\linewidth]{waiting_room_detected.jpg}
+%\includegraphics{waiting_room_detected.jpg} % FIXME: Too big
+%\includegraphics[scale=1]{waiting_room_detected.jpg} 
 
 \subsection{Local Binary Patterns}
 Technical description
@@ -133,8 +138,24 @@ Technical description
 Data Prep
 
 \subsection{Local Binary Patterns}
-The LBP descriptor describes a pixel as an 8-bit binary number based on the values of its 8 closest neighbors. This number becomes its label.
-Because LBP converts pixels to an 8-bit binary number, computations can be done with integer arithmetic which results in significant performance advantages over the other methods which use floating-point arithmetic.
+The LBP descriptor describes a pixel as an $P$-bit binary number based on the values of $P$ points on the circumference of a circle of radius $R$ centred at the pixel. This number becomes its label.
+Because LBP converts pixels to an binary number, computations can be done with integer arithmetic which results in significant performance advantages over the other methods which use floating-point arithmetic.
+
+We will define a uniform pattern to be a binary pattern containing at most two bitwise transitions from 0 to 1 or 1 to 0. \cite{ojala2002multiresolution}
+
+Let $(P, R)$ denote the pixel neighbourhood of $P$ evenly-spaced points on the circumference of a circle of radius $R$.
+
+Let $LBP^{u^2}_{P,R}\cdot$ denote the LBP operator in a $(P, R)$ neighborhood using only uniform patterns ($u^2$).
+
+$n$ neighboring pixels 
+
+The image is equally split into $X$ columns and $Y$ rows. Each of these regions is given a weight.
+\subsubsection{Training}
+Each of the training images trained in the following way. The LBP for the pixels inside each region is calculated.
+\hl{Something to do with a histogram...
+Each regions pixel classifications are put into a histogram. This histogram represents the pattern of that region.
+Oh, and then you do the bag of words thing that we did with assig2. But how do we combine all the training images of one person into one thing to compare against? This is the same problem as we are having with LID}
+
 \subsubsection{Parameter Optimisation}
 Data Prepsssss
 
@@ -199,3 +220,4 @@ We found that eigen and fisher took significantly longer to train and compute
 \end{document}
 % FIXME: There is a problem: The page numbers restart in the middle :-( Don't know why
 % FIXME: For training, we don't really test false positives. We could give it some faces not in the dataset.
+% FIXME: Look at http://people.wku.edu/qi.li/teaching/595_BA/ba16_Eigenface.pdf for cross-validation in determining the best split
