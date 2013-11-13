@@ -92,7 +92,14 @@ void scaleImage(cv::Mat& mat)
     cv::resize(mat, dest, cv::Size(), scale, scale);
 
     // Crop the image
-    mat = dest(cv::Rect(0, 0, COLS, ROWS));
+    // To crop the image, we take the region of interest of the appropriate size
+    // centred about the centre of the original image
+    // mat = dest(cv::Rect(0, 0, COLS, ROWS));
+    mat = dest(cv::Rect(
+        (dest.cols - COLS)/2,
+        (dest.rows - ROWS)/2,
+        COLS,
+        ROWS));
 
     // Note that even though mat is a shallow copy of dest, the data won't be destroyed when
     // dest goes out of scope because OpenCV does reference counting for Mats
