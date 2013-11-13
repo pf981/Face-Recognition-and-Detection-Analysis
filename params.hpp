@@ -20,7 +20,8 @@ namespace params
     }
     namespace eigenFace
     {
-        const int numComponents = 0;
+        const int numComponents = 0; // This being 0 is by far the best
+//        const int numComponents = 150; // FIXME: 0=>35.9551%, 10=>43.8202%, 100=> 38.2022%, 150=>35.9551
 //        const int numComponents = 3;
         // const double threshold = 10.0;
         // FIXME: Below are the good params
@@ -38,6 +39,10 @@ namespace params
     }
     namespace lbphFace
     {
+//        const int radius = 4;
+//        const int neighbors = 28; // FIXME: This is too big
+//        const int neighbors = 10; // FIXME: This is too big
+        // FIXME: Defaults below
         const int radius = 1;
         const int neighbors = 8;
         const int gridX = 8;
