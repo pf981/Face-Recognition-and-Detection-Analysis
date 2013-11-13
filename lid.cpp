@@ -241,7 +241,11 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
         histogramLabels, // The label of the corresponding keypoint
         params::kmeans::termCriteria,
         params::kmeans::attempts,
-        params::kmeans::flags);
+        params::kmeans::flags); // FIXME: This is not using the right distance equation. This is using Euclidean distance when it should be using D defined in the paper.
+// FIXME:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// FIXME: This is very important to change, however, it is still a distance measure, so it will probably still work okay
+
+    // FIXME: I don't think I've done the following right. How big is the codebook meant to be? What happens to multiple images of the same person? How do they end up getting merged into one - or are they not meant to be merged at all?
 
 
     // Convert to single channel 32 bit float as the matrix needs to be in a form supported
@@ -252,6 +256,7 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
 //    std::vector<cv::Mat> hists(imgs.size()); // FIXME: How do we get the size of src???
     const size_t NUM_IMAGES = getSize(src);
     std::vector<cv::Mat> hists(NUM_IMAGES); // FIXME: How do we get the size of src???
+    // mCodebook.resize(NUM_IMAGES);
 
     // The histogramLabels vector contains ALL the points from EVERY image. We need to split
     // it up into groups of points for each image.
@@ -273,6 +278,8 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
 
     // Make the magnitude of each histogram equal to 1
     normalizeHistograms(hists); // FIXME: Are we meant to normalise the histograms (Yes I think so - especially if you have a different number of keypoints for each image
+
+    // FIXME: What exactly is the codebook? hists? I think so...
 }
 
 // Predicts the label of a query image in src.

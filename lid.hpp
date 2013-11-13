@@ -1,3 +1,6 @@
+// OpenCV does not have an implementation of LID descriptors for face detection so I had to write my
+// own. I inherit from the FaceRecognizer class and implement it such that it is used identically to
+// the other FaceRecognizers (such as EigenFaces, FisherFaces and LBPHFaces).
 #ifndef LID_HPP
 #define LID_HPP
 
