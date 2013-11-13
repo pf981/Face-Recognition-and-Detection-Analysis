@@ -77,14 +77,18 @@ scaleFactor=0.017; minNeighbors=9
 
 \begin{figure}
 \centering
-%\includegraphics[width=0.7\linewidth]{waiting_room_detected.jpg}
-\includegraphics[width=0.7\linewidth,natwidth=642,natheight=642]{waiting_room_detected.jpg}
-%\includegraphics{waiting_room_detected.jpg} % FIXME: Too big
-\caption{Haar Cascade Classifier}
+%\includegraphics[width=0.7\linewidth,natwidth=10,natheight=10]{waiting_room_detected.jpg}
+%\includegraphics[width=0.1\linewidth]{waiting_room_detected.jpg} % FIXME: If this is too big it ends up restarting the page numbering
+\includegraphics[scale=1]{waiting_room_detected.jpg}
+%\includegraphics[width=250px,height=250px]{waiting_room_detected.jpg}
+\caption{Haar Cascade Classifier FIXME: If this is big it resets page num for some reason}
 \label{fig:haar_cascade}
 \end{figure}
-%\includegraphics[scale=1]{waiting_room_detected.jpg} 
 
+
+%\includegraphics[width=0.7\linewidth]{waiting_room_detected.jpg}
+%\includegraphics{waiting_room_detected.jpg} % FIXME: Too big
+%\includegraphics[scale=1]{waiting_room_detected.jpg} 
 
 \subsection{Local Binary Patterns}
 Technical description
@@ -134,8 +138,16 @@ Technical description
 Data Prep
 
 \subsection{Local Binary Patterns}
-The LBP descriptor describes a pixel as an 8-bit binary number based on the values of its 8 closest neighbors. This number becomes its label.
-Because LBP converts pixels to an 8-bit binary number, computations can be done with integer arithmetic which results in significant performance advantages over the other methods which use floating-point arithmetic.
+The LBP descriptor describes a pixel as an $P$-bit binary number based on the values of $P$ points in the circular neighbourhood of radius $R$ centred at the pixel. This number becomes its label.
+Because LBP converts pixels to an binary number, computations can be done with integer arithmetic which results in significant performance advantages over the other methods which use floating-point arithmetic.
+
+We will define a uniform pattern to be a binary pattern containing at most two bitwise transitions from 0 to 1 or 1 to 0. \cite{ojala2002multiresolution}
+
+Let $(P, R)$ denote the pixel neighbourhood of $P$ evenly-spaced points on a circle of radius $R$.
+
+Let $LBP^{u^2}_{P,R}\cdot$ denote the LBP operator in a $(P, R)$ neighborhood using only uniform patterns ($u^2$).
+
+$n$ neighboring pixels 
 \subsubsection{Parameter Optimisation}
 Data Prepsssss
 
