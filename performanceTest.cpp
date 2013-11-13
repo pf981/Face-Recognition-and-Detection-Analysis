@@ -25,9 +25,9 @@
 
 void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>& labels)
 {
-//    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: USE THIS
+    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: USE THIS
 //    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Use other
-    for (char sample = 'A'; sample <= 'B'; ++sample) // FIXME: Use other
+//    for (char sample = 'A'; sample <= 'B'; ++sample) // FIXME: Use other
     {
         // FIXME: Of the images, we need to RANDOMLY select 60% of them for training
         std::cerr << sample << ": " << countImages(sample) << std::endl; // FIXME: Remove

@@ -1,3 +1,5 @@
+Originally, we resized training images to 600(rows)x480(columns) but this wasn't square and was way too large so training and detection took too long. We changed this to 128x128. MAKE SURE YOU MENTION THAT YOU CENTRED THE IMAGE WHEN YOU CROPPED
+
 Mention that it was compiled on Ubuntu whatever. Have a README.TXT with compile information. Don't forget to remove training/performance testing in makefile.
 
 For the LID descriptors, we needed to look at the surrounding pixels. This is a problem if we are on the boundary because we do not want to look at pixels outside the domain of the image. If the keypoint was sufficiently close to a boundary, the inspected region for the LID descriptor was cropped to be within the bounds of the image. I do not imagine how we handle these boundary keypoints would have much impact on the results as it only applies to points very close to the edge - of which there aren't many.

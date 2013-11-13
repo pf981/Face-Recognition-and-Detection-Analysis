@@ -44,9 +44,9 @@
 void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>& labels)
 {
     // For each training image
-//    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: Use this
+    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: Use this
 //    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Comment out
-    for (char sample = 'A'; sample <= 'B'; ++sample)
+//    for (char sample = 'A'; sample <= 'B'; ++sample)
     {
         // FIXME: Of the images, we need to RANDOMLY select 60% of them for training
         std::cerr << sample << ": " << countImages(sample) << std::endl; // FIXME: Remove

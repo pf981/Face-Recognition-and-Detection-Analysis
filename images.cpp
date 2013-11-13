@@ -78,8 +78,12 @@ void readAndRescaleImages(std::vector<cv::Mat>& imgs, int argc, char** argv)
 // detectors require training/test images to be of equal size.
 void scaleImage(cv::Mat& mat)
 {
-    const int ROWS = 600;
-    const int COLS = 480;
+//    const int ROWS = 600;
+//    const int COLS = 480;
+    const int ROWS = 128; // FIXME: We need to CENTRE the image - not just chop off the ends
+  const int COLS = 128;// FIXME: Test
+   // const int ROWS = 60;
+   // const int COLS = 48;// FIXME: Test
 
     cv::Mat dest = mat.clone();
     float scale = std::max(float(ROWS)/mat.rows, float(COLS)/mat.cols);

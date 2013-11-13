@@ -20,8 +20,8 @@ namespace params
     }
     namespace eigenFace
     {
-//        const int numComponents = 0;
-        const int numComponents = 3;
+        const int numComponents = 0;
+//        const int numComponents = 3;
         // const double threshold = 10.0;
         // FIXME: Below are the good params
 //        const int numComponents = 0; // Setting this to 0 means the algorithm will automatically pick c-1 // FIXME: WHY IS THIS STILL CRASHING!!?? // Still crash with 8 and 5 and 4 and 3 and 2. Only 1 works. WHY??? I get "killed" message. HUH??!?? Even TRAINING data is failing!!
