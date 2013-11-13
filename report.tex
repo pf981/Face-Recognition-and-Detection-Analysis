@@ -138,16 +138,24 @@ Technical description
 Data Prep
 
 \subsection{Local Binary Patterns}
-The LBP descriptor describes a pixel as an $P$-bit binary number based on the values of $P$ points in the circular neighbourhood of radius $R$ centred at the pixel. This number becomes its label.
+The LBP descriptor describes a pixel as an $P$-bit binary number based on the values of $P$ points on the circumference of a circle of radius $R$ centred at the pixel. This number becomes its label.
 Because LBP converts pixels to an binary number, computations can be done with integer arithmetic which results in significant performance advantages over the other methods which use floating-point arithmetic.
 
 We will define a uniform pattern to be a binary pattern containing at most two bitwise transitions from 0 to 1 or 1 to 0. \cite{ojala2002multiresolution}
 
-Let $(P, R)$ denote the pixel neighbourhood of $P$ evenly-spaced points on a circle of radius $R$.
+Let $(P, R)$ denote the pixel neighbourhood of $P$ evenly-spaced points on the circumference of a circle of radius $R$.
 
 Let $LBP^{u^2}_{P,R}\cdot$ denote the LBP operator in a $(P, R)$ neighborhood using only uniform patterns ($u^2$).
 
 $n$ neighboring pixels 
+
+The image is equally split into $X$ columns and $Y$ rows. Each of these regions is given a weight.
+\subsubsection{Training}
+Each of the training images trained in the following way. The LBP for the pixels inside each region is calculated.
+\hl{Something to do with a histogram...
+Each regions pixel classifications are put into a histogram. This histogram represents the pattern of that region.
+Oh, and then you do the bag of words thing that we did with assig2. But how do we combine all the training images of one person into one thing to compare against? This is the same problem as we are having with LID}
+
 \subsubsection{Parameter Optimisation}
 Data Prepsssss
 
