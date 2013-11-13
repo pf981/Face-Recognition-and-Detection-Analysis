@@ -46,11 +46,11 @@ The data given consisted of between 9 and 14 photos each of the faces of 11 stud
 
 
 \subsection{Training/Testing Split}
-The student photos were split into two sets: a training set and a validation set. They are used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
+The student photos were split into two sets: a training set and a validation set. They were used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
 
-The proportion of the size of the training set to the size of the validation set was chosen to be \hl{FIXME:SOMETHING}. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
+The proportion of the size of the training set to the size of the validation set was chosen to be \hl{FIXME:SOMETHING, look at cross validation}. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
 
-Note that the majority of individuals in the dataset followed the same pattern: the first image was front-on and the subsequent images involved tilting their head with varying amounts. Because of this, when we split the samples into training and test, we \textit{cannot} say the first \hl{60\%} are training and the rest are for testing. We must take a \textit{random sample}.
+\hl{some\%} of the data were used to train the model and the other \hl{some\%} were used to test its performance.
 
 
 %\citep{guyon1997scaling}
@@ -200,3 +200,4 @@ We found that eigen and fisher took significantly longer to train and compute
 \end{document}
 % FIXME: There is a problem: The page numbers restart in the middle :-( Don't know why
 % FIXME: For training, we don't really test false positives. We could give it some faces not in the dataset.
+% FIXME: Look at http://people.wku.edu/qi.li/teaching/595_BA/ba16_Eigenface.pdf for cross-validation in determining the best split
