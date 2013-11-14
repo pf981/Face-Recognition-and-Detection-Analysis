@@ -281,7 +281,7 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     generateHistograms(hists, separatedLabels, CLUSTER_COUNT); // FIXME: Uncomment
 
     // Make the magnitude of each histogram equal to 1
-    //   normalizeHistograms(hists); // FIXME: Are we meant to normalise the histograms (Yes I think so - especially if you have a different number of keypoints for each image // FIXME: NORMALISE IS GOOD I THINK BUT IT RESULTED IN MOST ELEMENTS BEING 0
+    normalizeHistograms(hists); // FIXME: Are we meant to normalise the histograms (Yes I think so - especially if you have a different number of keypoints for each image // FIXME: NORMALISE IS GOOD I THINK BUT IT RESULTED IN MOST ELEMENTS BEING 0
 
     // FIXME: What exactly is the codebook? hists? I think so...
     mCodebook = hists;
@@ -368,8 +368,9 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
     generateHistograms(hists, separatedLabels, mCenters.rows);
 //    generateHistograms(hists, separatedLabels, 2);// FIXME: Use above
     // FIXME: NORMALISE HISTS
+    normalizeHistograms(hists); // FIXME: Just added this
 
-    // FIXME: You need to normalise codebook histograms after training so you don't have to do it every time you predict
+    // FIXME: You need to normalise codebook histograms after training so you don't have to do it every time you predict - DONE
 
 
     dist = DBL_MAX;
