@@ -30,7 +30,7 @@ private:
 
 void detectKeypointsAndDescriptors(
     cv::InputArrayOfArrays src,
-    std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,
+    std::vector<std::vector<cv::KeyPoint> >& allKeyPoints, // FIXME: After we have the descriptor, we don't care about the keypoint!!! Remove this param
     cv::Mat& descriptors) const;
 
 public:

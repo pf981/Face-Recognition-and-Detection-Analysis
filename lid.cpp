@@ -205,7 +205,7 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
     // }
 
     // FIXME: Are you getting INTENSITIES???
-    // FIXME: Are we meant to equalise intensities? (Note that I think I DONT equalised them elsewhere)
+    // FIXME: Are we meant to equalise intensities? (Note that I think I DONT equalised them elsewhere) - NO I DON'T THINK WE NEED TO EQUALISE
     // FIXME: Note that reading in as CV_LOAD_IMAGE_GRAYSCALE(0) loads image as an intensity image (What we want)
     return lidDescriptor;
 }
@@ -291,36 +291,61 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
 // images is used to classify the image.
 int Lidfaces::predict(cv::InputArray src) const
 {
-    std::vector<std::vector<cv::KeyPoint> > keyPoints;
+    int label;
+    double dummy;
+    predict(src, label, dummy);
+    return label;
+}
+
+// Predicts the label and confidence for a given sample.
+// FIXME
+void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
+{
+
+    std::vector<std::vector<cv::KeyPoint> > keyPoints; // FIXME: Remove this when you get rid of keypoints after you have descriptor
     cv::Mat descriptors;
-//    cv::Mat image;
+
     std::vector<cv::Mat> imageVector; // A vector containing just one image (this is so we can use the same detectKeypointsAndDescriptors function
-//    src.getMat(image); // FIXME: This is convoluted
     imageVector.push_back(src.getMat());
 
     // Get SIFT keypoints and LID descriptors
     detectKeypointsAndDescriptors(imageVector, keyPoints, descriptors);
-//    detectKeypointsAndDescriptors(cv::InputArrayOfArrays(), keyPoints, descriptors);
-//    detectKeypointsAndDescriptors(src, keyPoints, descriptors);
-
-
-    // cv::InputArrayOfArrays src2 = src;
-    // std::vector<std::vector<cv::KeyPoint> > allKeyPoints;
-    // cv::Mat descriptors2;
-    // detectKeypointsAndDescriptors(src2, allKeyPoints, descriptors2);
-
 
 
     // FIXME: TODO BIGTIME!!!
     // Cluster the image using the training centres
     // FIXME: NOte that the euclidean distance between two mats is norm(m1 - m2);
-    return 0;
-}
 
-// Predicts the label and confidence for a given sample.
-// FIXME
-void Lidfaces::predict(cv::InputArray _src, int &label, double &dist) const
-{
+    dist = DBL_MAX;
+    int closestCentroidIndex = 0;
+    // mCenters.convertTo(mCenters, CV_8UC1); // FIXME: NEW
+    // descriptors.convertTo(descriptors, CV_8UC1); // FIXME: NEW
+    mCenters.convertTo(mCenters, CV_32FC1); // FIXME: NEW
+    descriptors.convertTo(descriptors, CV_32FC1); // FIXME: NEW
+
+    // For each descriptor
+    for (int descriptorIndex = 0; descriptorIndex < descriptors.rows; ++descriptorIndex)
+    {
+    //     (Give it a classification)
+    //     For each centroid
+        for (int centroidIndex = 0; centroidIndex < mCenters.rows; ++centroidIndex)
+        {
+    //         Calculate the distance from the descriptor to the centroid
+            if (descriptors.cols != mCenters.cols)
+                // TYPES
+                std::cerr << "!!!!!!!DC: " << descriptors.cols << std::endl << "CC: " << mCenters.cols << std::endl;
+            double currentDist = cv::norm(descriptors.row(descriptorIndex) - mCenters.row(centroidIndex)); // FIXME: USE THIS
+            if (descriptors.cols != mCenters.cols)
+                std::cout << "DC: " << descriptors.cols << std::endl << "CC: " << mCenters.cols << std::endl;
+    //         If it is the smallest distance, remember it and the centroid
+            if (currentDist < dist)
+            {
+                dist = currentDist;
+                closestCentroidIndex = centroidIndex;
+            }
+        }
+    }
+    std::cout << "CCI: " << closestCentroidIndex << std::endl << "d: " << dist << std::endl; // FIXME: REmove
 }
 
 // see FaceRecognizer::load.
