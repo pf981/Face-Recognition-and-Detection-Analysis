@@ -346,12 +346,22 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
                 closestCentroidIndex = centroidIndex;
             }
         }
+        // FIXME: Store smallest here so we know distance? No, I think that is a different distance (histograms)
         histogramLabels.at<float>(descriptorIndex) = closestCentroidIndex;
-//        histogramLabels.at<float>(descriptorIndex); // FIXME: Use above
     }
     std::cout << "CCI: " << closestCentroidIndex << std::endl << "d: " << dist << std::endl; // FIXME: REmove
 
+    assert(histogramLabels.rows == descriptors.rows);
+
     // FIXME: Now we have a vector of descriptors and the labels that go with it
+    // FIXME: This is a hack
+    std::vector<cv::Mat> separatedLabels;
+    std::vector<cv::Mat> hists(mCenters.rows);
+    separatedLabels.push_back(histogramLabels);
+
+//    std::cerr << "\n\n\n" << histogramLabels << std::endl << "\n\n\n\n"; // FIXME: REMOVE
+    generateHistograms(hists, separatedLabels, mCenters.rows);
+//    generateHistograms(hists, separatedLabels, 2);// FIXME: Use above
 }
 
 // see FaceRecognizer::load.
