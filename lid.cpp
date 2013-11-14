@@ -229,7 +229,8 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     descriptors.convertTo(descriptors, CV_32FC1);
 
     // Do k-means clustering
-    const int CLUSTER_COUNT = descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors
+//    const int CLUSTER_COUNT = descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors
+    const int CLUSTER_COUNT = 30; // FIXME: Don't know if we take a fraction of the descriptors // FIXME: Trying this - I had too many descriptors before
     cv::Mat histogramLabels;
 
     // mCenters = cv::Mat(CLUSTER_COUNT, P);
@@ -280,9 +281,12 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     generateHistograms(hists, separatedLabels, CLUSTER_COUNT); // FIXME: Uncomment
 
     // Make the magnitude of each histogram equal to 1
-    normalizeHistograms(hists); // FIXME: Are we meant to normalise the histograms (Yes I think so - especially if you have a different number of keypoints for each image
+    //   normalizeHistograms(hists); // FIXME: Are we meant to normalise the histograms (Yes I think so - especially if you have a different number of keypoints for each image // FIXME: NORMALISE IS GOOD I THINK BUT IT RESULTED IN MOST ELEMENTS BEING 0
 
     // FIXME: What exactly is the codebook? hists? I think so...
+    mCodebook = hists;
+    // FIXME: mLabels = something to do with separatedLabels
+    mLabels = labels.getMat(); // FIXME: Are these the right labels??
 }
 
 // Predicts the label of a query image in src by creating a histogram by clustering the sift
@@ -301,7 +305,8 @@ int Lidfaces::predict(cv::InputArray src) const
 // FIXME
 void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
 {
-
+    label = -1;
+    dist = DBL_MAX;
     std::vector<std::vector<cv::KeyPoint> > keyPoints; // FIXME: Remove this when you get rid of keypoints after you have descriptor
     cv::Mat descriptors;
 
@@ -349,7 +354,7 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
         // FIXME: Store smallest here so we know distance? No, I think that is a different distance (histograms)
         histogramLabels.at<float>(descriptorIndex) = closestCentroidIndex;
     }
-    std::cout << "CCI: " << closestCentroidIndex << std::endl << "d: " << dist << std::endl; // FIXME: REmove
+//    std::cout << "CCI: " << closestCentroidIndex << std::endl << "d: " << dist << std::endl; // FIXME: REmove
 
     assert(histogramLabels.rows == descriptors.rows);
 
@@ -362,6 +367,27 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
 //    std::cerr << "\n\n\n" << histogramLabels << std::endl << "\n\n\n\n"; // FIXME: REMOVE
     generateHistograms(hists, separatedLabels, mCenters.rows);
 //    generateHistograms(hists, separatedLabels, 2);// FIXME: Use above
+    // FIXME: NORMALISE HISTS
+
+    // FIXME: You need to normalise codebook histograms after training so you don't have to do it every time you predict
+
+
+    dist = DBL_MAX;
+    // Compare this histogram against all the other histograms
+//    std::cerr << "CODEBOOK:" << mCodebook.size() << "!!!!!" << std::endl; // FIXME: Remove
+    for (size_t codebookIndex = 0; codebookIndex < mCodebook.size(); ++codebookIndex)
+    {
+        // Get dist hist
+        // FIXME: NORMALISE
+        double currentDist = cv::compareHist(hists[0], mCodebook[codebookIndex], CV_COMP_CHISQR);
+//        double currentDist = 0;
+        if (currentDist < dist)
+        {
+            dist = currentDist;
+            label = mLabels.at<int>(codebookIndex); // FIXME: Use something like this // FIXME: BUG HERE // FIXME: LABELS ARE NOT BEING SAVED FOR SOME REASON
+//            label = 5; // FIXME: Remove
+        }
+    }
 }
 
 // see FaceRecognizer::load.
@@ -377,7 +403,7 @@ void Lidfaces::load(const cv::FileStorage& fs)
 
     // Read the codebook
     // readFileNodeList(fs["projections"], _projections);
-    const cv::FileNode& fn = fs["projections"];
+    const cv::FileNode& fn = fs["codebook"];
     if (fn.type() == cv::FileNode::SEQ) {
         for (cv::FileNodeIterator it = fn.begin(); it != fn.end();) {
             cv::Mat item;
@@ -403,13 +429,14 @@ void Lidfaces::save(cv::FileStorage& fs) const
 
     // Write the codebook
     //cv::writeFileNodeList(fs, "codebook", mCodebook);
-    fs << "codebook" << "[";
+    std::cerr << "CODEBOOK:" << mCodebook.size() << "!!!"; // FIXME: Remove
+    fs << "codebook" << "["; // FIXME: This isn't working
     for (std::vector<cv::Mat>::const_iterator it = mCodebook.begin(); it != mCodebook.end(); ++it) {
         fs << *it;
     }
     fs << "]";
 
-    fs << "labels" << mLabels;
+    fs << "labels" << mLabels; // FIXME: Labels are not being saved for some reason.
     fs << "centers" << mCenters;
 }
 
