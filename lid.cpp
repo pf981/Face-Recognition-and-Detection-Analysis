@@ -232,6 +232,8 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     const int CLUSTER_COUNT = descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors
     cv::Mat histogramLabels;
 
+    // mCenters = cv::Mat(CLUSTER_COUNT, P);
+
     // This function populates histogram bin labels
     // The nth element of histogramLabels is an integer which represents the cluster that the
     // nth element of allKeyPoints is a member of.
@@ -241,8 +243,8 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
         histogramLabels, // The label of the corresponding keypoint
         params::kmeans::termCriteria,
         params::kmeans::attempts,
-        params::kmeans::flags);
-//        mCenters); // FIXME: This is not using the right distance equation. This is using Euclidean distance when it should be using D defined in the paper. // FIXME: NOTE THAT YOU NEED TO CREATE mCENTERS FIRST!!! GIVE IT THE RIGHT DIMENSIONS!!!
+        params::kmeans::flags,
+        mCenters); // FIXME: This is not using the right distance equation. This is using Euclidean distance when it should be using D defined in the paper. // FIXME: NOTE THAT YOU NEED TO CREATE mCENTERS FIRST!!! GIVE IT THE RIGHT DIMENSIONS!!!
 // FIXME:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // FIXME: This is very important to change, however, it is still a distance measure, so it will probably still work okay
 
@@ -300,6 +302,7 @@ int Lidfaces::predict(cv::InputArray src) const
 //    detectKeypointsAndDescriptors(imageVector, keyPoints, descriptors);
     // FIXME: TODO BIGTIME!!!
     // Cluster the image using the training centres
+    // FIXME: NOte that the euclidean distance between two mats is norm(m1 - m2);
     return 0;
 }
 
@@ -313,12 +316,30 @@ void Lidfaces::predict(cv::InputArray _src, int &label, double &dist) const
 // FIXME:
 void Lidfaces::load(const cv::FileStorage& fs)
 {
+
 }
 
 // See FaceRecognizer::save.
 // FIXME:
 void Lidfaces::save(cv::FileStorage& fs) const
 {
+    // Write matrices
+    fs << "inradius" << mInradius;
+    fs << "numNeighbors" << mNumNeighbors;
+    fs << "threshold" << mThreshold;
+
+    // Write sequences
+
+    // Write the codebook
+    //cv::writeFileNodeList(fs, "codebook", mCodebook);
+    fs << "codebook" << "[";
+    for (std::vector<cv::Mat>::const_iterator it = mCodebook.begin(); it != mCodebook.end(); ++it) {
+        fs << *it;
+    }
+    fs << "]";
+
+    fs << "labels" << mLabels;
+    fs << "centers" << mCenters;
 }
 
 // FIXME:

@@ -21,6 +21,7 @@ class Lidfaces : public cv::FaceRecognizer
 {
 private:
     int mInradius;
+    int mNumNeighbors; // FIXME: This is not used - you need to implement it!!!
     double mThreshold;
     // The size of mCodebook will be the number of classifications.
     std::vector<cv::Mat> mCodebook;
@@ -37,8 +38,9 @@ public:
     using cv::FaceRecognizer::load;
 
     // Initializes an empty Lidfaces model.
-    Lidfaces(int inradius = 1, double threshold = DBL_MAX) :
+    Lidfaces(int inradius = 1, int numNeighbors = 8, double threshold = DBL_MAX) :
         mInradius(inradius),
+        mNumNeighbors(numNeighbors),
         mThreshold(threshold),
         mCodebook(),
         mLabels(),
@@ -50,8 +52,9 @@ public:
     // corresponding labels in labels. num_components will be kept for
     // classification.
     Lidfaces(cv::InputArrayOfArrays src, cv::InputArray labels,
-               int inradius = 1, double threshold = DBL_MAX) :
+             int inradius = 1, int numNeighbors = 8, double threshold = DBL_MAX) :
         mInradius(inradius),
+        mNumNeighbors(numNeighbors),
         mThreshold(threshold),
         mCodebook(),
         mLabels(labels.getMat()), // FIXME: are these labels meaning the same thing?
