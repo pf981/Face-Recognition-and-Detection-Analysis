@@ -323,11 +323,13 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
     mCenters.convertTo(mCenters, CV_32FC1); // FIXME: NEW
     descriptors.convertTo(descriptors, CV_32FC1); // FIXME: NEW
 
+    cv::Mat histogramLabels(descriptors.rows, 1, CV_32F); // Each element corresponds to the label of the corresponding descriptor // FIXME: Check these dimensions and the type
+
     // For each descriptor
     for (int descriptorIndex = 0; descriptorIndex < descriptors.rows; ++descriptorIndex)
     {
         // (Give it a classification)
-        dist = DBL_MAX;
+        double smallestDist = DBL_MAX;
 
         // For each centroid
         for (int centroidIndex = 0; centroidIndex < mCenters.rows; ++centroidIndex)
@@ -338,16 +340,18 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
 //            std::cerr << "!D" << currentDist << "D!" << std::endl; // FIXME: Remove
 
             // If it is the smallest distance, remember it and the centroid
-            if (currentDist < dist)
+            if (currentDist < smallestDist)
             {
-                dist = currentDist;
+                smallestDist = currentDist;
                 closestCentroidIndex = centroidIndex;
             }
         }
+        histogramLabels.at<float>(descriptorIndex) = closestCentroidIndex;
+//        histogramLabels.at<float>(descriptorIndex); // FIXME: Use above
     }
     std::cout << "CCI: " << closestCentroidIndex << std::endl << "d: " << dist << std::endl; // FIXME: REmove
 
-
+    // FIXME: Now we have a vector of descriptors and the labels that go with it
 }
 
 // see FaceRecognizer::load.
