@@ -81,7 +81,7 @@ scaleFactor=0.017; minNeighbors=9
 %\includegraphics[width=0.1\linewidth]{waiting_room_detected.jpg} % FIXME: If this is too big it ends up restarting the page numbering
 \includegraphics[scale=1]{waiting_room_detected.jpg}
 %\includegraphics[width=250px,height=250px]{waiting_room_detected.jpg}
-\caption{Haar Cascade Classifier FIXME: If this is big it resets page num for some reason}
+\caption{Haar Cascade Classifier FIXME: If this is big it resets page num for some reason; FIXME: REDO - YOU HAVE CROPPED SOMEONE OUT!!!}
 \label{fig:haar_cascade}
 \end{figure}
 
@@ -154,7 +154,7 @@ The image is equally split into $X$ columns and $Y$ rows. Each of these regions 
 Each of the training images trained in the following way. The LBP for the pixels inside each region is calculated.
 \hl{Something to do with a histogram...
 Each regions pixel classifications are put into a histogram. This histogram represents the pattern of that region.
-Oh, and then you do the bag of words thing that we did with assig2. But how do we combine all the training images of one person into one thing to compare against? This is the same problem as we are having with LID}
+Oh, and then you do the bag of words thing that we did with assig2. But how do we combine all the training images of one person into one thing to compare against? This is the same problem as we are having with LID. IDEA: You could have each image "vote" whether they are similar. The class with the most votes wins. You would have to take into account the fact that there are different numbers of training data}
 
 \subsubsection{Parameter Optimisation}
 Data Prepsssss
