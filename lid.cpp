@@ -72,7 +72,7 @@ namespace lid
 void Lidfaces::detectKeypointsAndDescriptors(
     cv::InputArrayOfArrays src,
     std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,// FIXME: Put into a single array
-    cv::Mat& descriptors)
+    cv::Mat& descriptors) const
 {
     // FIXME: TODO: Check that it is 8 bit grayscale
     cv::SIFT detector(
@@ -299,7 +299,18 @@ int Lidfaces::predict(cv::InputArray src) const
     imageVector.push_back(src.getMat());
 
     // Get SIFT keypoints and LID descriptors
-//    detectKeypointsAndDescriptors(imageVector, keyPoints, descriptors);
+    detectKeypointsAndDescriptors(imageVector, keyPoints, descriptors);
+//    detectKeypointsAndDescriptors(cv::InputArrayOfArrays(), keyPoints, descriptors);
+//    detectKeypointsAndDescriptors(src, keyPoints, descriptors);
+
+
+    // cv::InputArrayOfArrays src2 = src;
+    // std::vector<std::vector<cv::KeyPoint> > allKeyPoints;
+    // cv::Mat descriptors2;
+    // detectKeypointsAndDescriptors(src2, allKeyPoints, descriptors2);
+
+
+
     // FIXME: TODO BIGTIME!!!
     // Cluster the image using the training centres
     // FIXME: NOte that the euclidean distance between two mats is norm(m1 - m2);

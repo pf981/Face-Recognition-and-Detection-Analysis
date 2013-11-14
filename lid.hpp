@@ -31,7 +31,7 @@ private:
 void detectKeypointsAndDescriptors(
     cv::InputArrayOfArrays src,
     std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,
-    cv::Mat& descriptors);
+    cv::Mat& descriptors) const;
 
 public:
     using cv::FaceRecognizer::save;

@@ -176,11 +176,11 @@ void performanceTest()
 
         std::cerr << "\t" << result << "(" << dist << ")";
 
-        // modelLid->predict(images[i], result, dist);
-        // if (result != labels[i])
-        //     ++failsLid;// FIXME: Uncomment
+        modelLid->predict(images[i], result, dist);
+        if (result != labels[i])
+            ++failsLid;// FIXME: Uncomment
 
-        // std::cerr << "\t" << result << "(" << dist << ")" << std::endl;
+        std::cerr << "\t" << result << "(" << dist << ")" << std::endl;
     }
 
     // FIXME: DEBUGGING
