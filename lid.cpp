@@ -316,7 +316,26 @@ void Lidfaces::predict(cv::InputArray _src, int &label, double &dist) const
 // FIXME:
 void Lidfaces::load(const cv::FileStorage& fs)
 {
+    // Read matrices
+    fs["inradius"] >> mInradius;
+    fs["numNeighbors"] >> mNumNeighbors;
+    fs["threshold"] >> mThreshold;
 
+    // read sequences
+
+    // Read the codebook
+    // readFileNodeList(fs["projections"], _projections);
+    const cv::FileNode& fn = fs["projections"];
+    if (fn.type() == cv::FileNode::SEQ) {
+        for (cv::FileNodeIterator it = fn.begin(); it != fn.end();) {
+            cv::Mat item;
+            it >> item;
+            mCodebook.push_back(item);
+        }
+    }
+
+    fs["labels"] >> mLabels;
+    fs["centers"] >> mCenters;
 }
 
 // See FaceRecognizer::save.
