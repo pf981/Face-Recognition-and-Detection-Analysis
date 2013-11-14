@@ -134,11 +134,11 @@ void performanceTest()
     modelLbp->load("trained_lbp.xml"); // FIXME: How the heck do I error-check loading??
 
     // FIXME: Uncomment
-    // cv::Ptr<cv::FaceRecognizer> modelLid = lid::createLidFaceRecognizer( // FIXME: This should be its own function
-    //     params::lidFace::inradius,
-    //     params::lidFace::threshold);
-    // std::cout << "Loading trained_lid.xml..." << std::endl;
-    // modelLbp->load("trained_lid.xml"); // FIXME: How the heck do I error-check loading??
+    cv::Ptr<cv::FaceRecognizer> modelLid = lid::createLidFaceRecognizer( // FIXME: This should be its own function
+        params::lidFace::inradius,
+        params::lidFace::threshold);
+    std::cout << "Loading trained_lid.xml..." << std::endl;
+    modelLid->load("trained_lid.xml"); // FIXME: How the heck do I error-check loading??
 
 
     std::vector<cv::Mat> images;
