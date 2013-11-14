@@ -241,7 +241,8 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
         histogramLabels, // The label of the corresponding keypoint
         params::kmeans::termCriteria,
         params::kmeans::attempts,
-        params::kmeans::flags); // FIXME: This is not using the right distance equation. This is using Euclidean distance when it should be using D defined in the paper.
+        params::kmeans::flags,
+        mCenters); // FIXME: This is not using the right distance equation. This is using Euclidean distance when it should be using D defined in the paper.
 // FIXME:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // FIXME: This is very important to change, however, it is still a distance measure, so it will probably still work okay
 

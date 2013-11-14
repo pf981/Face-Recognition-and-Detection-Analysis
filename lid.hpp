@@ -25,6 +25,7 @@ private:
     // The size of mCodebook will be the number of classifications.
     std::vector<cv::Mat> mCodebook;
     cv::Mat mLabels;
+    cv::Mat mCenters; // The centroids of the k-means clustering
 
 void detectKeypointsAndDescriptors(
     cv::InputArrayOfArrays src,
@@ -40,7 +41,8 @@ public:
         mInradius(inradius),
         mThreshold(threshold),
         mCodebook(),
-        mLabels()
+        mLabels(),
+        mCenters()
     {
     }
 
@@ -52,7 +54,8 @@ public:
         mInradius(inradius),
         mThreshold(threshold),
         mCodebook(),
-        mLabels(labels.getMat()) // FIXME: are these labels meaning the same thing?
+        mLabels(labels.getMat()), // FIXME: are these labels meaning the same thing?
+        mCenters()
     {
         train(src, labels);
     }
