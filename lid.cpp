@@ -361,14 +361,21 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
     // FIXME: Now we have a vector of descriptors and the labels that go with it
     // FIXME: This is a hack
     std::vector<cv::Mat> separatedLabels;
-    std::vector<cv::Mat> hists(mCenters.rows);
+//    std::vector<cv::Mat> hists(mCenters.rows);// FIXME: This should be a histogram for each IMAGE (not class)
+//    std::vector<cv::Mat> hists(descriptors.rows);// FIXME: This should be a histogram for each IMAGE (not class)
+    std::vector<cv::Mat> hists(1);// FIXME: THERE IS ONLY 1 HISTOGRAM
     separatedLabels.push_back(histogramLabels);
 
 //    std::cerr << "\n\n\n" << histogramLabels << std::endl << "\n\n\n\n"; // FIXME: REMOVE
     generateHistograms(hists, separatedLabels, mCenters.rows);
 //    generateHistograms(hists, separatedLabels, 2);// FIXME: Use above
     // FIXME: NORMALISE HISTS
-    normalizeHistograms(hists); // FIXME: Just added this
+    // std::cerr << "\n***"  << hists[0] << "***\n"; // FIXME: Remove
+    // std::cerr << "\n&&&"  << separatedLabels[0] << "&&&\n"; // FIXME: Remove
+    // std::cerr << "HISTSSIZE:" << hists.size() << "**\n"; // FIXME: Remove // FIXME: WHY IS THIS NOT 1????
+    // assert(hists.size() == 1); // FIXME: Remove
+   normalizeHistograms(hists); // FIXME: Just added this
+
 
     // FIXME: You need to normalise codebook histograms after training so you don't have to do it every time you predict - DONE
 
