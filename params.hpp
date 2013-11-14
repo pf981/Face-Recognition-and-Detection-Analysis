@@ -66,6 +66,8 @@ namespace params
     {
         const int inradius = 1;
         const double threshold = DBL_MAX;
+//        const double clustersAsPercentageOfKeypoints = 0.01f; // FIXME: Tweak
+        const double clustersAsPercentageOfKeypoints = 0.9f; // FIXME: Tweak
     }
     namespace cascadeClassifier
     {

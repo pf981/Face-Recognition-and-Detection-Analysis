@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <iostream> // FIXME: Remove
+#include <map> // FIXME: Make sure you actually use this
 #include <vector>
 
 // FIXME: Only include what you need
@@ -230,7 +231,10 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
 
     // Do k-means clustering
 //    const int CLUSTER_COUNT = descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors
-    const int CLUSTER_COUNT = 30; // FIXME: Don't know if we take a fraction of the descriptors // FIXME: Trying this - I had too many descriptors before
+//    const int CLUSTER_COUNT = 30; // FIXME: Don't know if we take a fraction of the descriptors // FIXME: Trying this - I had too many descriptors before
+//    const int CLUSTER_COUNT = 500; // FIXME: Don't know if we take a fraction of the descriptors // FIXME: Trying this - I had too many descriptors before
+    const int CLUSTER_COUNT = params::lidFace::clustersAsPercentageOfKeypoints*descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors // FIXME: Trying this - I had too many descriptors before
+    // FIXME: 100 => 60% failure; 500 => 40.98%; 5%=>60%; 50%=>37.7%; ;90%=>34.8%; 99%=>34.83%
     cv::Mat histogramLabels;
 
     // mCenters = cv::Mat(CLUSTER_COUNT, P);
@@ -381,21 +385,47 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
 
 
     dist = DBL_MAX;
+    std::multimap<int, double> distances; // Maps label to distance
     // Compare this histogram against all the other histograms
-//    std::cerr << "CODEBOOK:" << mCodebook.size() << "!!!!!" << std::endl; // FIXME: Remove
     for (size_t codebookIndex = 0; codebookIndex < mCodebook.size(); ++codebookIndex)
     {
         // Get dist hist
-        // FIXME: NORMALISE
         double currentDist = cv::compareHist(hists[0], mCodebook[codebookIndex], CV_COMP_CHISQR);
-//        double currentDist = 0;
-        if (currentDist < dist)
-        {
-            dist = currentDist;
-            label = mLabels.at<int>(codebookIndex); // FIXME: Use something like this // FIXME: BUG HERE // FIXME: LABELS ARE NOT BEING SAVED FOR SOME REASON
-//            label = 5; // FIXME: Remove
-        }
+        // if (currentDist < dist)
+        // {
+        //     dist = currentDist;
+        //     label = mLabels.at<int>(codebookIndex);
+        // }
+        // FIXME: Use average distance
+//        distances[mLabels.at<int>(codebookIndex)].add(currentDist);
+        distances.insert(std::pair<int, double>(mLabels.at<int>(codebookIndex), currentDist));
     }
+    // Calculate the smallest average distance
+    double smallestAverageDist = DBL_MAX;
+    int closestLabel = -1;
+    double curDist = 0;
+    for (int curLabel = 0; curLabel < mCenters.rows; ++curLabel) // For each curLabel
+    {
+        if (distances.count(curLabel) == 0) // If this histogram has none of this label
+            continue; // Don't bother calculating it
+        double totalDist = 0;
+        std::pair<std::multimap<int, double>::const_iterator, std::multimap<int, double>::const_iterator> itRange = distances.equal_range(curLabel);
+        for (std::multimap<int, double>::const_iterator it = itRange.first; it != itRange.second; ++it)
+        {
+            std::cerr << "*" << curLabel << ":" << it->second << "*"; // FIXME: Remove
+            totalDist += it->second;
+        }
+        curDist = totalDist/distances.count(curLabel);
+        if (curDist < smallestAverageDist)
+        {
+            smallestAverageDist = curDist;
+            closestLabel = curLabel;
+        }
+        std::cerr << "@" << curLabel << ":" << curDist << "@"; // FIXME: Remove
+    }
+
+    label = closestLabel;
+    dist = smallestAverageDist;
 }
 
 // see FaceRecognizer::load.
