@@ -133,13 +133,20 @@ void performanceTest()
     std::cout << "Loading trained_lbp.xml..." << std::endl;
     modelLbp->load("trained_lbp.xml"); // FIXME: How the heck do I error-check loading??
 
+    // FIXME: Uncomment
+    // cv::Ptr<cv::FaceRecognizer> modelLid = lid::createLidFaceRecognizer( // FIXME: This should be its own function
+    //     params::lidFace::inradius,
+    //     params::lidFace::threshold);
+    // std::cout << "Loading trained_lid.xml..." << std::endl;
+    // modelLbp->load("trained_lid.xml"); // FIXME: How the heck do I error-check loading??
+
 
     std::vector<cv::Mat> images;
     std::vector<int> labels;
 
     loadPerformanceImagesAndLabels(images, labels);
 
-    int failsEigen = 0, failsFisher = 0, failsLbp = 0;
+    int failsEigen = 0, failsFisher = 0, failsLbp = 0, failsLid = 0;
 
     int result = 0;
     double dist = 0.0f;
@@ -167,7 +174,13 @@ void performanceTest()
         if (result != labels[i])
             ++failsLbp;
 
-        std::cerr << "\t" << result << "(" << dist << ")" << std::endl;
+        std::cerr << "\t" << result << "(" << dist << ")";
+
+        // modelLid->predict(images[i], result, dist);
+        // if (result != labels[i])
+        //     ++failsLid;// FIXME: Uncomment
+
+        // std::cerr << "\t" << result << "(" << dist << ")" << std::endl;
     }
 
     // FIXME: DEBUGGING
@@ -194,4 +207,5 @@ void performanceTest()
     std::cout << "\nEigen failures: " << failsEigen*100/(images.size() + 0.000001) << "%" << std::endl;
     std::cout << "Fisher failures: " << failsFisher*100/(images.size() +  + 0.000001) << "%" << std::endl;
     std::cout << "LBP failures: " << failsLbp*100/(images.size()  + 0.000001) << "%" << std::endl;
+    std::cout << "LID failures: " << failsLid*100/(images.size()  + 0.000001) << "%" << std::endl;
 }

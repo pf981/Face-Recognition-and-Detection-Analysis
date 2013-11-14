@@ -161,5 +161,5 @@ void train()
         params::lidFace::inradius,
         params::lidFace::threshold);
     model->train(images, labels); // FIXME: Maybe won't work
-    // model->save("trained_lid.xml"); // FIXME: Uncomment
+    model->save("trained_lid.xml"); // FIXME: Uncomment
 }

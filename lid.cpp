@@ -110,7 +110,7 @@ void Lidfaces::detectKeypointsAndDescriptors(
         totalNumberOfKeyPoints += allKeyPoints[i].size();
     assert(descriptors.rows == totalNumberOfKeyPoints);
 #endif
-    assert(descriptors.cols = 8*mInradius); // Ensure that each descriptors size is the number of neighbors
+    assert(descriptors.cols = 8*mInradius); // Ensure that each descriptors size is the number of neighbors // FIXME: 8*mInradius is NOT correct - you need to specify P (the number of columns) as a paramater of LID
 }
 
 
@@ -241,8 +241,8 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
         histogramLabels, // The label of the corresponding keypoint
         params::kmeans::termCriteria,
         params::kmeans::attempts,
-        params::kmeans::flags,
-        mCenters); // FIXME: This is not using the right distance equation. This is using Euclidean distance when it should be using D defined in the paper.
+        params::kmeans::flags);
+//        mCenters); // FIXME: This is not using the right distance equation. This is using Euclidean distance when it should be using D defined in the paper. // FIXME: NOTE THAT YOU NEED TO CREATE mCENTERS FIRST!!! GIVE IT THE RIGHT DIMENSIONS!!!
 // FIXME:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // FIXME: This is very important to change, however, it is still a distance measure, so it will probably still work okay
 
@@ -283,10 +283,23 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     // FIXME: What exactly is the codebook? hists? I think so...
 }
 
-// Predicts the label of a query image in src.
-// FIXME:
+// Predicts the label of a query image in src by creating a histogram by clustering the sift
+// descriptors using the centres we generated in training. The distances between the histogram and
+// the histogram of every training image is calculated. The smallest average distance to a class of
+// images is used to classify the image.
 int Lidfaces::predict(cv::InputArray src) const
 {
+    std::vector<std::vector<cv::KeyPoint> > keyPoints;
+    cv::Mat descriptors;
+//    cv::Mat image;
+    std::vector<cv::Mat> imageVector; // A vector containing just one image (this is so we can use the same detectKeypointsAndDescriptors function
+//    src.getMat(image); // FIXME: This is convoluted
+    imageVector.push_back(src.getMat());
+
+    // Get SIFT keypoints and LID descriptors
+//    detectKeypointsAndDescriptors(imageVector, keyPoints, descriptors);
+    // FIXME: TODO BIGTIME!!!
+    // Cluster the image using the training centres
     return 0;
 }
 
