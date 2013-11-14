@@ -110,36 +110,38 @@ void scaleImage(cv::Mat& mat)
 // FIXME:
 // This has different dimensions to the other scaling as the group image has a significantly
 // different row-to-column ratio
-void scaleGroupImage(cv::Mat& mat) // FIXME: Does inlining in cpp even work?
-{
-    const int ROWS = 480;
-    const int COLS = 600;
-
-    cv::Mat dest = mat.clone();
-    float scale = std::max(float(ROWS)/mat.rows, float(COLS)/mat.cols);
-
-    // Scale the image uniformly
-    cv::resize(mat, dest, cv::Size(), scale, scale);
-
-    // Crop the image
-    mat = dest(cv::Rect(0, 0, COLS, ROWS));
-
-    // Note that even though mat is a shallow copy of dest, the data won't be destroyed when
-    // dest goes out of scope because OpenCV does reference counting for Mats
-}
-
-
-// inline void scaleImage(cv::Mat& mat)
+// void scaleGroupImage(cv::Mat& mat) // FIXME: Does inlining in cpp even work?
 // {
-//     cv::Mat dest = mat.clone();
-//     float scale = sqrt((480.0f * 600.0f) / (mat.rows * mat.cols));
+//     const int COLS = 546;
+//     const int ROWS = 364;
+//     // const int ROWS = 480;
+//     // const int COLS = 600;
 
-//     // Don't make the image bigger
-//     if (scale > 1)
-//         return;
+//     cv::Mat dest = mat.clone();
+//     float scale = std::max(float(ROWS)/mat.rows, float(COLS)/mat.cols);
+
+//     // Scale the image uniformly
 //     cv::resize(mat, dest, cv::Size(), scale, scale);
+
+//     // Crop the image
+//     mat = dest(cv::Rect(0, 0, COLS, ROWS));
 
 //     // Note that even though mat is a shallow copy of dest, the data won't be destroyed when
 //     // dest goes out of scope because OpenCV does reference counting for Mats
-//     mat = dest;
 // }
+
+// Scales the image to approximately 480*600.
+void scaleGroupImage(cv::Mat& mat)
+{
+    cv::Mat dest = mat.clone();
+    float scale = sqrt((480.0f * 600.0f) / (mat.rows * mat.cols));
+
+    // Don't make the image bigger
+    if (scale > 1)
+        return;
+    cv::resize(mat, dest, cv::Size(), scale, scale);
+
+    // Note that even though mat is a shallow copy of dest, the data won't be destroyed when
+    // dest goes out of scope because OpenCV does reference counting for Mats
+    mat = dest;
+}

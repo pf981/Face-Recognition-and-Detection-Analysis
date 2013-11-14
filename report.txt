@@ -1,3 +1,9 @@
+Eigen: Reduce the dimensionality even further - this will be INSIDE the library.
+Fisher: Dunno,
+LID: Keep the keypoints in kmeans. When you detect, give kmeans the centroids (DON'T REGENERATE THEM). Then compare the histogram of the image with EVERY training image histogram. The class with the smallest average distance to the image is the classification.
+
+TODO: Fix haar, eigen, fisher; Complete LID
+
 Originally, we resized training images to 600(rows)x480(columns) but this wasn't square and was way too large so training and detection took too long. We changed this to 128x128. MAKE SURE YOU MENTION THAT YOU CENTRED THE IMAGE WHEN YOU CROPPED
 
 Mention that it was compiled on Ubuntu whatever. Have a README.TXT with compile information. Don't forget to remove training/performance testing in makefile.

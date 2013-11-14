@@ -45,6 +45,7 @@ namespace params
         const int neighbors = 8;
         const int gridX = 7; // 7,7 is by far the best
         const int gridY = 7; // FIXME: 7 better than 8 7=>11.236%
+        // FIXME: Note that if you used weighted LBP, it wouldn't matter what the grid size was - you could just train any grid to be good - the important regions would have a greater weight
 
 //        const int radius = 4;
 //        const int neighbors = 28; // FIXME: This is too big
