@@ -316,7 +316,7 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
     // Cluster the image using the training centres
     // FIXME: NOte that the euclidean distance between two mats is norm(m1 - m2);
 
-    dist = DBL_MAX;
+
     int closestCentroidIndex = 0;
     // mCenters.convertTo(mCenters, CV_8UC1); // FIXME: NEW
     // descriptors.convertTo(descriptors, CV_8UC1); // FIXME: NEW
@@ -326,18 +326,18 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
     // For each descriptor
     for (int descriptorIndex = 0; descriptorIndex < descriptors.rows; ++descriptorIndex)
     {
-    //     (Give it a classification)
-    //     For each centroid
+        // (Give it a classification)
+        dist = DBL_MAX;
+
+        // For each centroid
         for (int centroidIndex = 0; centroidIndex < mCenters.rows; ++centroidIndex)
         {
-    //         Calculate the distance from the descriptor to the centroid
-            if (descriptors.cols != mCenters.cols)
-                // TYPES
-                std::cerr << "!!!!!!!DC: " << descriptors.cols << std::endl << "CC: " << mCenters.cols << std::endl;
-            double currentDist = cv::norm(descriptors.row(descriptorIndex) - mCenters.row(centroidIndex)); // FIXME: USE THIS
-            if (descriptors.cols != mCenters.cols)
-                std::cout << "DC: " << descriptors.cols << std::endl << "CC: " << mCenters.cols << std::endl;
-    //         If it is the smallest distance, remember it and the centroid
+            // Calculate the distance from the descriptor to the centroid
+            double currentDist = cv::norm(
+                descriptors.row(descriptorIndex) - mCenters.row(centroidIndex)); // FIXME: I think this is always returning 0 :-(
+//            std::cerr << "!D" << currentDist << "D!" << std::endl; // FIXME: Remove
+
+            // If it is the smallest distance, remember it and the centroid
             if (currentDist < dist)
             {
                 dist = currentDist;
@@ -346,6 +346,8 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
         }
     }
     std::cout << "CCI: " << closestCentroidIndex << std::endl << "d: " << dist << std::endl; // FIXME: REmove
+
+
 }
 
 // see FaceRecognizer::load.
