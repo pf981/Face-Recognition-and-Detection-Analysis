@@ -2,7 +2,7 @@
  * Project: Facial Recognition
  * Paul Foster - 3648370
  */
-//#include <cmath> // FIXME: REMOVE
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -13,10 +13,13 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/objdetect/objdetect.hpp"
 
+#include "concatenate.hpp"
+#include "countImages.hpp"
 #include "detect.hpp"
 #include "images.hpp"
 #include "params.hpp"
-#include "concatenate.hpp"
+
+
 
 // Runs the cascade classifier and popultes the faces vector
 void detectFaces(const cv::Mat& grayscale, std::vector<cv::Rect>& faces)
@@ -35,17 +38,8 @@ void detectFaces(const cv::Mat& grayscale, std::vector<cv::Rect>& faces)
         params::cascadeClassifier::scaleFactor,
         params::cascadeClassifier::minNeighbors,
         params::cascadeClassifier::flags,
-        // cv::Size(),
-        // cv::Size());
         cv::Size(params::cascadeClassifier::minSize),
-//        cv::Size(params::cascadeClassifier::maxSize));
         params::cascadeClassifier::maxSize);
-        // params::cascadeClassifier::minSize,
-        // params::cascadeClassifier::maxSize);
-        // 1.1,
-        // 2,
-        // 0,
-        // cv::Size(40, 40));
 }
 
 
@@ -53,6 +47,32 @@ void detectFaces(const cv::Mat& grayscale, std::vector<cv::Rect>& faces)
 inline std::string getPrediction(int prediction)
 {
     return ((prediction == -1) ? "Unknown" : Concatenate((char)(prediction + 'A')).str);
+}
+
+// Check thattrained_eigen.xml, trained_fisher.xml, trained_lbp.xml and trained_lid.xml files exist
+// If not it will exit the program
+void ensureXmlFilesExist()
+{
+    if (!fileExists("trained_eigen.xml"))
+    {
+        std::cerr << "Error: Unable to load trained_eigen.xml.\nExiting.\n";
+        exit(1);
+    }
+    if (!fileExists("trained_fisher.xml"))
+    {
+        std::cerr << "Error: Unable to load trained_fisher.xml.\nExiting.\n";
+        exit(1);
+    }
+    if (!fileExists("trained_lbp.xml"))
+    {
+        std::cerr << "Error: Unable to load trained_lbp.xml.\nExiting.\n";
+        exit(1);
+    }
+    if (!fileExists("trained_lid.xml"))
+    {
+        std::cerr << "Error: Unable to load trained_lid.xml.\nExiting.\n";
+        exit(1);
+    }
 }
 
 void detect(const std::string& imageFile)
@@ -71,7 +91,7 @@ void detect(const std::string& imageFile)
     // Convert to grayscale (required by FaceRecognizer)
     cv::Mat grayscale(groupImage.clone());
     cv::cvtColor(groupImage, grayscale, CV_BGR2GRAY);
-    equalizeHist(grayscale, grayscale); // FIXME: THIS IS ABSOLUTELY NEEDED - MISSES A FACE OTHERWISE
+    equalizeHist(grayscale, grayscale); // Haar requires equalisation
 
 
     std::vector<cv::Rect> faces;
@@ -107,10 +127,11 @@ void detect(const std::string& imageFile)
         cv::Mat individualImage(original.clone());
         scaleImage(individualImage);
         cv::cvtColor(individualImage, grayscale, CV_BGR2GRAY);
-        equalizeHist(grayscale, grayscale); // FIXME: Why do this?
+
+        ensureXmlFilesExist();
 
         // Eigen
-        cv::Ptr<cv::FaceRecognizer> model = cv::createEigenFaceRecognizer( // FIXME: This should be its own function
+        cv::Ptr<cv::FaceRecognizer> model = cv::createEigenFaceRecognizer(
             params::eigenFace::numComponents,
             params::eigenFace::threshold);
         model->load("trained_eigen.xml"); // FIXME: How the heck do I error-check loading??
