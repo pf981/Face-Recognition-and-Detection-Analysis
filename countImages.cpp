@@ -1,3 +1,7 @@
+/* CSCI435 Computer Vision
+ * Project: Facial Recognition
+ * Paul Foster - 3648370
+ */
 #include <iostream>
 #include <fstream>
 
@@ -15,6 +19,9 @@ bool fileExists(const std::string& filename)
 
 
 // Returns the number of images in the folder "face_samples/sample_{sample}/"
+// Note that, because this function assumes the structure of the filesystem, it is not intended to
+// be used by the markers. I used this function when training the images, however you will not need
+// to use it as you will already have the trained XML files.
 int countImages(char sample)
 {
     for (int photoNum = 1;; ++photoNum)
