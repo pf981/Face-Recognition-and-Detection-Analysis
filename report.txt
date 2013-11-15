@@ -1,3 +1,8 @@
+FIXME: This will probably be fixed if we used LBP cascades instead
+
+FIXME: Some of the individual faces are being picked up as multiple. Maybe just base on size. Or create a new performance test function that will run the haar cascade over all images.
+First you should retune haar so that it detects all people in the waiting room
+
 FIXME: Search for all fixmes; Search for all "exit"s and make sure you include cstdlib
 
 FIXME: You created Concatenate, however, you an use cv::format instead as it works just like printf

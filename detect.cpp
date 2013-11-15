@@ -37,8 +37,11 @@ void detectFaces(const cv::Mat& grayscale, std::vector<cv::Rect>& faces)
         params::cascadeClassifier::scaleFactor,
         params::cascadeClassifier::minNeighbors,
         params::cascadeClassifier::flags,
+//        cv::Size(1,1), // FIXME
         cv::Size(params::cascadeClassifier::minSize),
-        params::cascadeClassifier::maxSize);
+//        params::cascadeClassifier::maxSize);
+//        cv::Size(params::cascadeClassifier::maxSize));
+        cv::Size(10, 10));
 }
 
 
