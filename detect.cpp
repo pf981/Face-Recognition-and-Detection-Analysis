@@ -134,7 +134,7 @@ void detect(const std::string& imageFile)
         cv::Ptr<cv::FaceRecognizer> model = cv::createEigenFaceRecognizer(
             params::eigenFace::numComponents,
             params::eigenFace::threshold);
-        model->load("trained_eigen.xml"); // FIXME: How the heck do I error-check loading??
+        model->load("trained_eigen.xml");
 
         double dist = 0.0f;
         int prediction = 0;
@@ -142,32 +142,28 @@ void detect(const std::string& imageFile)
         std::cout << "Eigen Face: Person is " << getPrediction(prediction) << std::endl;
 
         // Fisher
-        model = cv::createFisherFaceRecognizer( // FIXME: This should be its own function
+        model = cv::createFisherFaceRecognizer(
             params::fisherFace::numComponents,
             params::fisherFace::threshold);
-        model->load("trained_fisher.xml"); // FIXME: How the heck do I error-check loading??
+        model->load("trained_fisher.xml");
 
         model->predict(grayscale, prediction, dist);
         std::cout << "Fisher Face: Person is "<< getPrediction(prediction) << std::endl;
 
         // LBP
-        model = cv::createLBPHFaceRecognizer( // FIXME: This should be its own function
+        model = cv::createLBPHFaceRecognizer(
         params::lbphFace::radius,
         params::lbphFace::neighbors,
         params::lbphFace::gridX,
         params::lbphFace::gridY,
         params::lbphFace::threshold);
-        model->load("trained_lbp.xml"); // FIXME: How the heck do I error-check loading??
+        model->load("trained_lbp.xml");
 
         model->predict(grayscale, prediction, dist);
         std::cout << "LBP: Person is " << getPrediction(prediction) << std::endl;
-        std::cout << "DIST " << dist << std::endl; // FIXME:REMOVE
-
 
         imshow("INFO435 Project", individualImage);
     }
-
-
 
     cv::waitKey(0);
 }
