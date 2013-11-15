@@ -7,6 +7,9 @@
 
 #include <string>
 
+// Counts the number of faces in the given image and displays the image with bounding boxes around
+// the faces. Alternatively, if there is only one face, it will try to identify it using various
+// facial recognition algorithms.
 void detect(const std::string& imageFile);
 
 #endif

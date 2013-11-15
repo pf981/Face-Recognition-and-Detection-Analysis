@@ -1,3 +1,5 @@
+FIXME: Search for all fixmes; Search for all "exit"s and make sure you include cstdlib
+
 FIXME: You created Concatenate, however, you an use cv::format instead as it works just like printf
 
 PARAMS FOR EIGEN AND FISHER: NumComponents determines the number of components to keep. With eigenfaces, the number of components is the number of principle components to keep. It should be chosen such that it retains the components that make up for the most eigenvalues. e.g. 90%of the eigenvalue. However, it needs to be small enough that the distances aren't stupidly big due to too high dimensionality. Dunno about fisher.
