@@ -412,7 +412,7 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
         std::pair<std::multimap<int, double>::const_iterator, std::multimap<int, double>::const_iterator> itRange = distances.equal_range(curLabel);
         for (std::multimap<int, double>::const_iterator it = itRange.first; it != itRange.second; ++it)
         {
-            std::cerr << "*" << curLabel << ":" << it->second << "*"; // FIXME: Remove
+            // std::cerr << "*" << curLabel << ":" << it->second << "*"; // FIXME: Remove
             totalDist += it->second;
         }
         curDist = totalDist/distances.count(curLabel);
@@ -421,7 +421,7 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
             smallestAverageDist = curDist;
             closestLabel = curLabel;
         }
-        std::cerr << "@" << curLabel << ":" << curDist << "@"; // FIXME: Remove
+        // std::cerr << "@" << curLabel << ":" << curDist << "@"; // FIXME: Remove
     }
 
     label = closestLabel;
@@ -467,7 +467,7 @@ void Lidfaces::save(cv::FileStorage& fs) const
 
     // Write the codebook
     //cv::writeFileNodeList(fs, "codebook", mCodebook);
-    std::cerr << "CODEBOOK:" << mCodebook.size() << "!!!"; // FIXME: Remove
+    // std::cerr << "CODEBOOK:" << mCodebook.size() << "!!!"; // FIXME: Remove
     fs << "codebook" << "["; // FIXME: This isn't working
     for (std::vector<cv::Mat>::const_iterator it = mCodebook.begin(); it != mCodebook.end(); ++it) {
         fs << *it;

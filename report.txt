@@ -1,4 +1,6 @@
-Eigen: Reduce the dimensionality even further - this will be INSIDE the library.
+PARAMS FOR EIGEN AND FISHER: NumComponents determines the number of components to keep. With eigenfaces, the number of components is the number of principle components to keep. It should be chosen such that it retains the components that make up for the most eigenvalues. e.g. 90%of the eigenvalue. However, it needs to be small enough that the distances aren't stupidly big due to too high dimensionality. Dunno about fisher.
+
+Eigen: Reduce the dimensionality even further - this will be INSIDE the library. NO THIS IS JUST NUMCOMPONENTS
 Fisher: Dunno,
 LID: Keep the keypoints in kmeans. When you detect, give kmeans the centroids (DON'T REGENERATE THEM). Then compare the histogram of the image with EVERY training image histogram. The class with the smallest average distance to the image is the classification.
 
