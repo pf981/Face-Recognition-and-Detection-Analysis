@@ -20,7 +20,6 @@
 #include "params.hpp"
 
 
-
 // Runs the cascade classifier and popultes the faces vector
 void detectFaces(const cv::Mat& grayscale, std::vector<cv::Rect>& faces)
 {
@@ -49,7 +48,8 @@ inline std::string getPrediction(int prediction)
     return ((prediction == -1) ? "Unknown" : Concatenate((char)(prediction + 'A')).str);
 }
 
-// Check thattrained_eigen.xml, trained_fisher.xml, trained_lbp.xml and trained_lid.xml files exist
+
+// Check that trained_eigen.xml, trained_fisher.xml, trained_lbp.xml and trained_lid.xml files exist
 // If not it will exit the program
 void ensureXmlFilesExist()
 {
