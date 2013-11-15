@@ -7,7 +7,6 @@
 
 #include <sstream>
 
-// FIXME: Use std::string cv::format(const char* fmt, ...) instead. Works just liek printf :-(
 // This is a tool to concatenate arbitrarily many, hetrogeneous types into a string.
 // E.g. concatenate("CSC")('I')(435).str -> "CSCI435"
 struct Concatenate
@@ -28,6 +27,5 @@ struct Concatenate
         return *this;
     }
 };
-
 
 #endif
