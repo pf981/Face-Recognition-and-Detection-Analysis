@@ -4,16 +4,21 @@
  */
 // This file defines the functions needed to processes the training images. They generate xml files
 // that are needed for facial recognition.
+//
+// Note to makers: You will NOT need to use this file. This file is used to train the images,
+// however, the assignment submission will already have the trained XML files. There is no need
+// to re-train the images - in fact, if you re-train this, you will not get the same XML file
+// because I re-named some of the sample images to work with these functions.
+//
+// This file was included purely so you could see how I trained the XML files
 #include <fstream>
 #include <iostream>
-#include <sstream> // FIXME: Certainly don't need all these includes
 #include <string>
 #include <vector>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/contrib/contrib.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "opencv2/objdetect/objdetect.hpp"
 
 #include "concatenate.hpp"
 #include "countImages.hpp"
@@ -44,11 +49,8 @@
 void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>& labels)
 {
     // For each training image
-    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: Use this
-//    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Comment out
-//    for (char sample = 'A'; sample <= 'B'; ++sample)
+    for (char sample = 'A'; sample <= 'W'; ++sample)
     {
-        // FIXME: Of the images, we need to RANDOMLY select 60% of them for training
         std::cerr << sample << ": " << countImages(sample) << std::endl; // FIXME: Remove
         for (int photoNum = 1;
              photoNum <= (int)(params::training::trainingToValidationRatio*countImages(sample));
@@ -64,49 +66,11 @@ void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>&
             std::cout << "Reading " << filename << std::endl;
 
             // Read the image in. Fisher only works on greyscale
-//            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE)); // FIXME: Don't think this worked
-
-            // Scale the images as they so they are faster to process. All images need to have the same
-            // dimensions as it is required for the recognisers
-//            scaleImage(image); // FIXME:
-
-
-            // cv::Mat image(cv::imread(filename));
-            // scaleImage(image);
-            // cv::Mat grayscale;
-            // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
-            // equalizeHist(grayscale, grayscale); // FIXME: Why do this?
-
-            // FIXME: Added this to try and fix eigen and fisher not working
-//            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
-
-
-
-            // FIXME: Original
-            cv::Mat image(cv::imread(filename, 0)); // FIXME: Attempt to fix
+            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE)); // FIXME: Attempt to fix
             scaleImage(image);
-            cv::Mat grayscale(image.clone());
-
-
-//            equalizeHist(grayscale, grayscale); // FIXME: ABSOLUTELY REMOVE
-
-            // FIXME: Attempt fix
-            // cv::Mat image(cv::imread(filename));
-            // scaleImage(image);
-            // cv::Mat grayscale(image.clone());
-            // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
-            // equalizeHist(grayscale, grayscale);
-
-
-
-
-
-            // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
-            //equalizeHist(grayscale, grayscale); // FIXME: Why do this?
-
 
             // Add the image and its label to the vectors
-            images.push_back(grayscale);
+            images.push_back(image);
             labels.push_back(sample - 'A');
         }
     }
@@ -117,6 +81,9 @@ void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>&
 // Note that this function assumes the heirarchy of the image files. This is not intended to
 // be run more than once - once the xml files are generated, there is no need to regenerate
 // them.
+//
+// Note to markers - do NOT run this function. The submission already includes the trained XML
+// files.
 void train()
 {
     std::vector<cv::Mat> images;
@@ -124,10 +91,7 @@ void train()
 
     loadTrainingImagesAndLabels(images, labels);
 
-
     // Train Eigen, Fisher, LBP and LID face recognisers with the images and produce xml files
-//    cv::Ptr<cv::FaceRecognizer> model; // FIXME: REMOVE
-    // FIXME: UNCOMMENT
     std::cout << "Training Eigen Face Recogniser..." << std::endl;
     cv::Ptr<cv::FaceRecognizer> model = cv::createEigenFaceRecognizer(
         params::eigenFace::numComponents,
@@ -135,7 +99,6 @@ void train()
     model->train(images, labels);
     model->save("trained_eigen.xml");
 
-    // FIXME: Uncomment below
     std::cout << "Training Fisher Face Recogniser..." << std::endl;
     // Note that Ptr handles reference counting when we use the assignment operator,
     // so there won't be a memory leak
@@ -155,11 +118,10 @@ void train()
     model->train(images, labels);
     model->save("trained_lbp.xml");
 
-    // FIXME: Train LID Face Recogniser
     std::cout << "Training LID Face Recogniser..." << std::endl;
     model = lid::createLidFaceRecognizer(
         params::lidFace::inradius,
         params::lidFace::threshold);
-    model->train(images, labels); // FIXME: Maybe won't work
-    model->save("trained_lid.xml"); // FIXME: Uncomment
+    model->train(images, labels);
+    model->save("trained_lid.xml");
 }
