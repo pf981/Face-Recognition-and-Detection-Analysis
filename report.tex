@@ -119,7 +119,8 @@ If we describe the collection of all images of the face of an individual as a ve
 
 The goal is to find the principal components of the training data, called eigenfaces. These eigenfaces form a basis for every image of this person’s face. That is, every image of this person’s face can be described as a linear combination of the eigenfaces. Furthermore, every image of this person’s face can be approximated by a linear combination of the eigenfaces with the largest eigenvalues.
 
-The Eigenfaces are computed in the following way. Given $M$ training images with dimensions $h$*$w$, we consider each image as an $D$-dimensional vector where $D = hw$.
+\subsubsection{Calculating Eigenfaces}
+Given $M$ training images with dimensions $h$*$w$, we consider each image as an $D$-dimensional vector where $D = hw$.
 
 \vspace{12pt} \noindent Let $S$ be the set of the $M$ training images.
 \begin{equation}
@@ -142,11 +143,22 @@ Where $A = [\Phi_1 \Phi_2 \ldots \Phi_M]$
 
 We wish to calculate the eigenvectors ($u_1, \ldots, u_s$) of $C$. However, solving this directly is typically a computationally infeasible task.
 
-Instead, we construct $L \in \mathbb{R}^{M\times M}$ as $L = A^T A$ such that $L_{mn} = \Phi^T_m \Phi_n$ and find the $M$ eigenvectors ($v_1, \ldots, v_k$) of $L$. These are used to computer the eigenfaces
+Instead, consider the eigenvectors, $v_i$ of $A^TA$ such that $A^TAv_i=\widehat{\lambda}_iv_i$. Premultiplying by $A$ yields $AA^TAv_i=\widehat{\lambda}_iAv_i$. So clearly, $Av_i$ are the eigenvectors of $C=AA^T$.
+
+We construct $L \in \mathbb{R}^{M\times M}$ as $L = A^T A$ such that $L_{mn} = \Phi^T_m \Phi_n$ and find the $M$ eigenvectors ($v_1, \ldots, v_k$) of $L$. These are used to computer the eigenfaces
 \begin{equation}
 	u_l = \sum_{k=1}^{M}v_{lk}\Phi_k
 \end{equation}
 Using this method reduces the computation from $\mathcal{O}(D)$ to $\mathcal{O}(M)$ where $M\ll D$.
+
+To reduce the dimensionality, we keep only the eigenvectors with the largest corresponding eigenvalue. These vectors account for the most variation in the images. There are several ways of determining how many vectors to keep, but we chose to keep the eigenvalues that accounted for 90\% of the sum of the eigenvalues. \hl{FIXME: CHECK THIS what does OPENCV do?}
+
+\subsubsection{Using Eigenfaces for Face Recognition}
+To classify a face image $\Gamma$, we project it into its "face space" using $\omega_k = u^T_k(\Gamma - \Psi)$, for $k = 1, \ldots, M^\prime$.
+
+Let $\Omega^T = [\omega_1, \ldots, \omega_{M^\prime}]$ and let $\Omega_k$ denote the vector describing the $k$th face class.
+
+We wish to find $k$ that minimises $\epsilon_k = \|(\Omega - \Omega_k)\|$. If such an $\epsilon_k$ is above some threshold $\theta_\epsilon$, then we say the face is unknown. Otherwise we classify the face as the $k$th class.
 
 \subsubsection{Parameter Optimisation}
 Data Prep
@@ -235,6 +247,8 @@ Will not detect clipped faces or faces rotated.
 All these faces were trained with the same illumination and facial hair etc on the same day. It will likely not perform well on images of different illumination.
 
 We found that eigen and fisher took significantly longer to train and compute
+
+FIXME: The VERY LARGE DISTANCES for eigen and fisher could be due to the variation in pose. This is why it performs significantly poorer than in the papers as they dealt with fixed pose
 }
 
 \nocite{*} % List uncited references % FIXME: Doesn't work
