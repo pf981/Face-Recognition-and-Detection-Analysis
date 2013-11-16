@@ -40,30 +40,27 @@ algorithm that can learn from a dataset comprising the faces of these citizens.
 Definitions: face space
 
 \section{Introduction}
-Face detection and face recognition are two actively-researched and important topics in computer vision. Both of these tasks are performed frequently and easily by humans however no current system exists that can be deployed effectively in an unconstrained setting \cite{sinha2006face}.
+Face detection and face recognition are two actively-researched and important topics in computer vision. Both of these tasks are performed frequently and easily by humans however no current automated system exists that can be deployed effectively in an unconstrained setting \cite{sinha2006face}.
 
-Earlier forms of facial detection and recognition involved holistic methods such as Eigenfaces\cite{turk1991eigenfaces} and Fisherfaces\cite{belhumeur1997eigenfaces}. However, more recently, local descriptors such as Local Binary Patterns (LBP) and Local Intensity Distribution (LID) have gained attention due to their efficiency and tolerance to pose and illumination changes\cite{ahonen2004face}\cite{nguyen2011local}.
+Earlier forms of facial detection and recognition involved holistic methods such as Eigenfaces\cite{turk1991eigenfaces} and Fisherfaces\cite{belhumeur1997eigenfaces}. However, more recently, local descriptors such as Local Binary Patterns (LBP)\cite{ahonen2004face} and Local Intensity Distribution (LID)\cite{nguyen2011local} have gained attention due to their efficiency and tolerance to pose and illumination changes.
 Face recognition technology has significantly progressed since the proposal of the Eigenface method in 1987. Given that most individuals can only identify a few thousand people, under constrained conditions (such as fixed facial expression and lighting) and a very large number of classifications, automated face recognition can perform better than human recognition \cite{li2011handbook}.
 
-FIXME: History of FACE DETECTION
+\hl{FIXME: History of FACE DETECTION}
 
 There are numerous commercial and law-enforcement applications for face detection and recognition including advanced video surveillance, user authentication and suspect tracking \cite{zhao2003face}. The effectiveness of these applications rely on the efficiency and accuracy of the underlying algorithms. In this report, we will compare the efficiency and accuracy of 4 facial recognition algorithms: Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distributions (LID). We will also investigate the efficiency and performance of Haar feature-based cascade classification for face detection and discuss how these algorithms can be applied by the Gwynville Airport Authority for their security and surveillance system.
 
 
 \section{Data Preparation}
-The data given consisted of between 9 and 14 photos each of the faces of 11 students. The images were converted to grayscale then were scaled down and cropped to 128*128. This was achieved by uniformly scaling the image such that the smaller dimension was equal to 128 pixels. The 128*128 rectangle centred at the centre of the image was then used as the cropped image. 128*128 was chosen because it was large enough to provide good results but not so large as to be computationally problematic.
+The individual face data given consisted of between 9 and 14 photos each of the faces of 11 students. The images were converted to grayscale then were scaled down and cropped to 128*128. This was achieved by uniformly scaling the image such that the smaller dimension was equal to 128 pixels. The 128*128 rectangle centred at the centre of the image was then used as the cropped image. 128*128 was chosen because it was large enough to provide good results but not so large as to be computationally problematic.
 
+For group photos, where we wanted to use the face-counting algorithm, the photo was uniformly scaled such that its area was approximately 640*480 to reduce computation.
 
 \subsection{Training/Testing Split}
-The student photos were split into two sets: a training set and a validation set. They were used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
+For cross validation, the student photos were split into two sets: a training set and a validation set. They were used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
 
-The proportion of the size of the training set to the size of the validation set was chosen to be \hl{FIXME:SOMETHING, look at cross validation}. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
+The proportion of the size of the training set to the size of the validation set was chosen to be \hl{FIXME:SOMETHING, look at cross validation - involves mutiple sampling. Also, maybe put this splitting into the algorithm results section as it doesn't apply to Haar}. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
 
 \hl{some\%} of the data were used to train the model and the other \hl{some\%} were used to test its performance.
-
-
-%\citep{guyon1997scaling}
-%http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.33.1337&rep=rep1&type=pdf} % \citep{}
 
 \section{People Counting Algorithms}
 Data Prep
@@ -113,8 +110,10 @@ Data Prep
 
 \subsection{Eigen Face}
 If we describe the collection of all images of the face of an individual as a vector space, then we can describe every such image through a linear combination of the spanning vectors of that space.
-%\hl{For an individual, we have M training images. We treat the set of training images as a single, high-dimensional vector and find the eigenvectors of the covariance matrix.} % FIXME
-The goal is to find the principal components of the training data, called eigenfaces. These eigenfaces form a basis for every image of this person’s face. That is, every image of this person’s face can be described exactly as a linear combination of the eigenfaces. Furthermore, every image of this person’s face can be approximated by a linear combination of the eigenfaces with the largest eigenvalues.
+
+The goal is to find the principal components of the training data, called eigenfaces. These eigenfaces form a basis for every image of this person’s face. That is, every image of this person’s face can be described as a linear combination of the eigenfaces. Furthermore, every image of this person’s face can be approximated by a linear combination of the eigenfaces with the largest eigenvalues.
+
+The Eigenfaces are computed in the following way. Given $M$ training images with dimensions $h$*$w$, we consider each image as an $D$-dimensional vector where $D = hw$.
 
 \vspace{12pt} \noindent Let $S$ be the set of the $M$ training images.
 \begin{equation}
@@ -128,10 +127,16 @@ Let $\Phi_i$ denote the difference between the $i$\textsuperscript{th} training 
 \begin{equation}
 	\Phi_i = \Gamma_i - \Psi
 \end{equation}
-Constructing the covariance matrix, $C$, we get
+Constructing the covariance matrix, $C \in \mathbb{R}^{D\times D}$, we get
 \begin{equation}
 	C = \frac{1}{M}\cdot\sum_{n=1}^{M}\Phi_n \Phi_n^T
+	  = AA^T
 \end{equation}
+Where $A = [\Phi_1 \Phi_2 \ldots \Phi_M]$
+
+We wish to calculate the eigenvectors of $C$. However, this is typically a computationally infeasible task.
+
+We construct $L \in \mathbb{R}^{M\times M}$ as $L = A^T A$ such that $L_{mn} = \Phi^T_m \Phi_n$
 
 \subsubsection{Parameter Optimisation}
 Data Prep
