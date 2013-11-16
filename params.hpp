@@ -74,19 +74,24 @@ namespace params
     namespace cascadeClassifier
     {
         // These WERE good - but not anymore
+        // const double scaleFactor = 1.025; // 1.017,9 good
+        // const int minNeighbors = 8;
+        // const int flags = 0; // This is a legacy parameter and it will not do anything with our application
+
+        // These WERE good - but not anymore
+        const double scaleFactor = 1.01;
+        const int minNeighbors = 9;
+        const int flags = 0; // This is a legacy parameter and it will not do anything with our application
+
+        // // These WERE good - but not anymore
         // const double scaleFactor = 1.017;
         // const int minNeighbors = 9;
         // const int flags = 0; // This is a legacy parameter and it will not do anything with our application
 
 
-        const double scaleFactor = 1.01;
-        const int minNeighbors = 1;
-        const int flags = 0; // This is a legacy parameter and it will not do anything with our application
-
-
         // Chose not to have a min/max size so that we could handle close/far faces.
         const cv::Size minSize;
-        const cv::Size maxSize(1,1); // FIXME: In OpenCV 2.4.2, this parameter does not work...
+        const cv::Size maxSize; // FIXME: In OpenCV 2.4.2, this parameter does not work...
     }
     namespace sift
     {

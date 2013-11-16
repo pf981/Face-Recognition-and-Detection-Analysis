@@ -24,9 +24,9 @@
 void detectFaces(const cv::Mat& grayscale, std::vector<cv::Rect>& faces)
 {
     cv::CascadeClassifier faceCascade;
-    if(!faceCascade.load("haarcascade_frontalface_alt.xml"))
+    if(!faceCascade.load("haarcascade_frontalface_alt2.xml")) // FIXME:
     {
-        std::cerr << "Error: Unable to load haarcascade_frontalface_alt.xml.\nExiting.\n";
+        std::cerr << "Error: Unable to load haarcascade_frontalface_alt2.xml.\nExiting.\n";
         exit(1);
     };
 
