@@ -27,6 +27,7 @@
 
 \renewcommand\abstractname{Executive Summary}
 \begin{abstract}
+\hl{FIXME: TODO - do not use what it is currently}
 Gwynville Airport Authority has requested evaluation of some computer vision
 technologies that they plan to deploy as part of their security and surveillance system.
 The system should be able to count the number of people in a waiting room area based
@@ -39,7 +40,15 @@ algorithm that can learn from a dataset comprising the faces of these citizens.
 Definitions: face space
 
 \section{Introduction}
-Here is the text of your introduction.
+Face detection and face recognition are two, actively-researched and important topics in computer vision. \hl{FIXME: cite} Both of these tasks are performed frequently and easily by humans.
+
+Face recognition has become increasingly important due to advances in image capture devices and the availability of online face databases \cite{li2011handbook}.
+
+There are numerous commercial and law-enforcement applications for face detection and recognition including something. These rely on algorithms that are both efficient and accurate.
+
+FIXME: Talk about biginning - eigen the fisher
+
+Face recognition technology has significantly progressed since the proposal of the Eigenface method in 1987. Given that most individuals can only identify a few thousand people, under constrained conditions (such as fixed facial expression and lighting) and a very large number of classifications, automated face recognition can perform better than human recognition \cite{li2011handbook}.
 
 \section{Data Preparation}
 The data given consisted of between 9 and 14 photos each of the faces of 11 students. The images were converted to grayscale then were scaled down and cropped to 128*128. This was achieved by uniformly scaling the image such that the smaller dimension was equal to 128 pixels. The 128*128 rectangle centred at the centre of the image was then used as the cropped image. 128*128 was chosen because it was large enough to provide good results but not so large as to be computationally problematic.
