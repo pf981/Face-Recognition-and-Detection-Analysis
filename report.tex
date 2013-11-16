@@ -91,7 +91,7 @@ scaleFactor=0.017; minNeighbors=9
 \centering
 %\includegraphics[width=0.7\linewidth,natwidth=10,natheight=10]{waiting_room_detected.jpg}
 %\includegraphics[width=0.1\linewidth]{waiting_room_detected.jpg} % FIXME: If this is too big it ends up restarting the page numbering
-\includegraphics[scale=1]{waiting_room_detected.jpg}
+\includegraphics[scale=1]{waiting_room_detected.jpg} % FIXME: Overful hbox
 %\includegraphics[width=250px,height=250px]{waiting_room_detected.jpg}
 \caption{Haar Cascade Classifier FIXME: If this is big it resets page num for some reason; FIXME: REDO - YOU HAVE CROPPED SOMEONE OUT!!!}
 \label{fig:haar_cascade}
@@ -148,6 +148,8 @@ Instead, consider the eigenvectors, $v_i$ of $A^TA$ such that $A^TAv_i=\widehat{
 We construct $L \in \mathbb{R}^{M\times M}$ as $L = A^T A$ such that $L_{mn} = \Phi^T_m \Phi_n$ and find the $M$ eigenvectors ($v_1, \ldots, v_k$) of $L$. These are used to computer the eigenfaces
 \begin{equation}
 	u_l = \sum_{k=1}^{M}v_{lk}\Phi_k
+%	\qquad \text{k=1, \ldots, M}
+%\text{k=1, \ldots, M} % FIXME: Don't know how to do this in LaTeX!!!
 \end{equation}
 Using this method reduces the computation from $\mathcal{O}(D)$ to $\mathcal{O}(M)$ where $M\ll D$.
 
@@ -166,11 +168,18 @@ Data Prep
 \subsection{Fisherfaces}
 The main advantage of this method is that it is invariant to different light sources. Extensive experimental results show that Fisherface has lower error rates than eigenface on the havard and yale face detection databases. \hl{(See the abstract of the pdf)}.
 
+The Fisherfaces method recognises that variance among faces in the database may come from distortions such as illumination changes or facial expressions. Sometimes these variations within a face class are larger than the variations between classes of faces.
+
 \hl{Although this method has advantages when subject to different lighting conditions, this advantage is not really applicable to our purposes as the camera will likely be uniformly lit. (Maybe it will be important if it is sometimes lit by natural light and sometimes lit by artificial light depending on the time of day.}
 
-Like Eigenfaces, the Fisherfaces algorithm reduces the dimensionality of the problem. It does so in a way the preserves the linear separability of the classes. We wish to choos \hl{$W$} such that the ratio of the between-class scatter and within-class scatter is maximised. We define the between-class scatter matrix as $S_B = \sum_{i=1}^{c}N_i(\mu_i - \mu)(\mu_i - \mu)^T$
+Like Eigenfaces, the Fisherfaces algorithm reduces the dimensionality of the problem. It does so in a way the preserves the linear separability of the classes. We wish to choose \hl{$W$} such that the ratio of the between-class scatter and within-class scatter is maximised. We define the between-class scatter matrix as $S_B = \sum_{i=1}^{c}N_i(\mu_i - \mu)(\mu_i - \mu)^T$ and the within-class scatter matrix as  $S_W = \sum_{i=1}^{c}\sum_{x_k\in X_i}(x_k - \mu_i)(x_k - \mu_i)^T$. Where $u_i$ is the mean image of class $X_i$ and $N_i$ is the number of samples in class $X_i$.
 
-Technical description
+$S_W$ is either singular or non-singular. If it is singular, choose $W_{opt}$ as the matrix with orthonormal columns such that $\frac{|W^TS_BW|}{|W^TS_WW|}$ is maximised. That is
+\begin{equation}
+	W_{opt} = arg\ max_W \frac{|W^TS_BW|}{|W^TS_WW|} = [w_1\ w_2\ \ldots\ w_m]
+\end{equation}
+Where $w_i$ is the $i$th generalised eigenvector of $S_B$ and $S_W$ corresponding to the $m$ largest generalised eigenvalues ($\lambda_1, \ldots, \lambda_m$).
+
 \subsubsection{Parameter Optimisation}
 Data Prep
 
