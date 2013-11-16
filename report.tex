@@ -208,9 +208,9 @@ Each of the training images are trained in the following way. Each pixel, $p$, i
 
 Our description for the image consists of a spacial histogram: $X\cdot Y$ histograms, which each correspond to a region of the image, appended together.
 
-\subsubsection{Classifying Faces Using LBP}
+\subsubsection{Face Recognition Using LBP}
 Given an unclassified image $I$, its description (a spacial histogram) is determined using the previous method. For each of the training images $I^{(i)}$, the chi-squared distance between the training image's spacial histogram, $H^{(i)}$, and the unclassified image's histogram, $H$, is calculated.
-We classify the image as the class of the closest training image. That is
+We classify the image as the class of the closest training image. That is,
 \begin{equation}
 	class\{I\} = class\{I^{(k)}\}
 \end{equation}
@@ -228,23 +228,16 @@ We add the additional constraint that $class\{I\}$ will be \textit{unknown} if t
 \subsubsection{Additional Notes}
 Many enhancements have been proposed for LBP. These include considering neighbours that lie on an ellipse rather than a circle, non-rectangular regions, weighted regions, regions of different sizes and overlapping regions \cite{belhumeur1997eigenfaces}. However, we will only be testing the method specified above.
 
-% You could talk about the evolution of LBP - originally just 8 neighbors then circle then ellipse. Originally didn't exclude non-uniform binary patterns. The regions do not have to be rectangular or the same size and do not have to cover the whole image - could even overlap.
-\hl{Something to do with a histogram...
-FIXME: In our experiments, each region was given equal weight (We didn't use the weighted chi-squared). This is just how I assume OpenCV implements it
-
-Each regions pixel classifications are put into a histogram. This histogram represents the pattern of that region.
-Oh, and then you do the bag of words thing that we did with assig2. But how do we combine all the training images of one person into one thing to compare against? This is the same problem as we are having with LID. IDEA: You could have each image "vote" whether they are similar. The class with the most votes wins. You would have to take into account the fact that there are different numbers of training data}
 
 \subsubsection{Parameter Optimisation}
 Data Prepsssss
 
 \subsection{Local Intensity Distribution}
-\hl{LID does 2 things: uses a computationally efficient distance measure for kmeans clustering, Defines a LID descriptor, other stuff. Insert diagram to illustrate what neighboring pixels are in LID. Do the same for LBP.
+\hl{Insert diagram to illustrate what neighboring pixels are in LID. Do the same for LBP.
 
-You could use SI}
+Local Intensity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similar to LBP descriptors, LID descriptors are insensitive to illumination changes} \cite{nguyen2011local}.
 
-Local Intensity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similarly to LBP descriptors, LID descriptors are insensitive to illumination changes.
-
+\subsubsection{The LID Descriptor}
 Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of an image with $N$ pixels and let $p = (x,y) \in \mathbb{Z}^2$ be an arbitrary point in the domain of $I$. We define $LID_{N,R}(p) : \mathbb{Z}^2 \rightarrow \mathbb{R}^N$ as
 \begin{equation}
    % \label{simple_equation}
@@ -252,23 +245,19 @@ Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of
 \end{equation}
 where $d(p_i,p) = I(p_i) - I(p)$ and $p_i = (x_i, y_i) \in \mathbb{Z}$ is such that $max\{|x_i - x|, |y_i - y|\} = R$. % FIXME: There must be a better way to describe this rectangle (perimeter) than using this max.
 
-We can determine the dissimilarity $D(I_1, I_2)$ between two images through the Kullback-Leibler (KL) distance \cite{kullback1951information}.
-\begin{equation}
-   % \label{simple_equation}
-	D(I_1, I_2) = \frac{KL\left(p_{I_1}(v) \| p_{I_2}(v)\right) +
-	              KL\left(p_{I_2}(v) \| p_{I_1}(v)\right)}{2}
-\end{equation}
-\hl{FIXME: Do some handwaving, then}
-\begin{equation}
-   % \label{simple_equation}
-	KL(p_1(v) \| p_2(v)) = \sum_{i=1}^{N}KL(p_1(v_i) \| p_2(v_i))
-\end{equation}
-
+\subsubsection{Training The Images}
+% FIXME: I suspect that if you use spacial histograms instead of SIFT you will get better results
 \subsubsection{Parameter Optimisation}
 Data Prep
 
 \subsection{Comparison}
 Advantages and disadvantages of each algorithm with side-by-side images after parameter optimisation
+
+\subsubsection{Why Eigenfaces and Fisherfaces Performed Worse Than Expected}
+Both the Eigenfaces and Fisherfaces methods are reported to have a \hl{some\%} rate of accuracy \hl{Some citation} however our testing showed only \hl{x\%} and \hl{y\%} respectively. I believe the reason for this discrepancy is because both of these methods are intollerant to variance in pose \cite{beymer1994face}.
+
+\subsubsection{Why The LID Implementation Performed so Poorly}
+Overall, the LID algorithm for face recognition performed very poorly. Of the four algorithms it by far performed the worst in terms of correctly identifying faces. \hl{Show an image of all the training faces of a person with the sift keypoints marked}. I believe that this is due to the SIFT keypoints detecting significantly different sections of the face for each image of the same person. This results in comparing LID descriptors of different parts of the face.
 
 
 \section{Recommendation}
