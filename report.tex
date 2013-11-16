@@ -182,30 +182,56 @@ Where $w_i$ is the $i$th generalised eigenvector of $S_B$ and $S_W$ correspondin
 \end{equation}
 However, in face recognition problems, $S_W$ is always singular \cite{belhumeur1997eigenfaces}. To solve this problem, we use PCA to project the image to a lower dimensional space such that $S_W$ is nonsingular. We wish to find $W_{opt}^T$ such that $W_{opt}^T = W_{fld}^TW_{pca}^T$ where $W_{pca} = arg\ max_W|W^TS_TW|$ and $W_{fld} = arg\ max_W\frac{|W^TW_{pca}^TS_BW_{pca}W|}{|W^TW_{pca}^TS_WW_{pca}W|}$.
 
-We can take this to the extreme and constrain the within-class scatter to zero resulting in
-\begin{equation}
-	W_{opt}=arg\ max_{W\in \mathbf{W}}|W^TS_BW|
-\end{equation}
-
 \subsubsection{Parameter Optimisation}
 Data Prep
 
 \subsection{Local Binary Patterns}
 The LBP descriptor describes a pixel as an $P$-bit binary number based on the values of $P$ points on the circumference of a circle of radius $R$ centred at the pixel. This number becomes its label.
+
 Because LBP converts pixels to an binary number, computations can be done with integer arithmetic which results in significant performance advantages over the other methods which use floating-point arithmetic.
 
-We will define a uniform pattern to be a binary pattern containing at most two bitwise transitions from 0 to 1 or 1 to 0. \cite{ojala2002multiresolution}
+We will define a uniform pattern to be a binary pattern containing at most two bitwise transitions from 0 to 1 or 1 to 0 when the pattern is traversed circularly. For example $01110000$ and $00000000$ are uniform whereas $01101000$ and $00110011$ are not.
 
 Let $(P, R)$ denote the pixel neighbourhood of $P$ evenly-spaced points on the circumference of a circle of radius $R$.
 
-Let $LBP^{u^2}_{P,R}\cdot$ denote the LBP operator in a $(P, R)$ neighborhood using only uniform patterns ($u^2$).
+Let $LBP^{u^2}_{P,R}\cdot$ denote the LBP operator in a $(P, R)$ neighborhood using only uniform patterns ($u^2$) and labelling all remaining patterns with a single label.
+% FIXME: http://www.scholarpedia.org/article/Local_Binary_Patterns
 
-$n$ neighboring pixels 
 
-The image is equally split into $X$ columns and $Y$ rows. Each of these regions is given a weight.
-\subsubsection{Training}
-Each of the training images trained in the following way. The LBP for the pixels inside each region is calculated.
+\hl{$n$ neighboring pixels 
+YOU HAVEN'T EXPLAINED HOW TO CALCULATE LBP OPERATOR
+The image is equally split into $X$ columns and $Y$ rows. Each of these regions is given a weight.}
+\subsubsection{Training LBP}
+Training involves obtaining a description for each training image.
+
+Each of the training images are trained in the following way. Each pixel, $p$, is given a classification of $LBP_{P,R}^{u^2}(p)$. The image is split evenly into $X$ columns and $Y$ rows and the histogram of the local binary patterns of its constituent pixels is determined. These histograms are then normalised.
+
+Our description for the image consists of a spacial histogram: $X\cdot Y$ histograms, which each correspond to a region of the image, appended together.
+
+\subsubsection{Classifying Faces Using LBP}
+Given an unclassified image $I$, its description (a spacial histogram) is determined using the previous method. For each of the training images $I^{(i)}$, the chi-squared distance between the training image's spacial histogram, $H^{(i)}$, and the unclassified image's histogram, $H$, is calculated.
+We classify the image as the class of the closest training image. That is
+\begin{equation}
+	class\{I\} = class\{I^{(k)}\}
+\end{equation}
+where $I_k$'s spacial histogram has the smallest chi-squared distance to $I$'s spacial histogram. That is, $k$ is chosen such that
+\begin{equation}
+	\chi^2(H, H^{(k)}) = \sum_{j=1}^{n}\frac{(H_j - H^{(k)}_j)^2}{H_j + H^{(k)}_j}
+\end{equation}
+is minimised, where $H^{(k)}_j$ denotes the $j$th element of the spacial histogram $H^{(k)}$.
+
+We add the additional constraint that $class\{I\}$ will be \textit{unknown} if the distance is not within some threshold, $\theta$. That is,
+\begin{equation}
+	\chi^2(H, H^{(i)}) > \theta \Rightarrow class\{I\} = unknown
+\end{equation}
+
+\subsubsection{Additional Notes}
+Many enhancements have been proposed for LBP. These include considering neighbours that lie on an ellipse rather than a circle, non-rectangular regions, weighted regions, regions of different sizes and overlapping regions \cite{belhumeur1997eigenfaces}. However, we will only be testing the method specified above.
+
+% You could talk about the evolution of LBP - originally just 8 neighbors then circle then ellipse. Originally didn't exclude non-uniform binary patterns. The regions do not have to be rectangular or the same size and do not have to cover the whole image - could even overlap.
 \hl{Something to do with a histogram...
+FIXME: In our experiments, each region was given equal weight (We didn't use the weighted chi-squared). This is just how I assume OpenCV implements it
+
 Each regions pixel classifications are put into a histogram. This histogram represents the pattern of that region.
 Oh, and then you do the bag of words thing that we did with assig2. But how do we combine all the training images of one person into one thing to compare against? This is the same problem as we are having with LID. IDEA: You could have each image "vote" whether they are similar. The class with the most votes wins. You would have to take into account the fact that there are different numbers of training data}
 
@@ -275,6 +301,7 @@ This could be due to the face that both algorithms are intolerant of variations 
 
 Notes on our training data: Variations in pose, no variation in lighting, some people put on glasses, variations in facial expression
 
+FIXME: Explain what happened when you reduced the resolution to 128*128: Fisher and eigen sped up immensely and lbp performed more poorly.
 
 \nocite{*} % List uncited references % FIXME: Doesn't work
 \bibliographystyle{plain}
@@ -284,3 +311,6 @@ Notes on our training data: Variations in pose, no variation in lighting, some p
 % FIXME: There is a problem: The page numbers restart in the middle Just hack it to work - they only want the pdf :-( Don't know why
 % FIXME: For training, we don't really test false positives. We could give it some faces not in the dataset.
 % FIXME: Look at http://people.wku.edu/qi.li/teaching/595_BA/ba16_Eigenface.pdf for cross-validation in determining the best split
+% If you run out of space: http://www.terminally-incoherent.com/blog/2007/09/19/latex-squeezing-the-vertical-white-space/
+% You could talk about the evolution of LBP - originally just 8 neighbors then circle then ellipse. Originally didn't exclude non-uniform binary patterns. The regions do not have to be rectangular or the same size and do not have to cover the whole image - could even overlap.
+% THIS IS A REALLY GOOD LBP PAPER - might illuminate some info for LID: http://web.ing.puc.cl/~asoto/papers/Maturana-09.pdf
