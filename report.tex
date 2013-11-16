@@ -51,7 +51,7 @@ Earlier forms of facial detection and recognition involved holistic methods such
 
 Face recognition technology has significantly progressed since the proposal of the Eigenface method in 1987. Given that most individuals can only identify a few thousand people, under constrained conditions (such as fixed facial expression and lighting) and a very large number of classifications, automated face recognition can perform better than human recognition \cite{li2011handbook}.
 
-\hl{FIXME: History of FACE DETECTION}
+\hl{FIXME: History of FACE DETECTION. Look at lecture notes. Good history there P.J. Phillips et.al, Overview of the face recognition grand challenge, CVPR 2005, Volume: 1, pp. 947- 954 }
 
 There are numerous commercial and law-enforcement applications for face detection and recognition including advanced video surveillance, user authentication and suspect tracking \cite{zhao2003face}. The effectiveness of these applications rely on the efficiency and accuracy of the underlying algorithms. In this report, we will compare the efficiency and accuracy of 4 facial recognition algorithms: Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distributions (LID). We will also investigate the efficiency and performance of Haar feature-based cascade classification for face detection and discuss how these algorithms can be applied by the Gwynville Airport Authority for their security and surveillance system.
 
@@ -163,11 +163,12 @@ We wish to find $k$ that minimises $\epsilon_k = \|(\Omega - \Omega_k)\|$. If su
 \subsubsection{Parameter Optimisation}
 Data Prep
 
-\subsection{Fisher Face}
-The main advantage of this method is that it is invariant to different light sources. Extensive experimental results show that Fisherface has lower error rates than eigenface on the havard and yale face detection databases. (See the abstract of the pdf).
+\subsection{Fisherfaces}
+The main advantage of this method is that it is invariant to different light sources. Extensive experimental results show that Fisherface has lower error rates than eigenface on the havard and yale face detection databases. \hl{(See the abstract of the pdf)}.
 
-Although this method has advantages when subject to different lighting conditions, this advantage is not really applicable to our purposes as the camera will likely be uniformly lit. (Maybe it will be important if it is sometimes lit by natural light and sometimes lit by artificial light depending on the time of day.
+\hl{Although this method has advantages when subject to different lighting conditions, this advantage is not really applicable to our purposes as the camera will likely be uniformly lit. (Maybe it will be important if it is sometimes lit by natural light and sometimes lit by artificial light depending on the time of day.}
 
+Like Eigenfaces, the Fisherfaces algorithm reduces the dimensionality of the problem. It does so in a way the preserves the linear separability of the classes. We wish to choos \hl{$W$} such that the ratio of the between-class scatter and within-class scatter is maximised. We define the between-class scatter matrix as $S_B = \sum_{i=1}^{c}N_i(\mu_i - \mu)(\mu_i - \mu)^T$
 
 Technical description
 \subsubsection{Parameter Optimisation}
@@ -240,7 +241,7 @@ It is critical that the camera have a frontal face view as the training data for
 
 \section{Conclusion}
 Write your conclusion here. \citep{guyon1997scaling} \citep{belhumeur1997eigenfaces}
-\hl{bias-variance dilemma; Maybe use ROC curve to evaluate performance (IS THIS EVEN APPLICABLE?)
+bias-variance dilemma; Maybe use ROC curve to evaluate performance (IS THIS EVEN APPLICABLE?)
 
 Will not detect clipped faces or faces rotated.
 
@@ -249,7 +250,13 @@ All these faces were trained with the same illumination and facial hair etc on t
 We found that eigen and fisher took significantly longer to train and compute
 
 FIXME: The VERY LARGE DISTANCES for eigen and fisher could be due to the variation in pose. This is why it performs significantly poorer than in the papers as they dealt with fixed pose
-}
+
+Our results found that both the Eigenfaces and Fisherfaces algorithms performed very poorly in terms of performance. When tuning parameters, we had the problem that if we reduced to too few dimensions, it would classify things incorrectly. On the other hand, if we chose too many dimensions, the distances between classifications would be far too large - normally in the thousands (rephrase - explain maths - higher dimensionality=bigger distances).
+
+This could be due to the face that both algorithms are intolerant of variations in pose. When one looks at the images, all individuals hand different head rotations and angles which may explain the poor performance compared to experiments in other papers\cite{belhumeur1997eigenfaces}. There are several modifications to the algorithm that would make this method deal with pose variation such as CITATION.
+
+Notes on our training data: Variations in pose, no variation in lighting, some people put on glasses, variations in facial expression
+
 
 \nocite{*} % List uncited references % FIXME: Doesn't work
 \bibliographystyle{plain}
