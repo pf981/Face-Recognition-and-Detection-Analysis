@@ -14,6 +14,11 @@
 \usepackage{nth}
 \usepackage{soul}
 
+% Big-O notation 
+%\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\left(#1\right)}} % FIXME
+%\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\bigl(#1\bigr)}}
+%\newcommand{\bigO}[1]{\ensuremath{\mathop{}\mathopen{}\mathcal{O}\mathopen{}\left(#1\right)
+
 \begin{document}
 
 \title{CSCI435 Project}
@@ -43,6 +48,7 @@ Definitions: face space
 Face detection and face recognition are two actively-researched and important topics in computer vision. Both of these tasks are performed frequently and easily by humans however no current automated system exists that can be deployed effectively in an unconstrained setting \cite{sinha2006face}.
 
 Earlier forms of facial detection and recognition involved holistic methods such as Eigenfaces\cite{turk1991eigenfaces} and Fisherfaces\cite{belhumeur1997eigenfaces}. However, more recently, local descriptors such as Local Binary Patterns (LBP)\cite{ahonen2004face} and Local Intensity Distribution (LID)\cite{nguyen2011local} have gained attention due to their efficiency and tolerance to pose and illumination changes.
+
 Face recognition technology has significantly progressed since the proposal of the Eigenface method in 1987. Given that most individuals can only identify a few thousand people, under constrained conditions (such as fixed facial expression and lighting) and a very large number of classifications, automated face recognition can perform better than human recognition \cite{li2011handbook}.
 
 \hl{FIXME: History of FACE DETECTION}
@@ -134,9 +140,13 @@ Constructing the covariance matrix, $C \in \mathbb{R}^{D\times D}$, we get
 \end{equation}
 Where $A = [\Phi_1 \Phi_2 \ldots \Phi_M]$
 
-We wish to calculate the eigenvectors of $C$. However, this is typically a computationally infeasible task.
+We wish to calculate the eigenvectors ($u_1, \ldots, u_s$) of $C$. However, solving this directly is typically a computationally infeasible task.
 
-We construct $L \in \mathbb{R}^{M\times M}$ as $L = A^T A$ such that $L_{mn} = \Phi^T_m \Phi_n$
+Instead, we construct $L \in \mathbb{R}^{M\times M}$ as $L = A^T A$ such that $L_{mn} = \Phi^T_m \Phi_n$ and find the $M$ eigenvectors ($v_1, \ldots, v_k$) of $L$. These are used to computer the eigenfaces
+\begin{equation}
+	u_l = \sum_{k=1}^{M}v_{lk}\Phi_k
+\end{equation}
+Using this method reduces the computation from $\mathcal{O}(D)$ to $\mathcal{O}(M)$ where $M\ll D$.
 
 \subsubsection{Parameter Optimisation}
 Data Prep
