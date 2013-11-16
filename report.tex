@@ -2,6 +2,7 @@
 \usepackage{amssymb}
 \usepackage{authblk}
 \usepackage{color}
+\usepackage{float}
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{natbib}
@@ -254,7 +255,13 @@ Data Prep
 Advantages and disadvantages of each algorithm with side-by-side images after parameter optimisation
 
 \subsubsection{Why Eigenfaces and Fisherfaces Performed Worse Than Expected}
-Both the Eigenfaces and Fisherfaces methods are reported to have a \hl{some\%} rate of accuracy \hl{Some citation} however our testing showed only \hl{x\%} and \hl{y\%} respectively. I believe the reason for this discrepancy is because both of these methods are intollerant to variance in pose \cite{beymer1994face}.
+Both the Eigenfaces and Fisherfaces methods are reported to have a \hl{some\%} rate of accuracy \hl{Some citation} however our testing showed only \hl{x\%} and \hl{y\%} respectively. I believe the reason for this discrepancy is because both of these methods are sensitive to pose \cite{turk1991eigenfaces}\cite{belhumeur1997eigenfaces}. The reported good performance of these methods have been on databases which contained faces with only one frontal view. The images we have tested with in this report have had very varying poses. This may be the cause of these algorithms poor performance.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{./pose}
+\caption{Images showing variation in pose in the dataset}
+\label{fig:pose}
+\end{figure} % FIXME
 
 \subsubsection{Why The LID Implementation Performed so Poorly}
 Overall, the LID algorithm for face recognition performed very poorly. Of the four algorithms it by far performed the worst in terms of correctly identifying faces. \hl{Show an image of all the training faces of a person with the sift keypoints marked}. I believe that this is due to the SIFT keypoints detecting significantly different sections of the face for each image of the same person. This results in comparing LID descriptors of different parts of the face.
@@ -295,6 +302,8 @@ FIXME: Explain what happened when you reduced the resolution to 128*128: Fisher 
 \nocite{*} % List uncited references % FIXME: Doesn't work
 \bibliographystyle{plain}
 \bibliography{references}
+
+
 
 \end{document}
 % FIXME: There is a problem: The page numbers restart in the middle Just hack it to work - they only want the pdf :-( Don't know why
