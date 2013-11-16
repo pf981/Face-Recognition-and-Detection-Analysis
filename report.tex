@@ -40,23 +40,15 @@ algorithm that can learn from a dataset comprising the faces of these citizens.
 Definitions: face space
 
 \section{Introduction}
-Face detection and face recognition are two, actively-researched and important topics in computer vision. \hl{FIXME: cite} Both of these tasks are performed frequently and easily by humans.
+Face detection and face recognition are two actively-researched and important topics in computer vision. Both of these tasks are performed frequently and easily by humans however no current system exists that can be deployed effectively in an unconstrained setting \cite{sinha2006face}.
 
-Face recognition has become increasingly important due to advances in image capture devices and the availability of online face databases \cite{li2011handbook}.
-
-
-
-FIXME: Talk about biginning - eigen the fisher
-
-
-
-A key issue in face detection and recognition is finding efficient descriptors for the appearance of a face.
-
-Prior to eigenface
-
+Earlier forms of facial detection and recognition involved holistic methods such as Eigenfaces\cite{turk1991eigenfaces} and Fisherfaces\cite{belhumeur1997eigenfaces}. However, more recently, local descriptors such as Local Binary Patterns (LBP) and Local Intensity Distribution (LID) have gained attention due to their efficiency and tolerance to pose and illumination changes\cite{ahonen2004face}\cite{nguyen2011local}.
 Face recognition technology has significantly progressed since the proposal of the Eigenface method in 1987. Given that most individuals can only identify a few thousand people, under constrained conditions (such as fixed facial expression and lighting) and a very large number of classifications, automated face recognition can perform better than human recognition \cite{li2011handbook}.
 
+FIXME: History of FACE DETECTION
+
 There are numerous commercial and law-enforcement applications for face detection and recognition including advanced video surveillance, user authentication and suspect tracking \cite{zhao2003face}. The effectiveness of these applications rely on the efficiency and accuracy of the underlying algorithms. In this report, we will compare the efficiency and accuracy of 4 facial recognition algorithms: Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distributions (LID). We will also investigate the efficiency and performance of Haar feature-based cascade classification for face detection and discuss how these algorithms can be applied by the Gwynville Airport Authority for their security and surveillance system.
+
 
 \section{Data Preparation}
 The data given consisted of between 9 and 14 photos each of the faces of 11 students. The images were converted to grayscale then were scaled down and cropped to 128*128. This was achieved by uniformly scaling the image such that the smaller dimension was equal to 128 pixels. The 128*128 rectangle centred at the centre of the image was then used as the cropped image. 128*128 was chosen because it was large enough to provide good results but not so large as to be computationally problematic.
