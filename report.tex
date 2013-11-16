@@ -87,15 +87,15 @@ I used opencv's pre-trained xml file.
 I chose to leave minSize and maxSize unspecified as this would allow for detection of people at significantly varying distances to the camera.
 scaleFactor=0.017; minNeighbors=9
 
-\begin{figure}
-\centering
+%\begin{figure}
+%\centering
 %\includegraphics[width=0.7\linewidth,natwidth=10,natheight=10]{waiting_room_detected.jpg}
 %\includegraphics[width=0.1\linewidth]{waiting_room_detected.jpg} % FIXME: If this is too big it ends up restarting the page numbering
-\includegraphics[scale=1]{waiting_room_detected.jpg} % FIXME: Overful hbox
+% % % %%\includegraphics[scale=1]{waiting_room_detected.jpg} % FIXME: Overful hbox
 %\includegraphics[width=250px,height=250px]{waiting_room_detected.jpg}
-\caption{Haar Cascade Classifier FIXME: If this is big it resets page num for some reason; FIXME: REDO - YOU HAVE CROPPED SOMEONE OUT!!!}
-\label{fig:haar_cascade}
-\end{figure}
+% % % %%\caption{Haar Cascade Classifier FIXME: If this is big it resets page num for some reason; FIXME: REDO - YOU HAVE CROPPED SOMEONE OUT!!!}
+% % % %\label{fig:haar_cascade}
+% % % %\end{figure}
 
 
 %\includegraphics[width=0.7\linewidth]{waiting_room_detected.jpg}
@@ -147,9 +147,7 @@ Instead, consider the eigenvectors, $v_i$ of $A^TA$ such that $A^TAv_i=\widehat{
 
 We construct $L \in \mathbb{R}^{M\times M}$ as $L = A^T A$ such that $L_{mn} = \Phi^T_m \Phi_n$ and find the $M$ eigenvectors ($v_1, \ldots, v_k$) of $L$. These are used to computer the eigenfaces
 \begin{equation}
-	u_l = \sum_{k=1}^{M}v_{lk}\Phi_k
-%	\qquad \text{k=1, \ldots, M}
-%\text{k=1, \ldots, M} % FIXME: Don't know how to do this in LaTeX!!!
+	u_l = \sum_{k=1}^{M}v_{lk}\Phi_k \qquad k=1, \ldots, M
 \end{equation}
 Using this method reduces the computation from $\mathcal{O}(D)$ to $\mathcal{O}(M)$ where $M\ll D$.
 
@@ -178,7 +176,16 @@ $S_W$ is either singular or non-singular. If it is singular, choose $W_{opt}$ as
 \begin{equation}
 	W_{opt} = arg\ max_W \frac{|W^TS_BW|}{|W^TS_WW|} = [w_1\ w_2\ \ldots\ w_m]
 \end{equation}
-Where $w_i$ is the $i$th generalised eigenvector of $S_B$ and $S_W$ corresponding to the $m$ largest generalised eigenvalues ($\lambda_1, \ldots, \lambda_m$).
+Where $w_i$ is the $i$th generalised eigenvector of $S_B$ and $S_W$ corresponding to the $m$ largest generalised eigenvalues ($\lambda_1, \ldots, \lambda_m$). So we have
+\begin{equation}
+	S_Bw_i = \lambda_iS_Ww_i,\quad i=1, \ldots, m
+\end{equation}
+However, in face recognition problems, $S_W$ is always singular \cite{belhumeur1997eigenfaces}. To solve this problem, we use PCA to project the image to a lower dimensional space such that $S_W$ is nonsingular. We wish to find $W_{opt}^T$ such that $W_{opt}^T = W_{fld}^TW_{pca}^T$ where $W_{pca} = arg\ max_W|W^TS_TW|$ and $W_{fld} = arg\ max_W\frac{|W^TW_{pca}^TS_BW_{pca}W|}{|W^TW_{pca}^TS_WW_{pca}W|}$.
+
+We can take this to the extreme and constrain the within-class scatter to zero resulting in
+\begin{equation}
+	W_{opt}=arg\ max_{W\in \mathbf{W}}|W^TS_BW|
+\end{equation}
 
 \subsubsection{Parameter Optimisation}
 Data Prep
@@ -262,6 +269,8 @@ FIXME: The VERY LARGE DISTANCES for eigen and fisher could be due to the variati
 
 Our results found that both the Eigenfaces and Fisherfaces algorithms performed very poorly in terms of performance. When tuning parameters, we had the problem that if we reduced to too few dimensions, it would classify things incorrectly. On the other hand, if we chose too many dimensions, the distances between classifications would be far too large - normally in the thousands (rephrase - explain maths - higher dimensionality=bigger distances).
 
+Because the distances were so large, it tended to misclassify confidently rather than classify as unknown.
+
 This could be due to the face that both algorithms are intolerant of variations in pose. When one looks at the images, all individuals hand different head rotations and angles which may explain the poor performance compared to experiments in other papers\cite{belhumeur1997eigenfaces}. There are several modifications to the algorithm that would make this method deal with pose variation such as CITATION.
 
 Notes on our training data: Variations in pose, no variation in lighting, some people put on glasses, variations in facial expression
@@ -272,6 +281,6 @@ Notes on our training data: Variations in pose, no variation in lighting, some p
 \bibliography{references}
 
 \end{document}
-% FIXME: There is a problem: The page numbers restart in the middle :-( Don't know why
+% FIXME: There is a problem: The page numbers restart in the middle Just hack it to work - they only want the pdf :-( Don't know why
 % FIXME: For training, we don't really test false positives. We could give it some faces not in the dataset.
 % FIXME: Look at http://people.wku.edu/qi.li/teaching/595_BA/ba16_Eigenface.pdf for cross-validation in determining the best split
