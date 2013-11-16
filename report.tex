@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage{amssymb}
 \usepackage{authblk}
+\usepackage{caption}
 \usepackage{color}
 \usepackage{float}
 \usepackage{graphicx}
@@ -73,7 +74,13 @@ The proportion of the size of the training set to the size of the validation set
 Data Prep
 
 \subsection{Haar}
-Technical description
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=0.7\linewidth]{./groupdetected}
+%\caption{Faces detected}
+%\label{fig:group}
+%\end{figure} % FIXME
+
 \subsubsection{Parameter Optimisation}
 There were four parameters to consider with the Haar classifier: double scaleFactor, int minNeighbors, Size minSize and Size maxSize.
 
@@ -248,6 +255,10 @@ where $d(p_i,p) = I(p_i) - I(p)$ and $p_i = (x_i, y_i) \in \mathbb{Z}$ is such t
 
 \subsubsection{Training The Images}
 % FIXME: I suspect that if you use spacial histograms instead of SIFT you will get better results
+
+\subsubsection{Alternative Methods for LID Face Detection}
+\label{sec:alternativeLID}
+
 \subsubsection{Parameter Optimisation}
 Data Prep
 
@@ -255,7 +266,9 @@ Data Prep
 Advantages and disadvantages of each algorithm with side-by-side images after parameter optimisation
 
 \subsubsection{Why Eigenfaces and Fisherfaces Performed Worse Than Expected}
-Both the Eigenfaces and Fisherfaces methods are reported to have a \hl{some\%} rate of accuracy \hl{Some citation} however our testing showed only \hl{x\%} and \hl{y\%} respectively. I believe the reason for this discrepancy is because both of these methods are sensitive to pose \cite{turk1991eigenfaces}\cite{belhumeur1997eigenfaces}. The reported good performance of these methods have been on databases which contained faces with only one frontal view. The images we have tested with in this report have had very varying poses. This may be the cause of these algorithms poor performance.
+Both the Eigenfaces and Fisherfaces methods are reported to have a \hl{some\%} rate of accuracy \hl{Some citation} however our testing showed only \hl{x\%} and \hl{y\%} respectively. I believe the reason for this discrepancy is because both of these methods are sensitive to pose \cite{turk1991eigenfaces}\cite{belhumeur1997eigenfaces}. The reported good performance of these methods have been on databases which contained faces with only one frontal view. The images we have tested with in this report have had very varying poses (See figure~\ref{fig:pose}). This may be the cause of these algorithms poor performance.
+
+Although the Eigenfaces and Fisherfaces implementations used in this report are sensitive to variance of pose, there exist modern modifications to these algorithms to reduce that sensitivity \cite{jaiswal2012local}.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\linewidth]{./pose}
@@ -264,7 +277,9 @@ Both the Eigenfaces and Fisherfaces methods are reported to have a \hl{some\%} r
 \end{figure} % FIXME
 
 \subsubsection{Why The LID Implementation Performed so Poorly}
-Overall, the LID algorithm for face recognition performed very poorly. Of the four algorithms it by far performed the worst in terms of correctly identifying faces. \hl{Show an image of all the training faces of a person with the sift keypoints marked}. I believe that this is due to the SIFT keypoints detecting significantly different sections of the face for each image of the same person. This results in comparing LID descriptors of different parts of the face.
+Overall, the LID algorithm for face recognition performed very poorly. Of the four algorithms it by far performed the worst in terms of correctly identifying faces. \hl{Show an image of all the training faces of a person with the sift keypoints marked}. I believe that this is due to the SIFT keypoints detecting significantly different sections of the face for each image of the same person. This results in comparing LID descriptors of different parts of the face. As we were not comparing the descriptors for the same part of the face, the histogram comparisons were not an accurate measure of the dissimilarity of the faces.
+
+I believe the alternative method of computing spacial histograms, as outlined in section~\ref{sec:alternativeLID}, would result in much better performance as we would be comparing corresponding regions of images in the same way LBP does.
 
 
 \section{Recommendation}
@@ -278,11 +293,6 @@ It is critical that the camera have a frontal face view as the training data for
 
 
 \section{Conclusion}
-Write your conclusion here. \citep{guyon1997scaling} \citep{belhumeur1997eigenfaces}
-bias-variance dilemma; Maybe use ROC curve to evaluate performance (IS THIS EVEN APPLICABLE?)
-
-Will not detect clipped faces or faces rotated.
-
 All these faces were trained with the same illumination and facial hair etc on the same day. It will likely not perform well on images of different illumination.
 
 We found that eigen and fisher took significantly longer to train and compute
@@ -299,7 +309,7 @@ Notes on our training data: Variations in pose, no variation in lighting, some p
 
 FIXME: Explain what happened when you reduced the resolution to 128*128: Fisher and eigen sped up immensely and lbp performed more poorly.
 
-\nocite{*} % List uncited references % FIXME: Doesn't work
+
 \bibliographystyle{plain}
 \bibliography{references}
 
