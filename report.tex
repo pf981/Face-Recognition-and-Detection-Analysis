@@ -4,6 +4,7 @@
 \usepackage{caption}
 \usepackage{color}
 \usepackage{float}
+\usepackage[margin=0.5in]{geometry} % FIXME: Choose sensible
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{natbib}
@@ -49,6 +50,8 @@ Definitions: face space
 \section{Introduction}
 Face detection and face recognition are two actively-researched and important topics in computer vision. Both of these tasks are performed frequently and easily by humans however no current automated system exists that can be deployed effectively in an unconstrained setting \cite{sinha2006face}.
 
+\hl{facial recognition is not possible if the face is not isolated from the background}\cite{wilson2006facial}
+
 Earlier forms of facial detection and recognition involved holistic methods such as Eigenfaces\cite{turk1991eigenfaces} and Fisherfaces\cite{belhumeur1997eigenfaces}. However, more recently, local descriptors such as Local Binary Patterns (LBP)\cite{ahonen2004face} and Local Intensity Distribution (LID)\cite{nguyen2011local} have gained attention due to their efficiency and tolerance to pose and illumination changes.
 
 Face recognition technology has significantly progressed since the proposal of the Eigenface method in 1987. Given that most individuals can only identify a few thousand people, under constrained conditions (such as fixed facial expression and lighting) and a very large number of classifications, automated face recognition can perform better than human recognition \cite{li2011handbook}.
@@ -73,9 +76,9 @@ The proportion of the size of the training set to the size of the validation set
 \section{People Counting Algorithms}
 Data Prep
 
-\subsection{Haar}
-Haar classifiers can be used to rapidly detect faces within an image in real time.
-
+\subsection{Haar Classifiers for Face Detection}
+Haar classifiers can be used to rapidly detect faces within an image in real time. Haar-like features use the contrast variances between groups of pixels to determine relative light and dark areas. Two or three adjacent groups form a Haar-like feature. This can be applied to objects of different sizes by sclaing the features.
+We define the integral image as the array containing the sums of \hl{FIXME: TODO}
 
 \subsubsection{Parameter Optimisation}
 OpenCV provides several trained XML files for face detection with Haar. The results showed that haarcascade\_frontalface\_alt2.xml provided the best results, as others such as haarcascade\_frontalface\_default.xml failed to detect some of the faces. The XML file was generated via a tree-based 20*20 gentle adaboost frontal face detector. \hl{FIXME: Describe what the hell that means}
