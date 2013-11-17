@@ -76,15 +76,11 @@ Data Prep
 \subsection{Haar}
 Haar classifiers can be used to rapidly detect faces within an image in real time.
 
-\begin{figure}[H] % FIXME: This figure wrecks page numbering
-\centering
-\includegraphics[width=0.7\linewidth]{./groupdetected}
-\caption{Faces detected. $scaleFactor=1.01, minNeighbors=9$}
-\label{fig:group}
-\end{figure} % FIXME
 
 \subsubsection{Parameter Optimisation}
-There were four parameters to consider with the Haar classifier: double scaleFactor, int minNeighbors, Size minSize and Size maxSize.
+OpenCV provides several trained XML files for face detection with Haar. I found that haarcascade\_frontalface\_alt2.xml provided the best results as others such as haarcascade\_frontalface\_default.xml failed to detect some of the faces. The XML file was generated via a tree-based 20*20 gentle adaboost frontal face detector. \hl{FIXME: Describe what the hell that means}
+
+There were four parameters to consider with the Haar classifier: \textbf{double} $scaleFactor$, \textbf{int} $minNeighbors$, \textbf{Size} $minSize$ and \textbf{Size} $maxSize$.
 
 I found that more faces were detected (either correctly or as false positives) as scaleFactor was increased and minNeighbors was decreased.
 
@@ -92,25 +88,18 @@ Starting at minNeighbors=3, I incrementally increased its value until a sufficie
 
 Similarly for scaleFactor, I started at 1.01 and increased its value until every face was detected and there were no false positives. I found this value to be 1.017. 
 
-I used opencv's pre-trained xml file.
-
 I chose to leave minSize and maxSize unspecified as this would allow for detection of people at significantly varying distances to the camera.
 scaleFactor=0.017; minNeighbors=9
 
-%\begin{figure}
-%\centering
-%\includegraphics[width=0.7\linewidth,natwidth=10,natheight=10]{waiting_room_detected.jpg}
-%\includegraphics[width=0.1\linewidth]{waiting_room_detected.jpg} % FIXME: If this is too big it ends up restarting the page numbering
-% % % %%\includegraphics[scale=1]{waiting_room_detected.jpg} % FIXME: Overful hbox
-%\includegraphics[width=250px,height=250px]{waiting_room_detected.jpg}
-% % % %%\caption{Haar Cascade Classifier FIXME: If this is big it resets page num for some reason; FIXME: REDO - YOU HAVE CROPPED SOMEONE OUT!!!}
-% % % %\label{fig:haar_cascade}
-% % % %\end{figure}
+\subsubsection{Face Detection Results}
+After the parameters
+\begin{figure}[H] % FIXME: This figure wrecks page numbering
+\centering
+\includegraphics[width=0.7\linewidth]{./groupdetected}
+\caption{Faces detected. $scaleFactor=1.01, minNeighbors=9$}
+\label{fig:group}
+\end{figure} % FIXME
 
-
-%\includegraphics[width=0.7\linewidth]{waiting_room_detected.jpg}
-%\includegraphics{waiting_room_detected.jpg} % FIXME: Too big
-%\includegraphics[scale=1]{waiting_room_detected.jpg} 
 
 \subsection{Local Binary Patterns}
 Technical description
