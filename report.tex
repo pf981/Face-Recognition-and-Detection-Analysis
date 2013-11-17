@@ -35,14 +35,7 @@
 
 \renewcommand\abstractname{Executive Summary}
 \begin{abstract}
-\hl{FIXME: TODO - do not use what it is currently}
-Gwynville Airport Authority has requested evaluation of some computer vision
-technologies that they plan to deploy as part of their security and surveillance system.
-The system should be able to count the number of people in a waiting room area based
-on the image captured by a camera suitably located to `see'' the faces of passengers. Furthermore the Authority would like to recognize a speci.c group of people that are known
-to be frequent users. The idea is to update their `Frequent Users'' card whenever they
-are recognized in the Airport premises. In this case they intend to use a face recognition
-algorithm that can learn from a dataset comprising the faces of these citizens.
+This report evaluates various computer vision technologies for the Gwynville Airport Authority's security and surveillance system. Haar classifiers were used to detect faces of a photo of students and several face recognition algorithms (Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distribution (LID)) where applied to individual photos of students. The results indicate that Haar classifiers are effective in real-time accurate face detection and would be ideal for a people-counting surveillance system. After testing several face-recognition algorithms it finds that LBP provides efficient and accurate results that are less sensitive to variance in pose. The report recommends that the Haar classifiers should be used to count passengers and then the faces obtain from that should be used with LBP to determine identities. These identities can be used to update "Frequent Users" cards and also be used to add to the LBP training data.
 \end{abstract}
 
 Definitions: face space
@@ -298,9 +291,6 @@ The results involved testing the 89 images of the validation set. For how this s
 \end{table}
 In terms of efficiency, as expected LBP was both the quickest to train and detect as it uses integer arithmetic rather than floating point. LID was the next most efficient with Eigenfaces and Fisherfaces being the least efficient.
 
-\subsection{Comparison}
-Advantages and disadvantages of each algorithm with side-by-side images after parameter optimisation
-
 \subsubsection{Why Eigenfaces and Fisherfaces Performed Worse Than Expected}
 The Eigenfaces and Fisherfaces methods have been reported to have a 4\%\cite{turk1991eigenfaces} and 4.6\%\cite{belhumeur1997eigenfaces} failure rate respectively, however our testing showed only 40.45\% and 32.58\% respectively. The reason for this discrepancy is likely because both of these methods are sensitive to pose \cite{turk1991eigenfaces}\cite{belhumeur1997eigenfaces}. The reported good performance of these methods have been on databases which contained faces with only one frontal view. The images we have tested with in this report have had very varying poses (See figure~\ref{fig:pose}). This may be the cause of these algorithms poor performance.
 
@@ -311,33 +301,30 @@ Overall, the LID algorithm for face recognition performed very poorly. Of the fo
 
 I believe the alternative method of computing spacial histograms, as outlined in section~\ref{sec:alternativeLID}, would result in much better performance as we would be comparing corresponding regions of images in the same way LBP does.
 
+\subsection{Comparison}
+Both Eigenfaces and Fisherfaces performed poorly with failure rates of 40.45\% and 32.58\% respectively. These two algorithms were the least efficient both in training and in detection.
+
+The results show that LBP was by far the most accurate with an 11.25\% failure rate. It was also the most efficient with both training and detection which is like attributable to its use of integer arithmetic rather than floating point.
+
+\hl{FIXME: LID}
+
+Eigenfaces and Fisherfaces are both sensitive to variance in pose. Fisherfaces is less sensitive than Eigenfaces to variance in pose, and lighting, which may explain its better performance. LBP is less sensitive to variance in pose and lighting to Fisherfaces, which may explain its performance.
 
 \section{Conclusion}
+From the results of the people-counting experiments, we can conclude that Haar classifiers are suitable for real-time, accurate face detection.
 
+From the results of our face recognition experiments, we can conclude that LBP by far performed the best and was the most efficient.
+
+However, it should be noted that the images were all taken in the same room, with the same lighting so these results are not necessarily indicative of performance under different conditions.
 
 \section{Recommendation}
+From the results of this report, we can conclude that Haar classifiers provide a suitable real-time people-counting algorithm for the Gwynville Airport Authority's  people-counting surveillance system.
 
+After testing several face-recognition algorithms, the results indicate that LBP provides efficient and accurate results that are less sensitive to variance in pose.
 
+The report recommends that the Haar classifiers should be used to count passengers and then the faces obtain from that should be used with LBP to determine identities. These identities can be used to update "Frequent Users" cards.
 
-\hl{All these faces were trained with the same illumination and facial hair etc on the same day. It will likely not perform well on images of different illumination.
-
-We found that eigen and fisher took significantly longer to train and compute
-
-
-
-Notes on our training data: Variations in pose, no variation in lighting, some people put on glasses, variations in facial expression
-
-FIXME: Explain what happened when you reduced the resolution to 128*128: Fisher and eigen sped up immensely and lbp performed more poorly.
-
-
-
-
-When implementing the airline actual thingo, you should constantly add to your training data.
-So when you see a person and you confidently classify them as known, add that image to the training data.
-If you see the same unknown face, calculate its characteristics and make it known. This is what they want because then they would be able to tell who is frequent without having to manually train.
-The implementation you are looking for would be to use the face counter and then send each face into the second algorithm which will attempt to identify them.
-It is critical that the camera have a frontal face view as the training data for the Haar cascade classifier was frontal faces.}
-
+In addition to this, the new faces can be added to the training data to continually train the LBP. If the face is unrecognised, a class will be added. If the face is recognised, the face will be added to the training data with the appropriate class.
 
 \bibliographystyle{plain}
 \bibliography{references}
