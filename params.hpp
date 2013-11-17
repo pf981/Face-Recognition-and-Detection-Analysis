@@ -21,7 +21,8 @@ namespace params
     }
     namespace eigenFace
     {
-        const int numComponents = 0; // This being 0 is by far the best // FIXME: TOO MANY COMPONENETS, but only numComponents=1 gave good distances but crappy performance. GO WITH 0!!
+//        const int numComponents = 0; // This being 0 is by far the best // FIXME: TOO MANY COMPONENETS, but only numComponents=1 gave good distances but crappy performance. GO WITH 0!!
+        const int numComponents = 80; // This being 0 is by far the best // FIXME: TOO MANY COMPONENETS, but only numComponents=1 gave good distances but crappy performance. GO WITH 0!!
 //        const int numComponents = 1; // This being 0 is by far the best // FIXME: TOO MANY COMPONENETS // 5 too low, 20 too high, 15 too high, 10 is too high, still bad results, 8 same, 7 same, 5 too high, 3 too high, 2 even too high
 //        const int numComponents = 150; // FIXME: 0=>35.9551%, 10=>43.8202%, 100=> 38.2022%, 150=>35.9551
 //        const int numComponents = 3;
@@ -62,7 +63,7 @@ namespace params
         // // const int neighbors = 8;
         // const int gridX = 8;
         // const int gridY = 8;
-        const double threshold = DBL_MAX;
+        const double threshold = 52.0f;
     }
     namespace lidFace
     {

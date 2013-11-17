@@ -17,6 +17,7 @@
 #include "countImages.hpp"
 #include "detect.hpp"
 #include "images.hpp"
+#include "lid.hpp"
 #include "params.hpp"
 
 
@@ -172,15 +173,23 @@ void detect(const std::string& imageFile)
 
         // LBP
         model = cv::createLBPHFaceRecognizer(
-        params::lbphFace::radius,
-        params::lbphFace::neighbors,
-        params::lbphFace::gridX,
-        params::lbphFace::gridY,
-        params::lbphFace::threshold);
+            params::lbphFace::radius,
+            params::lbphFace::neighbors,
+            params::lbphFace::gridX,
+            params::lbphFace::gridY,
+            params::lbphFace::threshold);
         model->load("trained_lbp.xml");
 
         model->predict(grayscale, prediction, dist);
         std::cout << "LBP: Person is " << getPrediction(prediction) << std::endl;
+
+        model = lid::createLidFaceRecognizer( // FIXME: This should be its own function
+            params::lidFace::inradius,
+            params::lidFace::threshold);
+        model->load("trained_lid.xml");
+
+        model->predict(grayscale, prediction, dist);
+        std::cout << "LID: Person is " << getPrediction(prediction) << std::endl;
 
         imshow("INFO435 Project", individualImage);
     }
