@@ -78,18 +78,19 @@ Haar classifiers can be used to rapidly detect faces within an image in real tim
 
 
 \subsubsection{Parameter Optimisation}
-OpenCV provides several trained XML files for face detection with Haar. I found that haarcascade\_frontalface\_alt2.xml provided the best results as others such as haarcascade\_frontalface\_default.xml failed to detect some of the faces. The XML file was generated via a tree-based 20*20 gentle adaboost frontal face detector. \hl{FIXME: Describe what the hell that means}
+OpenCV provides several trained XML files for face detection with Haar. The results showed that haarcascade\_frontalface\_alt2.xml provided the best results, as others such as haarcascade\_frontalface\_default.xml failed to detect some of the faces. The XML file was generated via a tree-based 20*20 gentle adaboost frontal face detector. \hl{FIXME: Describe what the hell that means}
 
 There were four parameters to consider with the Haar classifier: \textbf{double} $scaleFactor$, \textbf{int} $minNeighbors$, \textbf{Size} $minSize$ and \textbf{Size} $maxSize$.
 
-I found that more faces were detected (either correctly or as false positives) as scaleFactor was increased and minNeighbors was decreased.
+It was found that more faces were detected (either correctly or as false positives) as $scaleFactor$ was increased and $minNeighbors$ was decreased.
 
-Starting at minNeighbors=3, I incrementally increased its value until a sufficient amount of noise (false positives) was removed. I chose the value that was the largest that still detected every face in the image. This value was 9.
+Starting at $minNeighbors$=3, the value was incrementally increased until a sufficient amount of noise (false positives) was removed. The value was maximised such that it still detected every face in the image. This resulted in minimising false positives.
 
-Similarly for scaleFactor, I started at 1.01 and increased its value until every face was detected and there were no false positives. I found this value to be 1.017. 
+Similarly for $scaleFactor$, starting at 1.005, the value was increased until every face was detected and there were no false positives.
 
-I chose to leave minSize and maxSize unspecified as this would allow for detection of people at significantly varying distances to the camera.
-scaleFactor=0.017; minNeighbors=9
+$minSize$ and $maxSize$ were left unspecified as this would allow for detection of people at significantly varying distances to the camera.
+
+The final parameters chosen were $scaleFactor$=0.01 and $minNeighbors$=9.
 
 \subsubsection{Face Detection Results}
 After the parameters
