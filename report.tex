@@ -224,9 +224,13 @@ Where $w_i$ is the $i$th generalised eigenvector of $S_B$ and $S_W$ correspondin
 	S_Bw_i = \lambda_iS_Ww_i,\quad i=1, \ldots, m
 \end{equation}
 However, in face recognition problems, $S_W$ is always singular \cite{belhumeur1997eigenfaces}. To solve this problem, we use PCA to project the image to a lower dimensional space such that $S_W$ is nonsingular. We wish to find $W_{opt}^T$ such that $W_{opt}^T = W_{fld}^TW_{pca}^T$ where $W_{pca} = arg\ max_W|W^TS_TW|$ and $W_{fld} = arg\ max_W\frac{|W^TW_{pca}^TS_BW_{pca}W|}{|W^TW_{pca}^TS_WW_{pca}W|}$.
-
+%FIXME: IS THIS DONE???
 \subsubsection{Parameter Optimisation}
-Data Prep
+There were two parameters to consider with Fisherfaces: \textbf{int} $numComponents$, \textbf{double} $threshold$.
+
+It was found that reducing $numComponents$ reduced the performance of the algorithm, however it also resulted in reduced distances between the face and the face class. A problem was encountered where we either had reasonable performance, but the distance was in the thousands, or we had poor performance with small distance. $numComponents$ was chosen such that it maximised the performance which was found to be the number of classes minus 1.
+
+As stated previously, our distances were extremely large so our $threshold$ had to be very large too. As one would expect, reducing this number increased the number of $unknown$ classifications which could potentially reduce the number of false classifications. $threshold$ was chosen to be one of the smaller misclassified distances. This was 1500 (which is extremely large).
 
 \subsection{Local Binary Patterns}
 The LBP descriptor describes a pixel as an $P$-bit binary number based on the values of $P$ points on the circumference of a circle of radius $R$ centred at the pixel. This number becomes its label.
@@ -278,7 +282,13 @@ Many enhancements have been proposed for LBP. These include considering neighbou
 
 
 \subsubsection{Parameter Optimisation}
-Data Prepsssss
+With LBP, there were 5 parameters that we needed to optimise: \textbf{int} $radius$, \textbf{int} $neighbors$, \textbf{int} $gridX$, \textbf{int} $gridY$, \textbf{double} $threshold$.
+
+$radius$ refers to the radius of the circle we consider our neighbours to lie on whereas $neighbors$ refers to the number of neighbours. Increasing $radius$ tended to reduce performance, even when $neighbors$ was scaled appropriately. $radius=1$ and $neighbors=8$ tended to give the best results.
+
+The grid parameters refer to how many regions we want to break the image up into. Whilst varying $gridX$ and $gridY$ significantly affected performance, it was erratic and there was no way to predict this trend. It was found that $gridX=7$ and $gridY=7$ gave good performance.
+
+$threshold$ was chosen to be one of the smaller misclassified distances, which was $52$.
 
 \subsection{Local Intensity Distribution}
 Local Intensity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similar to LBP descriptors, LID descriptors are insensitive to illumination changes.
@@ -326,10 +336,6 @@ We add the additional constraint that $class\{I\}$ will be \textit{unknown} if t
 For our LID algorithm, we use the chi-squared measure of distance, however the original paper on LID uses the Kullback-Leiber (KL) distance \cite{nguyen2011local}. It is unlikely that this will cause any differences in terms of performance, however the KL distance may have a computational advantage.
 % FIXME: I suspect that if you use spacial histograms instead of SIFT you will get better results
 
-
-\subsubsection{Parameter Optimisation}
-Data Prep
-
 \subsection{Results}
 The results involved testing the 89 images of the validation set. For how this set was constructed, see Section~\ref{sec:split}.
 \begin{table}[H]
@@ -346,7 +352,11 @@ The results involved testing the 89 images of the validation set. For how this s
     \end{tabular}
     \caption {Failure rates for face detection algorithms}
 \end{table}
+
+Clearly, LID's performance is unexpected. This is discussed in~\ref{sec:lidbad}.
+
 In terms of efficiency, as expected LBP was both the quickest to train and detect as it uses integer arithmetic rather than floating point. LID was the next most efficient with Eigenfaces and Fisherfaces being the least efficient.
+
 
 \subsubsection{Why Eigenfaces and Fisherfaces Performed Worse Than Expected}
 The Eigenfaces and Fisherfaces methods have been reported to have a 4\%\cite{turk1991eigenfaces} and 4.6\%\cite{belhumeur1997eigenfaces} failure rate respectively, however our testing showed only 40.45\% and 32.58\% respectively. The reason for this discrepancy is likely because both of these methods are sensitive to pose \cite{turk1991eigenfaces}\cite{belhumeur1997eigenfaces}. The reported good performance of these methods have been on databases which contained faces with only one frontal view. The images we have tested with in this report have had very varying poses (See figure~\ref{fig:pose}). This may be the cause of these algorithms poor performance.
@@ -361,16 +371,15 @@ The Eigenfaces and Fisherfaces methods have been reported to have a 4\%\cite{tur
 Although the Eigenfaces and Fisherfaces implementations used in this report are sensitive to variance of pose, there exist modern modifications to these algorithms to reduce that sensitivity \cite{jaiswal2012local}.
 
 \subsubsection{Why The LID Implementation Performed so Poorly}
-Overall, the LID algorithm for face recognition performed very poorly. Of the four algorithms it by far performed the worst in terms of correctly identifying faces. \hl{Show an image of all the training faces of a person with the sift keypoints marked}. I believe that this is due to the SIFT keypoints detecting significantly different sections of the face for each image of the same person. This results in comparing LID descriptors of different parts of the face. As we were not comparing the descriptors for the same part of the face, the histogram comparisons were not an accurate measure of the dissimilarity of the faces.
-
-I believe the alternative method of computing spacial histograms, as outlined in section~\ref{sec:alternativeLID}, would result in much better performance as we would be comparing corresponding regions of images in the same way LBP does.
+\label{sec:lidbad}
+Overall, the LID algorithm for face recognition performed very poorly. Of the four algorithms it by far performed the worst in terms of correctly identifying faces. This is likely due to implementation issues rather than issues with the underlying algorithm.
 
 \subsection{Comparison}
 Both Eigenfaces and Fisherfaces performed poorly with failure rates of 40.45\% and 32.58\% respectively. These two algorithms were the least efficient both in training and in detection.
 
 The results show that LBP was by far the most accurate with an 11.25\% failure rate. It was also the most efficient with both training and detection which is like attributable to its use of integer arithmetic rather than floating point.
 
-\hl{FIXME: LID}
+Unfortunately, we are unable to meaningfully interpret LID's results. (See section~\ref{sec:lidbad}).
 
 Eigenfaces and Fisherfaces are both sensitive to variance in pose. Fisherfaces is less sensitive than Eigenfaces to variance in pose, and lighting, which may explain its better performance. LBP is less sensitive to variance in pose and lighting to Fisherfaces, which may explain its performance.
 
