@@ -93,15 +93,9 @@ $minSize$ and $maxSize$ were left unspecified as this would allow for detection 
 The final parameters chosen were $scaleFactor$=0.01 and $minNeighbors$=9.
 
 \subsubsection{Face Detection Results}
-After the parameters were optimised, all faces were successfully detected almost instantly.
+After the parameters were optimised, all faces were successfully detected almost instantly. This can be seen in figure~\ref{fig:group}.
 
 The results support the notion that Haar classifiers are suitable for real-time detection of faces.
-\begin{figure}[H] % FIXME: This figure wrecks page numbering
-\centering
-\includegraphics[width=0.7\linewidth]{./groupdetected}
-\caption{Faces detected. $scaleFactor=1.01, minNeighbors=9$}
-\label{fig:group}
-\end{figure} % FIXME
 
 
 \subsection{Local Binary Patterns}
@@ -240,13 +234,16 @@ Data Prepsssss
 Local Intensity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similar to LBP descriptors, LID descriptors are insensitive to illumination changes} \cite{nguyen2011local}.
 
 \subsubsection{The LID Descriptor}
-Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of an image with $N$ pixels and let $p = (x,y) \in \mathbb{Z}^2$ be an arbitrary point in the domain of $I$. We define $LID_{N,R}(p) : \mathbb{Z}^2 \rightarrow \mathbb{R}^N$ as
+Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of an image/patch with $N$ pixels and let $p = (x,y) \in \mathbb{Z}^2$ be an arbitrary point in the domain of $I$. We define $LID_{N,R}(p) : \mathbb{Z}^2 \rightarrow \mathbb{R}^N$ as
 \begin{equation}
    % \label{simple_equation}
    LID_{N,R}(p) = \langle d(p_1,p), \ldots, d(p_n,p)\rangle
 \end{equation}
-where $d(p_i,p) = I(p_i) - I(p)$ and $p_i = (x_i, y_i) \in \mathbb{Z}$ is such that $max\{|x_i - x|, |y_i - y|\} = R$. % FIXME: There must be a better way to describe this rectangle (perimeter) than using this max.
+where $d(p_i,p) = I(p_i) - I(p)$ (quantised uniformly into $M$ levels) and $p_i = (x_i, y_i) \in \mathbb{Z}$ is such that $max\{|x_i - x|, |y_i - y|\} = R$. % FIXME: There must be a better way to describe this rectangle (perimeter) than using this max.
 \hl{Insert image of the descriptor - THIS IS NOT THE DESCRIPTOR - just the LID FUNCTIOn}
+
+For all $p_i$ in the patch, we calculate $ LID_{N,R}(p_i)$.
+We group together the first elements of all $LID_{N,R}(p)$ for each point into a normalised histogram and call it $u_1$. We group together the second elements of all $LID_{N,R}(p)$ for each point into a normalised histogram and call it $u_2$. We do the same for all elements of $LID_{N,R}$ to get $u=(u_1,\ldots,u_N)$ where $u_i$ is a normalised histogram representing the probability distribution of the $d(p_i,p)$ for all $p$ in the patch. $u$ is our LID descriptor for the patch.
 
 \subsubsection{Training The Images}
 We wish to train a codebook, $C=\{c_1, \ldots, c_N\}$, where $c_i$ is an equalised histogram representing the $i$th training image and each $c_i$ has a label associated with it.
@@ -255,9 +252,25 @@ $c_i$ is calculated in the following way. A set of keypoints, $\{k_1, \ldots, k_
 
 The descriptors are then clustered using a K-means algorithm using the chi-squared distance measure. \hl{Note that the code will use euclidean. FUDGE - this NEEDS to be chi-squared as euclidean will be biased to the larger dimensions}
 
-The results of the K-means algorithm are used to generate histogram, $H_i$, with $K$ bins. We equalise $H_i$ to get $c_i$.
+We store the resulting centroids as they will be needed for the face recognition stage.
+
+The results of the K-means algorithm are used to generate a histogram with $K$ bins. We equalise this histogram to get $c_i$. The label associated with $c_i$ is the class of the $i$th training image.
 
 \subsubsection{Face Recognition Using LID}
+Given an unclassified image, $I$, we extract its SIFT keypoints and calculate the LID descriptors for the $(2L+1)\times(2L+1)$ region centred at each of these keypoints.
+
+Using the centroids from the training stage, we cluster the descriptors in a similar manner to the training stage.
+
+The results are used to generate a histogram which is then normalised and call it $c$. We classify the image as the class of the closest training image. That is $class\{I\}=class\{I_k\}$ where $k$ is such that $c_k$ of the codebook has smallest chi-squared distance to $c$. That is, we choose $k$ such that
+\begin{equation}
+	\chi^2(c, c_k) = \sum_{j=1}^{n}\frac{(c^{(j)} - c^{(j)}_k)^2}{c^{(j)} + c^{(j)}_k}
+\end{equation}
+is minimised, where $c^{(j)}_k$ denotes the $j$th element of the histogram $c_k$.
+
+We add the additional constraint that $class\{I\}$ will be \textit{unknown} if the distance is not within some threshold, $\theta$. That is,
+\begin{equation}
+	\chi^2(c, c_k) > \theta \Rightarrow class\{I\} = unknown
+\end{equation}
 
 \subsubsection{Alternative Methods for LID Face Detection}
 \label{sec:alternativeLID}
@@ -275,12 +288,6 @@ Advantages and disadvantages of each algorithm with side-by-side images after pa
 Both the Eigenfaces and Fisherfaces methods are reported to have a \hl{some\%} rate of accuracy \hl{Some citation} however our testing showed only \hl{x\%} and \hl{y\%} respectively. I believe the reason for this discrepancy is because both of these methods are sensitive to pose \cite{turk1991eigenfaces}\cite{belhumeur1997eigenfaces}. The reported good performance of these methods have been on databases which contained faces with only one frontal view. The images we have tested with in this report have had very varying poses (See figure~\ref{fig:pose}). This may be the cause of these algorithms poor performance.
 
 Although the Eigenfaces and Fisherfaces implementations used in this report are sensitive to variance of pose, there exist modern modifications to these algorithms to reduce that sensitivity \cite{jaiswal2012local}.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\linewidth]{./pose}
-\caption{Images showing variation in pose in the dataset}
-\label{fig:pose}
-\end{figure} % FIXME
 
 \subsubsection{Why The LID Implementation Performed so Poorly}
 Overall, the LID algorithm for face recognition performed very poorly. Of the four algorithms it by far performed the worst in terms of correctly identifying faces. \hl{Show an image of all the training faces of a person with the sift keypoints marked}. I believe that this is due to the SIFT keypoints detecting significantly different sections of the face for each image of the same person. This results in comparing LID descriptors of different parts of the face. As we were not comparing the descriptors for the same part of the face, the histogram comparisons were not an accurate measure of the dissimilarity of the faces.
@@ -319,6 +326,21 @@ FIXME: Explain what happened when you reduced the resolution to 128*128: Fisher 
 \bibliographystyle{plain}
 \bibliography{references}
 
+\pagebreak
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{./groupdetected}
+\caption{Faces detected. $scaleFactor=1.01, minNeighbors=9$}
+\label{fig:group}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{./pose}
+\caption{Images showing variation in pose in the dataset}
+\label{fig:pose}
+\end{figure} % FIXME
 
 
 \end{document}
