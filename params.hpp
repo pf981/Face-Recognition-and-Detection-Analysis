@@ -16,61 +16,31 @@ namespace params
     namespace training
     {
         // The faces must be broken up into training images and images used to measure performance
-//        const double trainingToValidationRatio = 2/3.0f; // 66.66% of the images will be used for training
-        const double trainingToValidationRatio = 0.7f; // FIXME: This is a test
+        const double trainingToValidationRatio = 0.7f;
     }
     namespace eigenFace
     {
-//        const int numComponents = 0; // This being 0 is by far the best // FIXME: TOO MANY COMPONENETS, but only numComponents=1 gave good distances but crappy performance. GO WITH 0!!
-        const int numComponents = 80; // This being 0 is by far the best // FIXME: TOO MANY COMPONENETS, but only numComponents=1 gave good distances but crappy performance. GO WITH 0!!
-//        const int numComponents = 1; // This being 0 is by far the best // FIXME: TOO MANY COMPONENETS // 5 too low, 20 too high, 15 too high, 10 is too high, still bad results, 8 same, 7 same, 5 too high, 3 too high, 2 even too high
-//        const int numComponents = 150; // FIXME: 0=>35.9551%, 10=>43.8202%, 100=> 38.2022%, 150=>35.9551
-//        const int numComponents = 3;
-        // const double threshold = 10.0;
-        // FIXME: Below are the good params
-//        const int numComponents = 0; // Setting this to 0 means the algorithm will automatically pick c-1 // FIXME: WHY IS THIS STILL CRASHING!!?? // Still crash with 8 and 5 and 4 and 3 and 2. Only 1 works. WHY??? I get "killed" message. HUH??!?? Even TRAINING data is failing!!
-//        const double threshold = 50.0;
-//        const double threshold = DBL_MAX; // FIXME: There is a BIG BUG in your code. Your distances for eigen and fisher are WAY too big.
-        const double threshold = 4710.0f; // FIXME: I know this is WAY too big, but it gets good results
-//        const double threshold = 100.0; // FIXME: This should NOT be DBL_MAX. I think that will mean it will ALWAYS classify a face (never return -1). Furthermore, reducing this WILL NOT reduce the training time / file size. This value needs to be tuned so that it correctly classifies faces but doesn't have false hits. Also must be able to say -1 for faces not in the training set.
+        const int numComponents = 80;
+        const double threshold = 4710.0f;
     }
     namespace fisherFace
     {
-        const int numComponents = 0; // FIXME: 0 is best
+        const int numComponents = 0; // OpenCV will set numComponents to {classes}-1
         const double threshold = DBL_MAX;
-//        const double threshold = 10.0;
     }
     namespace lbphFace
     {
-        // FIXME: Start current best
-        // FIXME: End current best
         const int radius = 1;
         const int neighbors = 8;
-        const int gridX = 7; // 7,7 is by far the best
-        const int gridY = 7; // FIXME: 7 better than 8 7=>11.236%
-        // FIXME: Note that if you used weighted LBP, it wouldn't matter what the grid size was - you could just train any grid to be good - the important regions would have a greater weight
-
-//        const int radius = 4;
-//        const int neighbors = 28; // FIXME: This is too big
-//        const int neighbors = 10; // FIXME: This is too big
-        // // FIXME: These next ones were the ones in the paper - But they actually suck (58.427%)
-        // const int radius = 2;
-        // const int neighbors = 8;
-        // // const int gridX = 18;
-        // // const int gridY = 21; // FIXME: 7 better than 8 7=>11.236%
-        // // FIXME: Defaults below
-        // // const int radius = 1;
-        // // const int neighbors = 8;
-        // const int gridX = 8;
-        // const int gridY = 8;
+        const int gridX = 7;
+        const int gridY = 7;
         const double threshold = 52.0f;
     }
     namespace lidFace
     {
         const int inradius = 1;
         const double threshold = DBL_MAX;
-//        const double clustersAsPercentageOfKeypoints = 0.01f; // FIXME: Tweak
-        const double clustersAsPercentageOfKeypoints = 0.9f; // FIXME: Tweak
+        const double clustersAsPercentageOfKeypoints = 0.9f;
     }
     namespace cascadeClassifier
     {

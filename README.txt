@@ -18,7 +18,7 @@ The code can be compiled an run in the following way:
 Additional Notes
 ----------------
 Please note that I have included the trained XML files in the submission:
- * haarcascade_frontalface_alt.xml
+ * haarcascade_frontalface_alt2.xml
  * trained_eigen.xml
  * trained_fisher.xml
  * trained_lbp.xml

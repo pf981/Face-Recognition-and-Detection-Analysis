@@ -1,22 +1,11 @@
 #include <assert.h>
-#include <iostream> // FIXME: Remove
 #include <map> // FIXME: Make sure you actually use this
 #include <vector>
 
-// FIXME: Only include what you need
 #include "opencv2/core/core.hpp"
 #include "opencv2/contrib/contrib.hpp"
 #include "opencv2/features2d/features2d.hpp"
-#include "opencv2/highgui/highgui.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
-#include "opencv2/objdetect/objdetect.hpp"
-// #include <opencv2/imgproc/imgproc.hpp>  // Gaussian Blur
-// #include <opencv2/core/core.hpp>        // Basic OpenCV structures (cv::Mat, Scalar)
-// #include <opencv2/highgui/highgui.hpp>  // OpenCV window I/O
-// #include <opencv2/features2d/features2d.hpp>
-// #include <opencv2/contrib/detection_based_tracker.hpp>
-
-
 
 #include "lid.hpp"
 #include "params.hpp"
@@ -72,10 +61,9 @@ namespace lid
 // Populates allKeyPoints and descriptors
 void Lidfaces::detectKeypointsAndDescriptors(
     cv::InputArrayOfArrays src,
-    std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,// FIXME: Put into a single array
+    std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,
     cv::Mat& descriptors) const
 {
-    // FIXME: TODO: Check that it is 8 bit grayscale
     cv::SIFT detector(
         params::sift::nfeatures,
         params::sift::nOctaveLayers,
@@ -84,7 +72,7 @@ void Lidfaces::detectKeypointsAndDescriptors(
         params::sift::sigma);
 
     std::vector<cv::Mat> images;
-    src.getMatVector(images);// FIXME: This might crash
+    src.getMatVector(images);
 
     for (unsigned int i = 0; i < images.size(); ++i)
     {
@@ -105,26 +93,21 @@ void Lidfaces::detectKeypointsAndDescriptors(
 
     // We only want to check asserts when we are debugging
     // If we aren't debugging then the loop is a waste of time
-#ifndef NDEBUG // FIXME: Uncomment
+#ifndef NDEBUG
     int totalNumberOfKeyPoints = 0;
     for (unsigned int i = 0; i < allKeyPoints.size(); ++i)
         totalNumberOfKeyPoints += allKeyPoints[i].size();
     assert(descriptors.rows == totalNumberOfKeyPoints);
 #endif
-    assert(descriptors.cols = 8*mInradius); // Ensure that each descriptors size is the number of neighbors // FIXME: 8*mInradius is NOT correct - you need to specify P (the number of columns) as a paramater of LID
+    assert(descriptors.cols = 8*mInradius); // Ensure that each descriptors size is the number of neighbors
 }
 
-
-// void computeDescriptors(
-//     const std::vector<std::vector<cv::KeyPoint> >& allKeyPoints, // FIXME: After this, we don't specifically care what the keypoints are. We just need to know how many keypoints are associated with each image. Ie allKeypoints[i].size()
-//     cv::Mat& descriptors
-//     )
 
 cv::Ptr<cv::FaceRecognizer> createLidFaceRecognizer(int inradius, double threshold)
 {
-//  return makePtr<Lidfaces>(inradius, threshold); // FIXME: makePtr gives error for some reason
     return cv::Ptr<Lidfaces>(new Lidfaces(inradius, threshold)); // This is equivalent to makePtr
 }
+
 
 // Returns the LID descriptor of mat about p
 // For an image I : Z^2 -> R
@@ -141,7 +124,6 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
     // XopoX
     // XoooX
     // XXXXX
-//    int totalNeighbors = (2*inradius + 1)*(2*inradius + 1) - 1; // FIXME: NO THIS IS WRONG. FIX EVERYTHING
     int totalNeighbors = 8*inradius; // This is the formula for the perimeter of a square given the inradius
 
     cv::Mat lidDescriptor(1, totalNeighbors, CV_8UC1);
@@ -191,30 +173,12 @@ cv::Mat lid(const cv::Mat& src, cv::Point p, int inradius)
             0);
     }
 
-
-
-    // for (int x = MIN_X; x <= MAX_X; ++x) // FIXME:
-    // {
-    //     for (int y = MIN_Y; y <= MAX_Y; ++y)
-    //     {
-    //         if (x == p.x && y == p.y) // Don't calculate d(pi, p) when pi==p
-    //             continue;
-
-    //         // Set the nth descriptor element
-    //         lidDescriptor.at<unsigned char>(neighborIndex++) = std::max(src.at<unsigned char>(y, x) - src.at<unsigned char>(p.y, p.x), 0);
-    //     }
-    // }
-
-    // FIXME: Are you getting INTENSITIES???
-    // FIXME: Are we meant to equalise intensities? (Note that I think I DONT equalised them elsewhere) - NO I DON'T THINK WE NEED TO EQUALISE
-    // FIXME: Note that reading in as CV_LOAD_IMAGE_GRAYSCALE(0) loads image as an intensity image (What we want)
     return lidDescriptor;
 }
 
 
 // Computes an Lidfaces model with images in src and corresponding labels
 // in labels.
- // FIXME:
 void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
 {
     std::vector<std::vector<cv::KeyPoint> > allKeyPoints;
@@ -222,22 +186,13 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
 
     // Get SIFT keypoints and LID descriptors
     detectKeypointsAndDescriptors(src, allKeyPoints, descriptors);
-    // FIXME: TODO
-
-    // FIXME: Don't know if you normalize descriptors...
 
     // kmeans function requires points to be CV_32F
     descriptors.convertTo(descriptors, CV_32FC1);
 
     // Do k-means clustering
-//    const int CLUSTER_COUNT = descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors
-//    const int CLUSTER_COUNT = 30; // FIXME: Don't know if we take a fraction of the descriptors // FIXME: Trying this - I had too many descriptors before
-//    const int CLUSTER_COUNT = 500; // FIXME: Don't know if we take a fraction of the descriptors // FIXME: Trying this - I had too many descriptors before
-    const int CLUSTER_COUNT = params::lidFace::clustersAsPercentageOfKeypoints*descriptors.rows; // FIXME: Don't know if we take a fraction of the descriptors // FIXME: Trying this - I had too many descriptors before
-    // FIXME: 100 => 60% failure; 500 => 40.98%; 5%=>60%; 50%=>37.7%; ;90%=>34.8%; 99%=>34.83%
+    const int CLUSTER_COUNT = params::lidFace::clustersAsPercentageOfKeypoints*descriptors.rows;
     cv::Mat histogramLabels;
-
-    // mCenters = cv::Mat(CLUSTER_COUNT, P);
 
     // This function populates histogram bin labels
     // The nth element of histogramLabels is an integer which represents the cluster that the
@@ -249,21 +204,15 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
         params::kmeans::termCriteria,
         params::kmeans::attempts,
         params::kmeans::flags,
-        mCenters); // FIXME: This is not using the right distance equation. This is using Euclidean distance when it should be using D defined in the paper. // FIXME: NOTE THAT YOU NEED TO CREATE mCENTERS FIRST!!! GIVE IT THE RIGHT DIMENSIONS!!!
-// FIXME:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// FIXME: This is very important to change, however, it is still a distance measure, so it will probably still work okay
-
-    // FIXME: I don't think I've done the following right. How big is the codebook meant to be? What happens to multiple images of the same person? How do they end up getting merged into one - or are they not meant to be merged at all?
-
+        mCenters);
 
     // Convert to single channel 32 bit float as the matrix needs to be in a form supported
     // by calcHist
     histogramLabels.convertTo(histogramLabels, CV_32FC1);
 
     // We end up with a histogram for each image
-//    std::vector<cv::Mat> hists(imgs.size()); // FIXME: How do we get the size of src???
     const size_t NUM_IMAGES = getSize(src);
-    std::vector<cv::Mat> hists(NUM_IMAGES); // FIXME: How do we get the size of src???
+    std::vector<cv::Mat> hists(NUM_IMAGES);
     // mCodebook.resize(NUM_IMAGES);
 
     // The histogramLabels vector contains ALL the points from EVERY image. We need to split
@@ -282,15 +231,13 @@ void Lidfaces::train(cv::InputArrayOfArrays src, cv::InputArray labels)
     }
 
     // Populate the hists vector
-    generateHistograms(hists, separatedLabels, CLUSTER_COUNT); // FIXME: Uncomment
+    generateHistograms(hists, separatedLabels, CLUSTER_COUNT);
 
     // Make the magnitude of each histogram equal to 1
-    normalizeHistograms(hists); // FIXME: Are we meant to normalise the histograms (Yes I think so - especially if you have a different number of keypoints for each image // FIXME: NORMALISE IS GOOD I THINK BUT IT RESULTED IN MOST ELEMENTS BEING 0
+    normalizeHistograms(hists);
 
-    // FIXME: What exactly is the codebook? hists? I think so...
     mCodebook = hists;
-    // FIXME: mLabels = something to do with separatedLabels
-    mLabels = labels.getMat(); // FIXME: Are these the right labels??
+    mLabels = labels.getMat();
 }
 
 // Predicts the label of a query image in src by creating a histogram by clustering the sift
@@ -306,12 +253,11 @@ int Lidfaces::predict(cv::InputArray src) const
 }
 
 // Predicts the label and confidence for a given sample.
-// FIXME
 void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
 {
     label = -1;
     dist = DBL_MAX;
-    std::vector<std::vector<cv::KeyPoint> > keyPoints; // FIXME: Remove this when you get rid of keypoints after you have descriptor
+    std::vector<std::vector<cv::KeyPoint> > keyPoints;
     cv::Mat descriptors;
 
     std::vector<cv::Mat> imageVector; // A vector containing just one image (this is so we can use the same detectKeypointsAndDescriptors function
@@ -321,18 +267,12 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
     detectKeypointsAndDescriptors(imageVector, keyPoints, descriptors);
 
 
-    // FIXME: TODO BIGTIME!!!
     // Cluster the image using the training centres
-    // FIXME: NOte that the euclidean distance between two mats is norm(m1 - m2);
-
-
     int closestCentroidIndex = 0;
-    // mCenters.convertTo(mCenters, CV_8UC1); // FIXME: NEW
-    // descriptors.convertTo(descriptors, CV_8UC1); // FIXME: NEW
-    mCenters.convertTo(mCenters, CV_32FC1); // FIXME: NEW
-    descriptors.convertTo(descriptors, CV_32FC1); // FIXME: NEW
+    mCenters.convertTo(mCenters, CV_32FC1);
+    descriptors.convertTo(descriptors, CV_32FC1);
 
-    cv::Mat histogramLabels(descriptors.rows, 1, CV_32F); // Each element corresponds to the label of the corresponding descriptor // FIXME: Check these dimensions and the type
+    cv::Mat histogramLabels(descriptors.rows, 1, CV_32F);
 
     // For each descriptor
     for (int descriptorIndex = 0; descriptorIndex < descriptors.rows; ++descriptorIndex)
@@ -345,8 +285,7 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
         {
             // Calculate the distance from the descriptor to the centroid
             double currentDist = cv::norm(
-                descriptors.row(descriptorIndex) - mCenters.row(centroidIndex)); // FIXME: I think this is always returning 0 :-(
-//            std::cerr << "!D" << currentDist << "D!" << std::endl; // FIXME: Remove
+                descriptors.row(descriptorIndex) - mCenters.row(centroidIndex));
 
             // If it is the smallest distance, remember it and the centroid
             if (currentDist < smallestDist)
@@ -355,34 +294,17 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
                 closestCentroidIndex = centroidIndex;
             }
         }
-        // FIXME: Store smallest here so we know distance? No, I think that is a different distance (histograms)
         histogramLabels.at<float>(descriptorIndex) = closestCentroidIndex;
     }
-//    std::cout << "CCI: " << closestCentroidIndex << std::endl << "d: " << dist << std::endl; // FIXME: REmove
 
     assert(histogramLabels.rows == descriptors.rows);
 
-    // FIXME: Now we have a vector of descriptors and the labels that go with it
-    // FIXME: This is a hack
     std::vector<cv::Mat> separatedLabels;
-//    std::vector<cv::Mat> hists(mCenters.rows);// FIXME: This should be a histogram for each IMAGE (not class)
-//    std::vector<cv::Mat> hists(descriptors.rows);// FIXME: This should be a histogram for each IMAGE (not class)
-    std::vector<cv::Mat> hists(1);// FIXME: THERE IS ONLY 1 HISTOGRAM
+    std::vector<cv::Mat> hists(1);
     separatedLabels.push_back(histogramLabels);
 
-//    std::cerr << "\n\n\n" << histogramLabels << std::endl << "\n\n\n\n"; // FIXME: REMOVE
     generateHistograms(hists, separatedLabels, mCenters.rows);
-//    generateHistograms(hists, separatedLabels, 2);// FIXME: Use above
-    // FIXME: NORMALISE HISTS
-    // std::cerr << "\n***"  << hists[0] << "***\n"; // FIXME: Remove
-    // std::cerr << "\n&&&"  << separatedLabels[0] << "&&&\n"; // FIXME: Remove
-    // std::cerr << "HISTSSIZE:" << hists.size() << "**\n"; // FIXME: Remove // FIXME: WHY IS THIS NOT 1????
-    // assert(hists.size() == 1); // FIXME: Remove
-   normalizeHistograms(hists); // FIXME: Just added this
-
-
-    // FIXME: You need to normalise codebook histograms after training so you don't have to do it every time you predict - DONE
-
+    normalizeHistograms(hists);
 
     dist = DBL_MAX;
     std::multimap<int, double> distances; // Maps label to distance
@@ -391,15 +313,9 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
     {
         // Get dist hist
         double currentDist = cv::compareHist(hists[0], mCodebook[codebookIndex], CV_COMP_CHISQR);
-        // if (currentDist < dist)
-        // {
-        //     dist = currentDist;
-        //     label = mLabels.at<int>(codebookIndex);
-        // }
-        // FIXME: Use average distance
-//        distances[mLabels.at<int>(codebookIndex)].add(currentDist);
         distances.insert(std::pair<int, double>(mLabels.at<int>(codebookIndex), currentDist));
     }
+
     // Calculate the smallest average distance
     double smallestAverageDist = DBL_MAX;
     int closestLabel = -1;
@@ -412,7 +328,6 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
         std::pair<std::multimap<int, double>::const_iterator, std::multimap<int, double>::const_iterator> itRange = distances.equal_range(curLabel);
         for (std::multimap<int, double>::const_iterator it = itRange.first; it != itRange.second; ++it)
         {
-            // std::cerr << "*" << curLabel << ":" << it->second << "*"; // FIXME: Remove
             totalDist += it->second;
         }
         curDist = totalDist/distances.count(curLabel);
@@ -421,15 +336,13 @@ void Lidfaces::predict(cv::InputArray src, int& label, double& dist) const
             smallestAverageDist = curDist;
             closestLabel = curLabel;
         }
-        // std::cerr << "@" << curLabel << ":" << curDist << "@"; // FIXME: Remove
     }
 
     label = closestLabel;
     dist = smallestAverageDist;
 }
 
-// see FaceRecognizer::load.
-// FIXME:
+
 void Lidfaces::load(const cv::FileStorage& fs)
 {
     // Read matrices
@@ -454,8 +367,7 @@ void Lidfaces::load(const cv::FileStorage& fs)
     fs["centers"] >> mCenters;
 }
 
-// See FaceRecognizer::save.
-// FIXME:
+
 void Lidfaces::save(cv::FileStorage& fs) const
 {
     // Write matrices
@@ -467,18 +379,16 @@ void Lidfaces::save(cv::FileStorage& fs) const
 
     // Write the codebook
     //cv::writeFileNodeList(fs, "codebook", mCodebook);
-    // std::cerr << "CODEBOOK:" << mCodebook.size() << "!!!"; // FIXME: Remove
-    fs << "codebook" << "["; // FIXME: This isn't working
+    fs << "codebook" << "[";
     for (std::vector<cv::Mat>::const_iterator it = mCodebook.begin(); it != mCodebook.end(); ++it) {
         fs << *it;
     }
     fs << "]";
 
-    fs << "labels" << mLabels; // FIXME: Labels are not being saved for some reason.
+    fs << "labels" << mLabels;
     fs << "centers" << mCenters;
 }
 
-// FIXME:
 cv::AlgorithmInfo* Lidfaces::info() const
 {
     return NULL;

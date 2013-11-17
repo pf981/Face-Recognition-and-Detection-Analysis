@@ -183,7 +183,7 @@ void detect(const std::string& imageFile)
         model->predict(grayscale, prediction, dist);
         std::cout << "LBP: Person is " << getPrediction(prediction) << std::endl;
 
-        model = lid::createLidFaceRecognizer( // FIXME: This should be its own function
+        model = lid::createLidFaceRecognizer(
             params::lidFace::inradius,
             params::lidFace::threshold);
         model->load("trained_lid.xml");
