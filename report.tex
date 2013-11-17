@@ -55,7 +55,7 @@ Face recognition technology has significantly progressed since the proposal of t
 
 \hl{FIXME: History of FACE DETECTION. Look at lecture notes. Good history there P.J. Phillips et.al, Overview of the face recognition grand challenge, CVPR 2005, Volume: 1, pp. 947- 954 }
 
-There are numerous commercial and law-enforcement applications for face detection and recognition including advanced video surveillance, user authentication and suspect tracking \cite{zhao2003face}. The effectiveness of these applications rely on the efficiency and accuracy of the underlying algorithms. In this report, we will compare the efficiency and accuracy of 4 facial recognition algorithms: Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distributions (LID). We will also investigate the efficiency and performance of Haar feature-based cascade classification for face detection and discuss how these algorithms can be applied by the Gwynville Airport Authority for their security and surveillance system.
+There are numerous commercial and law-enforcement applications for face detection and recognition including advanced video surveillance, user authentication and suspect tracking \cite{zhao2003face}. The effectiveness of these applications rely on the efficiency and accuracy of the underlying algorithms. This report will compare the efficiency and accuracy of 4 facial recognition algorithms: Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distributions (LID). We will also investigate the efficiency and performance of Haar feature-based cascade classification for face detection and discuss how these algorithms can be applied by the Gwynville Airport Authority for their security and surveillance system.
 
 
 \section{Data Preparation}
@@ -93,7 +93,9 @@ $minSize$ and $maxSize$ were left unspecified as this would allow for detection 
 The final parameters chosen were $scaleFactor$=0.01 and $minNeighbors$=9.
 
 \subsubsection{Face Detection Results}
-After the parameters
+After the parameters were optimised, all faces were successfully detected almost instantly.
+
+The results support the notion that Haar classifiers are suitable for real-time detection of faces.
 \begin{figure}[H] % FIXME: This figure wrecks page numbering
 \centering
 \includegraphics[width=0.7\linewidth]{./groupdetected}
@@ -114,7 +116,7 @@ Advantages and disadvantages of each algorithm with side-by-side images after pa
 \section{Face Recognition Algorithms}
 Data Prep
 
-\subsection{Eigen Face}
+\subsection{Eigenfaces}
 If we describe the collection of all images of the face of an individual as a vector space, then we can describe every such image through a linear combination of the spanning vectors of that space.
 
 The goal is to find the principal components of the training data, called eigenfaces. These eigenfaces form a basis for every image of this person’s face. That is, every image of this person’s face can be described as a linear combination of the eigenfaces. Furthermore, every image of this person’s face can be approximated by a linear combination of the eigenfaces with the largest eigenvalues.
@@ -244,12 +246,24 @@ Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of
    LID_{N,R}(p) = \langle d(p_1,p), \ldots, d(p_n,p)\rangle
 \end{equation}
 where $d(p_i,p) = I(p_i) - I(p)$ and $p_i = (x_i, y_i) \in \mathbb{Z}$ is such that $max\{|x_i - x|, |y_i - y|\} = R$. % FIXME: There must be a better way to describe this rectangle (perimeter) than using this max.
+\hl{Insert image of the descriptor - THIS IS NOT THE DESCRIPTOR - just the LID FUNCTIOn}
 
 \subsubsection{Training The Images}
-% FIXME: I suspect that if you use spacial histograms instead of SIFT you will get better results
+We wish to train a codebook, $C=\{c_1, \ldots, c_N\}$, where $c_i$ is an equalised histogram representing the $i$th training image and each $c_i$ has a label associated with it.
+
+$c_i$ is calculated in the following way. A set of keypoints, $\{k_1, \ldots, k_n\}$, are generated using SIFT detector on the $i$th image training image. The LID descriptor for the $(2L+1)\times(2L+1)$ region centred at each of these keypoints are calculated.
+
+The descriptors are then clustered using a K-means algorithm using the chi-squared distance measure. \hl{Note that the code will use euclidean. FUDGE - this NEEDS to be chi-squared as euclidean will be biased to the larger dimensions}
+
+The results of the K-means algorithm are used to generate histogram, $H_i$, with $K$ bins. We equalise $H_i$ to get $c_i$.
+
+\subsubsection{Face Recognition Using LID}
 
 \subsubsection{Alternative Methods for LID Face Detection}
 \label{sec:alternativeLID}
+For our LID algorithm, we use the chi-squared measure of distance, however the original paper on LID uses the Kullback-Leiber (KL) distance \cite{nguyen2011local}. It is unlikely that this will cause any differences in terms of performance, however the KL distance may have a computational advantage.
+% FIXME: I suspect that if you use spacial histograms instead of SIFT you will get better results
+
 
 \subsubsection{Parameter Optimisation}
 Data Prep
