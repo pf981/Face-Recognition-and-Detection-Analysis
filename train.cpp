@@ -51,7 +51,7 @@ void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>&
     // For each training image
     for (char sample = 'A'; sample <= 'W'; ++sample)
     {
-        std::cerr << sample << ": " << countImages(sample) << std::endl; // FIXME: Remove
+        std::cout << sample << ": " << countImages(sample) << std::endl;
         for (int photoNum = 1;
              photoNum <= (int)(params::training::trainingToValidationRatio*countImages(sample));
              ++photoNum)
@@ -66,7 +66,7 @@ void loadTrainingImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>&
             std::cout << "Reading " << filename << std::endl;
 
             // Read the image in. Fisher only works on greyscale
-            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE)); // FIXME: Attempt to fix
+            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
             scaleImage(image);
 
             // Add the image and its label to the vectors

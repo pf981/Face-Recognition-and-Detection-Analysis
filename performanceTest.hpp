@@ -1,3 +1,7 @@
+/* CSCI435 Computer Vision
+ * Project: Facial Recognition
+ * Paul Foster - 3648370
+ */
 #ifndef PERFORMANCE_TEST_HPP
 #define PERFORMANCE_TEST_HPP
 

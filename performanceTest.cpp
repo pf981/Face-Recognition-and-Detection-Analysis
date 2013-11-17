@@ -25,21 +25,12 @@
 
 void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<int>& labels)
 {
-    for (char sample = 'A'; sample <= 'W'; ++sample) // FIXME: USE THIS
-//    for (char sample = 'A'; sample <= 'F'; ++sample) // FIXME: Use other
-//    for (char sample = 'A'; sample <= 'B'; ++sample) // FIXME: Use other
+    for (char sample = 'A'; sample <= 'W'; ++sample)
     {
-        // FIXME: Of the images, we need to RANDOMLY select 60% of them for training
-        std::cerr << sample << ": " << countImages(sample) << std::endl; // FIXME: Remove
-        // for (int photoNum = 1;
-        //      photoNum <= (int)(params::training::trainingToValidationRatio*countImages(sample));
-        //      ++photoNum) // FIXME: This is using the training data
-        // for (int photoNum = 1;
-        //      ;
-        //      ++photoNum) // FIXME: This is using the ALL data
+        std::cout << sample << ": " << countImages(sample) << std::endl;
         for (int photoNum = (int)(params::training::trainingToValidationRatio*countImages(sample)) + 1;
              ;
-             ++photoNum) // FIXME: Use this one
+             ++photoNum)
         {
             // Filenames are in the form "face_samples/sample_A/A1.JPG"
             std::string filename =
@@ -50,55 +41,9 @@ void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<in
 
             std::cout << "Reading " << filename << std::endl;
 
-            // Read the image in. Fisher only works on greyscale
-//            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
-
-
-
-
-            // cv::Mat image(cv::imread(filename));
-            // scaleImage(image);
-            // cv::Mat grayscale;
-            // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
-            // equalizeHist(grayscale, grayscale); // FIXME: Why do this?
-
-//            cv::Mat image(cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE));
-
-
-
-
-
-
-
-            // FIXME: THIS WAS THE CONFIGURATION THAT DIDN'T WORK
-            cv::Mat image(cv::imread(filename, 0));// FIXME: Attempt to fix
+            cv::Mat image(cv::imread(filename, 0));
             scaleImage(image);
             cv::Mat grayscale(image.clone());
-            // FIXME: This is an attempt to fix eigen and fisher. I think you train with color, test with grayscale
-            // cv::Mat image(cv::imread(filename));
-            // scaleImage(image);
-            // cv::Mat grayscale(image.clone());
-            // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
-            // equalizeHist(grayscale, grayscale);
-
-
-
-
-
-            // cv::cvtColor(image, grayscale, CV_BGR2GRAY);
-            // equalizeHist(grayscale, grayscale); // FIXME: Why do this?
-//            equalizeHist(grayscale, grayscale); // FIXME: ABSOLUTELY REMOVE THIS
-
-
-
-
-
-
-
-            // Scale the images as they so they are faster to process. All images need to have the same
-            // dimensions as it is required for the recognisers
-//            scaleImage(image);
-//            equalizeHist(image, image); // FIXME: added this
 
             // Add the image and its label to the vectors
             images.push_back(grayscale);
@@ -107,38 +52,38 @@ void loadPerformanceImagesAndLabels(std::vector<cv::Mat>& images, std::vector<in
     }
 }
 
+
 // This function loads the trained XML files and uses them to classify the validation images. It
 // will output which tests passed (classified correctly) and which did not
 void performanceTest()
 {
     // Load the models
-    cv::Ptr<cv::FaceRecognizer> modelEigen = cv::createEigenFaceRecognizer( // FIXME: This should be its own function
+    cv::Ptr<cv::FaceRecognizer> modelEigen = cv::createEigenFaceRecognizer(
         params::eigenFace::numComponents,
         params::eigenFace::threshold);
     std::cout << "Loading trained_eigen.xml..." << std::endl;
-    modelEigen->load("trained_eigen.xml"); // FIXME: How the heck do I error-check loading??
+    modelEigen->load("trained_eigen.xml");
 
     cv::Ptr<cv::FaceRecognizer> modelFisher = cv::createFisherFaceRecognizer(
         params::fisherFace::numComponents,
         params::fisherFace::threshold);
     std::cout << "Loading trained_fisher.xml..." << std::endl;
-    modelFisher->load("trained_fisher.xml"); // FIXME: How the heck do I error-check loading??
+    modelFisher->load("trained_fisher.xml");
 
-    cv::Ptr<cv::FaceRecognizer> modelLbp = cv::createLBPHFaceRecognizer( // FIXME: This should be its own function
+    cv::Ptr<cv::FaceRecognizer> modelLbp = cv::createLBPHFaceRecognizer(
         params::lbphFace::radius,
         params::lbphFace::neighbors,
         params::lbphFace::gridX,
         params::lbphFace::gridY,
         params::lbphFace::threshold);
     std::cout << "Loading trained_lbp.xml..." << std::endl;
-    modelLbp->load("trained_lbp.xml"); // FIXME: How the heck do I error-check loading??
+    modelLbp->load("trained_lbp.xml");
 
-    // FIXME: Uncomment
-    cv::Ptr<cv::FaceRecognizer> modelLid = lid::createLidFaceRecognizer( // FIXME: This should be its own function
+    cv::Ptr<cv::FaceRecognizer> modelLid = lid::createLidFaceRecognizer(
         params::lidFace::inradius,
         params::lidFace::threshold);
     std::cout << "Loading trained_lid.xml..." << std::endl;
-    modelLid->load("trained_lid.xml"); // FIXME: How the heck do I error-check loading??
+    modelLid->load("trained_lid.xml");
 
 
     std::vector<cv::Mat> images;
@@ -154,22 +99,19 @@ void performanceTest()
     assert(images.size() == labels.size());
     for (size_t i = 0; i < images.size(); ++i)
     {
-//        result = modelEigen->predict(images[i]);
         modelEigen->predict(images[i], result, dist);
         if (result != labels[i])
             ++failsEigen;
 
-        // FIXME: cerr chosen so not buffered. You need to use cout but flush the buffer
+        // cerr chosen because it is not buffered
         std::cerr << labels[i] << "\t" << result << "(" << dist << ")";
 
-//        result = modelFisher->predict(images[i]);
         modelFisher->predict(images[i], result, dist);
         if (result != labels[i])
             ++failsFisher;
 
         std::cerr << "\t" << result << "(" << dist << ")";
 
-//        result = modelLbp->predict(images[i]);
         modelLbp->predict(images[i], result, dist);
         if (result != labels[i])
             ++failsLbp;
@@ -178,30 +120,10 @@ void performanceTest()
 
         modelLid->predict(images[i], result, dist);
         if (result != labels[i])
-            ++failsLid;// FIXME: Uncomment
+            ++failsLid;
 
         std::cerr << "\t" << result << "(" << dist << ")" << std::endl;
     }
-
-    // FIXME: DEBUGGING
-    switch (images[0].type())
-    {
-    case CV_8SC1:
-        std::cerr << "Type: " << "8sc1" << std::endl;
-        break;
-    case CV_8UC1: // FIXME: IT IS THIS!!!
-        std::cerr << "Type: " << "8uc1" << std::endl;
-        break;
-    case CV_16SC1:
-        std::cerr << "Type: " << "16sc1" << std::endl;
-        break;
-    case CV_16UC1:
-        std::cerr << "Type: " << "16uc1" << std::endl;
-        break;
-    default:
-        std::cerr << "Type: " << "other" << std::endl;
-    }
-    std::cerr << lid::lid(images[0], cv::Point(50, 50), 1) << std::endl; // FIXME:
 
     // Add small number to denominator to prevent division by 0 and prevent integer division
     std::cout << "\nEigen failures: " << failsEigen*100/(images.size() + 0.000001) << "%" << std::endl;

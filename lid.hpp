@@ -4,7 +4,7 @@
 #ifndef LID_HPP
 #define LID_HPP
 
-#include <cstdlib> // FIXME: Just for null
+#include <cstdlib>
 
 #include "opencv2/core/core.hpp"
 
@@ -21,7 +21,7 @@ class Lidfaces : public cv::FaceRecognizer
 {
 private:
     int mInradius;
-    int mNumNeighbors; // FIXME: This is not used - you need to implement it!!!
+    int mNumNeighbors;
     double mThreshold;
     // The size of mCodebook will be the number of classifications.
     std::vector<cv::Mat> mCodebook;
@@ -30,7 +30,7 @@ private:
 
 void detectKeypointsAndDescriptors(
     cv::InputArrayOfArrays src,
-    std::vector<std::vector<cv::KeyPoint> >& allKeyPoints, // FIXME: After we have the descriptor, we don't care about the keypoint!!! Remove this param
+    std::vector<std::vector<cv::KeyPoint> >& allKeyPoints,
     cv::Mat& descriptors) const;
 
 public:
@@ -57,7 +57,7 @@ public:
         mNumNeighbors(numNeighbors),
         mThreshold(threshold),
         mCodebook(),
-        mLabels(labels.getMat()), // FIXME: are these labels meaning the same thing?
+        mLabels(labels.getMat()),
         mCenters()
     {
         train(src, labels);
