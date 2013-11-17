@@ -55,8 +55,6 @@ void scaleImage(cv::Mat& mat)
 // implementation does not require it.
 void scaleGroupImage(cv::Mat& mat)
 {
-    const int COL_BUFFER = 67;
-    const int ROW_BUFFER = 0;
     cv::Mat dest = mat.clone();
     float scale = sqrt((480.0f * 600.0f) / (mat.rows * mat.cols));
 
@@ -67,9 +65,5 @@ void scaleGroupImage(cv::Mat& mat)
 
     // Note that even though mat is a shallow copy of dest, the data won't be destroyed when
     // dest goes out of scope because OpenCV does reference counting for Mats
-    mat = dest(cv::Rect(
-                   0,
-                   0,
-                   dest.cols > COL_BUFFER ? dest.cols-COL_BUFFER : dest.cols,
-                   dest.rows > ROW_BUFFER ? dest.rows-ROW_BUFFER : dest.rows));
+    mat = dest;
 }

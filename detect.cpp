@@ -43,6 +43,23 @@ void detectFaces(const cv::Mat& grayscale, std::vector<cv::Rect>& faces)
 }
 
 
+// Sets intensity image to the equalised grayscale original
+void computeEqualizedIntensityImage(const cv::Mat& original, cv::Mat& intensityImage)
+{
+    const int COL_BUFFER = 67;
+    const int ROW_BUFFER = 0;
+    cv::cvtColor(
+        original(cv::Rect(
+            0,
+            0,
+            original.cols > COL_BUFFER ? original.cols - COL_BUFFER : original.cols,
+            original.rows > ROW_BUFFER ? original.rows - ROW_BUFFER : original.rows)),
+        intensityImage,
+        CV_BGR2GRAY);
+    equalizeHist(intensityImage, intensityImage); // Haar requires equalisation
+}
+
+
 // Returns the letter denoting the face ID or "Unknown" if prediction == -1.
 inline std::string getPrediction(int prediction)
 {
@@ -95,9 +112,8 @@ void detect(const std::string& imageFile)
 
     // Convert to grayscale (required by FaceRecognizer)
     cv::Mat grayscale(groupImage.clone());
-    cv::cvtColor(groupImage, grayscale, CV_BGR2GRAY);
-    equalizeHist(grayscale, grayscale); // Haar requires equalisation
-
+    // Haar requires equalised intensity (grayscale) images
+    computeEqualizedIntensityImage(groupImage, grayscale);
 
     std::vector<cv::Rect> faces;
     detectFaces(grayscale, faces);
@@ -108,7 +124,6 @@ void detect(const std::string& imageFile)
         // Draw the bounding boxes
         for(size_t i = 0; i < faces.size(); i++)
         {
-            cv::Mat faceROI = grayscale(faces[i]);
             int x = faces[i].x;
             int y = faces[i].y;
             int h = y + faces[i].height;
