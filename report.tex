@@ -7,6 +7,7 @@
 \usepackage[margin=0.5in]{geometry} % FIXME: Choose sensible
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
+\usepackage{listings}
 \usepackage{natbib}
 %\usepackage[style=authoryear,backend=biber]{biblatex}
 
@@ -35,7 +36,7 @@
 
 \renewcommand\abstractname{Executive Summary}
 \begin{abstract}
-This report evaluates various computer vision technologies for the Gwynville Airport Authority's security and surveillance system. Haar classifiers were used to detect faces of a photo of students and several face recognition algorithms (Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distribution (LID)) where applied to individual photos of students. The results indicate that Haar classifiers are effective in real-time accurate face detection and would be ideal for a people-counting surveillance system. After testing several face-recognition algorithms it finds that LBP provides efficient and accurate results that are less sensitive to variance in pose. The report recommends that the Haar classifiers should be used to count passengers and then the faces obtain from that should be used with LBP to determine identities. These identities can be used to update "Frequent Users" cards and also be used to add to the LBP training data.
+This report evaluates various computer vision technologies for the Gwynville Airport Authority's security and surveillance system. Haar cascade classifiers were used to detect faces of a photo of students and several face recognition algorithms (Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distribution (LID)) where applied to individual photos of students. The results indicate that Haar cascade classifiers are effective in real-time accurate face detection and would be ideal for a people-counting surveillance system. After testing several face-recognition algorithms it finds that LBP provides efficient and accurate results that are less sensitive to variance in pose. The report recommends that the Haar cascade classifiers should be used to count passengers and then the faces obtain from that should be used with LBP to determine identities. These identities can be used to update "Frequent Users" cards and also be used to add to the LBP training data.
 \end{abstract}
 
 Definitions: face space
@@ -59,14 +60,69 @@ There are numerous commercial and law-enforcement applications for face detectio
 \subsection{Data Preparation}
 To reduce computation, images were uniformly scaled such that their area was approximately 480*600.
 
-\subsection{Haar Classifiers for Face Detection}
-Haar classifiers can be used to rapidly detect faces within an image in real time. Haar-like features use the contrast variances between groups of pixels to determine relative light and dark areas. Two or three adjacent groups form a Haar-like feature. This can be applied to objects of different sizes by sclaing the features.
-We define the integral image as the array containing the sums of \hl{FIXME: TODO}
+\subsection{Haar Cascade Classifiers for Face Detection}
+Haar classifiers can be used to rapidly detect faces within an image in real time. Haar-like features use the contrast variances between groups of pixels to determine relative light and dark areas. Two or three adjacent groups form a Haar-like feature. This can be applied to objects of different sizes by scaling the features.
+
+Haar cascade classifiers combine several weak detectors where each weak detector is a simple binary classifier. Each weak detector forms a cascade stage.
+If an image patch passes through all the cascade stages, it is classified as "positive". Otherwise it is discarded.
+
+\subsubsection{Detecting Features}
+%http://www.cognotics.com/opencv/servo_2007_series/part_2/sidebar.html
+Let $A_I[x,y]$ denote the integral image of image $A[x,y]$. We define the integral image as the array containing the sums of pixel's intensities directly left or above a pixel, $(x, y)$. That is,
+\begin{equation}
+	A_I[x,y] = \sum_{x^\prime\le x, y^\prime\le y}A(x^\prime, y^\prime)
+\end{equation}
+
+In a similar way, we can calculate the rotated integral image, $A_R[x,y]$, as the sum of pixel intensities located forty five degrees to the left and above the x value and below the y value. That is,
+\begin{equation}
+	A_R[x,y] = \sum_{x^\prime\le x, x^\prime\le x-|y-y^\prime|}A(x^\prime, y^\prime)
+\end{equation}
+
+Features are detected by taking the appropriate integral image and the difference between six to eight array elements to form two or three connected rectangles.
+
+Figure~\ref{fig:features} shows some simple features.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.2\linewidth]{./haarfeatures}
+\caption{Basic Haar-like features}
+\label{fig:features}
+\end{figure} % FIXME
+
+\subsubsection{AdaBoost}
+AdaBoost is an algorithm for constructing a strong classifier, $f(x)$, as a linear combination of weak classifiers, $h_t(x)$. That is, $f(x)=\sum_{t=1}^{T}\alpha_th_t(x)$. It is used to both select the best features and to train the classifiers that use them.
+
+It achieves this using the following algorithm.\\
+
+\noindent Given $(x_1, y_1),\ldots,(x_m,y_m)$ where $x_i\in X, y_i\in\{-1,+1\}$, initialise $D_1(i)=1/m$ for $i=1,\ldots,m$.
+
+\noindent For $t=1,\ldots,T$:
+
+We choose a weak classifier $h_t$ such that $h_t = argmax_{h_t\in H}|0.5 - \epsilon_t$ where $\epsilon_t = \sum_{i=1}^m D_t(i)I(y_i\ne h_t(x_i))$ where $I$ is the indicator function.
+
+If $|0.5 - \epsilon_t| \le \theta$. Where $\theta$ is some threshold, then stop.
+
+Choose $\alpha_t=\frac{1}{2}ln(\frac{1-\epsilon_t}{\epsilon_t})$.
+
+For $i=1,\ldots,m$: update $D_{t+1}(i)=\frac{D_t(i)exmp(\alpha(2I(y_i\ne h_t(x_i))-1))}{\beta}$. Where $\beta$ ensures $D_{t+1}$ will be a probability distribution.
+
+The final classifier is $H(x)=sign(\sum_{t=1}^T\alpha_th_t(x))$.
+
+
+
+\subsubsection{Training}
+The Haar cascade classifier is trained with hundreds of samples of faces, called positive examples. Each of these samples are scaled to the same size. Negative examples are arbitrary images of the same size. From this training, we get many weak classifiers.
+
+AdaBoost is used to create cascade the weak classifiers arranged in order of complexity.
+
+\subsubsection{Detecting faces}
+To find faces in an image, the image is scanned by looking at different regions of interest across the image, each region of interest is decided to either contain a face or not based on whether or not it passes through each of the cascade stages. If an image patch passes through all the cascade stages, it is classified as "positive". Otherwise it is discarded.
+
+This is computationally efficient as most non-faces will be discarded in the earlier stages of the cascade meaning that the complex subsequent cascade stages do not need to be computed.
 
 \subsubsection{Parameter Optimisation}
 OpenCV provides several trained XML files for face detection with Haar. The results showed that haarcascade\_frontalface\_alt2.xml provided the best results, as others such as haarcascade\_frontalface\_default.xml failed to detect some of the faces. The XML file was generated via a tree-based 20*20 gentle adaboost frontal face detector. \hl{FIXME: Describe what the hell that means}
 
-There were four parameters to consider with the Haar classifier: \textbf{double} $scaleFactor$, \textbf{int} $minNeighbors$, \textbf{Size} $minSize$ and \textbf{Size} $maxSize$.
+There were four parameters to consider with the Haar cascade classifier: \textbf{double} $scaleFactor$, \textbf{int} $minNeighbors$, \textbf{Size} $minSize$ and \textbf{Size} $maxSize$.
 
 It was found that more faces were detected (either correctly or as false positives) as $scaleFactor$ was increased and $minNeighbors$ was decreased.
 
@@ -81,7 +137,7 @@ The final parameters chosen were $scaleFactor$=0.01 and $minNeighbors$=9.
 \subsubsection{Face Detection Results}
 After the parameters were optimised, all faces were successfully detected almost instantly. This can be seen in figure~\ref{fig:group}.
 
-The results support the notion that Haar classifiers are suitable for real-time detection of faces.
+The results support the notion that Haar cascade classifiers are suitable for real-time detection of faces.
 
 \section{Face Recognition Algorithms}
 \subsection{Data Preparation}
@@ -151,13 +207,11 @@ It was found that reducing $numComponents$ reduced the performance of the algori
 As stated previously, our $\epsilon_k$ distances were extremely large so our $threshold$ had to be very large too. As one would expect, reducing this number increased the number of $unknown$ classifications which could potentially reduce the number of false classifications. $threshold$ was chosen to be one of the smaller misclassified $\epsilon_k$'s. This was 4710.0 (which is extremely large).
 
 \subsection{Fisherfaces}
-The main advantage of this method is that it is invariant to different light sources. Extensive experimental results show that Fisherface has lower error rates than eigenface on the havard and yale face detection databases. \hl{(See the abstract of the pdf)}.
+The main advantage of this method is that it is invariant to different light sources. Extensive experimental results show that Fisherface has lower error rates than eigenface on the havard and yale face detection databases \cite{belhumeur1997eigenfaces}.
 
 The Fisherfaces method recognises that variance among faces in the database may come from distortions such as illumination changes or facial expressions. Sometimes these variations within a face class are larger than the variations between classes of faces.
 
-\hl{Although this method has advantages when subject to different lighting conditions, this advantage is not really applicable to our purposes as the camera will likely be uniformly lit. (Maybe it will be important if it is sometimes lit by natural light and sometimes lit by artificial light depending on the time of day.}
-
-Like Eigenfaces, the Fisherfaces algorithm reduces the dimensionality of the problem. It does so in a way the preserves the linear separability of the classes. We wish to choose \hl{$W$} such that the ratio of the between-class scatter and within-class scatter is maximised. We define the between-class scatter matrix as $S_B = \sum_{i=1}^{c}N_i(\mu_i - \mu)(\mu_i - \mu)^T$ and the within-class scatter matrix as  $S_W = \sum_{i=1}^{c}\sum_{x_k\in X_i}(x_k - \mu_i)(x_k - \mu_i)^T$. Where $u_i$ is the mean image of class $X_i$ and $N_i$ is the number of samples in class $X_i$.
+Like Eigenfaces, the Fisherfaces algorithm reduces the dimensionality of the problem. It does so in a way the preserves the linear separability of the classes. We wish to choose basis vectors, $W$, such that the ratio of the between-class scatter and within-class scatter is maximised. We define the between-class scatter matrix as $S_B = \sum_{i=1}^{c}N_i(\mu_i - \mu)(\mu_i - \mu)^T$ and the within-class scatter matrix as  $S_W = \sum_{i=1}^{c}\sum_{x_k\in X_i}(x_k - \mu_i)(x_k - \mu_i)^T$. Where $u_i$ is the mean image of class $X_i$ and $N_i$ is the number of samples in class $X_i$.
 
 $S_W$ is either singular or non-singular. If it is singular, choose $W_{opt}$ as the matrix with orthonormal columns such that $\frac{|W^TS_BW|}{|W^TS_WW|}$ is maximised. That is
 \begin{equation}
@@ -311,18 +365,18 @@ The results show that LBP was by far the most accurate with an 11.25\% failure r
 Eigenfaces and Fisherfaces are both sensitive to variance in pose. Fisherfaces is less sensitive than Eigenfaces to variance in pose, and lighting, which may explain its better performance. LBP is less sensitive to variance in pose and lighting to Fisherfaces, which may explain its performance.
 
 \section{Conclusion}
-From the results of the people-counting experiments, we can conclude that Haar classifiers are suitable for real-time, accurate face detection.
+From the results of the people-counting experiments, we can conclude that Haar cascade classifiers are suitable for real-time, accurate face detection.
 
 From the results of our face recognition experiments, we can conclude that LBP by far performed the best and was the most efficient.
 
 However, it should be noted that the images were all taken in the same room, with the same lighting so these results are not necessarily indicative of performance under different conditions.
 
 \section{Recommendation}
-From the results of this report, we can conclude that Haar classifiers provide a suitable real-time people-counting algorithm for the Gwynville Airport Authority's  people-counting surveillance system.
+From the results of this report, we can conclude that Haar cascade classifiers provide a suitable real-time people-counting algorithm for the Gwynville Airport Authority's  people-counting surveillance system.
 
 After testing several face-recognition algorithms, the results indicate that LBP provides efficient and accurate results that are less sensitive to variance in pose.
 
-The report recommends that the Haar classifiers should be used to count passengers and then the faces obtain from that should be used with LBP to determine identities. These identities can be used to update "Frequent Users" cards.
+The report recommends that the Haar cascade classifiers should be used to count passengers and then the faces obtain from that should be used with LBP to determine identities. These identities can be used to update "Frequent Users" cards.
 
 In addition to this, the new faces can be added to the training data to continually train the LBP. If the face is unrecognised, a class will be added. If the face is recognised, the face will be added to the training data with the appropriate class.
 
@@ -357,3 +411,4 @@ In addition to this, the new faces can be added to the training data to continua
 %Fisher failures: 32.5843%
 %LBP failures: 11.236%
 %LID failures: 94.382%
+%http://stackoverflow.com/questions/5808434/how-does-the-viola-jones-face-recognition-method-work
