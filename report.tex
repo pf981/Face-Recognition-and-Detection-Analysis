@@ -61,20 +61,10 @@ Face recognition technology has significantly progressed since the proposal of t
 There are numerous commercial and law-enforcement applications for face detection and recognition including advanced video surveillance, user authentication and suspect tracking \cite{zhao2003face}. The effectiveness of these applications rely on the efficiency and accuracy of the underlying algorithms. This report will compare the efficiency and accuracy of 4 facial recognition algorithms: Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distributions (LID). We will also investigate the efficiency and performance of Haar feature-based cascade classification for face detection and discuss how these algorithms can be applied by the Gwynville Airport Authority for their security and surveillance system.
 
 
-\section{Data Preparation}
-The individual face data given consisted of between 9 and 14 photos each of the faces of 11 students. The images were converted to grayscale then were scaled down and cropped to 128*128. This was achieved by uniformly scaling the image such that the smaller dimension was equal to 128 pixels. The 128*128 rectangle centred at the centre of the image was then used as the cropped image. 128*128 was chosen because it was large enough to provide good results but not so large as to be computationally problematic.
-
-For group photos, where we wanted to use the face-counting algorithm, the photo was uniformly scaled such that its area was approximately 640*480 to reduce computation.
-
-\subsection{Training/Testing Split}
-For cross validation, the student photos were split into two sets: a training set and a validation set. They were used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
-
-The proportion of the size of the training set to the size of the validation set was chosen to be \hl{FIXME:SOMETHING, look at cross validation - involves mutiple sampling. Also, maybe put this splitting into the algorithm results section as it doesn't apply to Haar}. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
-
-\hl{some\%} of the data were used to train the model and the other \hl{some\%} were used to test its performance.
 
 \section{People Counting Algorithms}
-Data Prep
+\subsection{Data Preparation}
+To reduce computation, images were uniformly scaled such that their area was approximately 480*600.
 
 \subsection{Haar Classifiers for Face Detection}
 Haar classifiers can be used to rapidly detect faces within an image in real time. Haar-like features use the contrast variances between groups of pixels to determine relative light and dark areas. Two or three adjacent groups form a Haar-like feature. This can be applied to objects of different sizes by sclaing the features.
@@ -100,18 +90,18 @@ After the parameters were optimised, all faces were successfully detected almost
 
 The results support the notion that Haar classifiers are suitable for real-time detection of faces.
 
-
-\subsection{Local Binary Patterns}
-Technical description
-\subsubsection{Parameter Optimisation}
-Data Prep
-
-\subsection{Comparison}
-Advantages and disadvantages of each algorithm with side-by-side images after parameter optimisation
-
-
 \section{Face Recognition Algorithms}
-Data Prep
+\subsection{Data Preparation}
+The individual face data given consisted of between 9 and 14 photos each of the faces of 11 students. The images were converted to grayscale then were scaled down and cropped to 128*128. This was achieved by uniformly scaling the image such that the smaller dimension was equal to 128 pixels. The 128*128 rectangle centred at the centre of the image was then used as the cropped image. 128*128 was chosen because it was large enough to provide good results but not so large as to be computationally problematic.
+
+For group photos, where we wanted to use the face-counting algorithm, the photo was uniformly scaled such that its area was approximately 640*480 to reduce computation.
+
+\subsubsection{Training/Testing Split}
+The student photos were split into two sets: a training set and a validation set. They were used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
+
+The proportion of the size of the training set to the size of the validation set was chosen to be 7:3. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
+
+70\% of the data were used to train the model and the other 40\% were used to test its performance.
 
 \subsection{Eigenfaces}
 If we describe the collection of all images of the face of an individual as a vector space, then we can describe every such image through a linear combination of the spanning vectors of that space.
@@ -160,7 +150,11 @@ Let $\Omega^T = [\omega_1, \ldots, \omega_{M^\prime}]$ and let $\Omega_k$ denote
 We wish to find $k$ that minimises $\epsilon_k = \|(\Omega - \Omega_k)\|$. If such an $\epsilon_k$ is above some threshold $\theta_\epsilon$, then we say the face is unknown. Otherwise we classify the face as the $k$th class.
 
 \subsubsection{Parameter Optimisation}
-Data Prep
+There were two parameters to consider with Eigenfaces: \textbf{int} $numComponents$, \textbf{double} $threshold$. $numComponents$ determines how many dimensions to keep when we reduce dimensionality and $threshold$ is our $\theta_\epsilon$ defined in the previous section.
+
+It was found that reducing $numComponents$ reduced the performance of the algorithm, however it also resulted in reduced $\epsilon_k$. A problem was encountered where we either had reasonable performance, but $\epsilon_k$ was in the thousands, or we had poor performance with small $\epsilon_k$. There seemed no value for $numComponents$ that had no downside. A value of 80 was chosen as it was sufficiently high for reasonable performance, however the distances ($\epsilon_k$) were still very large.
+
+As stated previously, our $\epsilon_k$ distances were extremely large so our $threshold$ had to be very large too. As one would expect, reducing this number increased the number of $unknown$ classifications which could potentially reduce the number of false classifications. $threshold$ was chosen to be one of the smaller misclassified $\epsilon_k$'s. This was 4710.0 (which is extremely large).
 
 \subsection{Fisherfaces}
 The main advantage of this method is that it is invariant to different light sources. Extensive experimental results show that Fisherface has lower error rates than eigenface on the havard and yale face detection databases. \hl{(See the abstract of the pdf)}.
@@ -246,7 +240,8 @@ where $d(p_i,p) = I(p_i) - I(p)$ (quantised uniformly into $M$ levels) and $p_i 
 \hl{Insert image of the descriptor - THIS IS NOT THE DESCRIPTOR - just the LID FUNCTIOn}
 
 For all $p_i$ in the patch, we calculate $ LID_{N,R}(p_i)$.
-We group together the first elements of all $LID_{N,R}(p)$ for each point into a normalised histogram and call it $u_1$. We group together the second elements of all $LID_{N,R}(p)$ for each point into a normalised histogram and call it $u_2$. We do the same for all elements of $LID_{N,R}$ to get $u=(u_1,\ldots,u_N)$ where $u_i$ is a normalised histogram representing the probability distribution of the $d(p_i,p)$ for all $p$ in the patch. $u$ is our LID descriptor for the patch.
+We determine the probability density function of $v=\{v_1,\ldots,v_N\}$ over the entire patch and call it $u(v)$ where $d(p_i,p)$ is a realisation of $v_i$. $u(v)$ is the LID descriptor for the patch $I$.
+%We group together the first elements of all $LID_{N,R}(p)$ for each point into a normalised histogram and call it $u_1$. We group together the second elements of all $LID_{N,R}(p)$ for each point into a normalised histogram and call it $u_2$. We do the same for all elements of $LID_{N,R}$ to get $u=(u_1,\ldots,u_N)$ where $u_i$ is a normalised histogram representing the probability distribution of the $d(p_i,p)$ for all $p$ in the patch. $u$ is our LID descriptor for the patch.
 
 \subsubsection{Training The Images}
 We wish to train a codebook, $C=\{c_1, \ldots, c_N\}$, where $c_i$ is an equalised histogram representing the $i$th training image and each $c_i$ has a label associated with it.
@@ -353,3 +348,7 @@ FIXME: Explain what happened when you reduced the resolution to 128*128: Fisher 
 % If you run out of space: http://www.terminally-incoherent.com/blog/2007/09/19/latex-squeezing-the-vertical-white-space/
 % You could talk about the evolution of LBP - originally just 8 neighbors then circle then ellipse. Originally didn't exclude non-uniform binary patterns. The regions do not have to be rectangular or the same size and do not have to cover the whole image - could even overlap.
 % THIS IS A REALLY GOOD LBP PAPER - might illuminate some info for LID: http://web.ing.puc.cl/~asoto/papers/Maturana-09.pdf
+%Eigen failures: 40.4494%
+%Fisher failures: 32.5843%
+%LBP failures: 11.236%
+%LID failures: 94.382%
