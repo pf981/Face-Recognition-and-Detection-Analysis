@@ -282,7 +282,7 @@ Data Prep
 
 \subsection{Results}
 The results involved testing the 89 images of the validation set. For how this set was constructed, see Section~\ref{sec:split}.
-\begin{table}
+\begin{table}[H]
 	\centering
     \begin{tabular}{|l|l|}
     \hline
@@ -296,32 +296,13 @@ The results involved testing the 89 images of the validation set. For how this s
     \end{tabular}
     \caption {Failure rates for face detection algorithms}
 \end{table}
-%\begin{tabular}{ l | c || r }
-%  \hline                        
-%  1 & 2 & 3 \\
-%  4 & 5 & 6 \\
-%  7 & 8 & 9 \\
-%  \hline  
-%\end{tabular
-%\begin{tabular}{|c|c|}
-%\hline Algorithm & Failure Rate (%) \\ 
-%\hline Eigenfaces & 40.45% \\ 
-%\hline Fisherfaces & 32.58% \\ 
-%\hline LBP & 11.24% \\ 
-%\hline LID & 94.38% \\ 
-%\hline 
-%\end{tabular} 
-Eigen failures: 40.4494%
-Fisher failures: 32.5843%
-LBP failures: 11.236%
-LID failures: 94.382%
-
+In terms of efficiency, as expected LBP was both the quickest to train and detect as it uses integer arithmetic rather than floating point. LID was the next most efficient with Eigenfaces and Fisherfaces being the least efficient.
 
 \subsection{Comparison}
 Advantages and disadvantages of each algorithm with side-by-side images after parameter optimisation
 
 \subsubsection{Why Eigenfaces and Fisherfaces Performed Worse Than Expected}
-Both the Eigenfaces and Fisherfaces methods are reported to have a \hl{some\%} rate of accuracy \hl{Some citation} however our testing showed only \hl{x\%} and \hl{y\%} respectively. I believe the reason for this discrepancy is because both of these methods are sensitive to pose \cite{turk1991eigenfaces}\cite{belhumeur1997eigenfaces}. The reported good performance of these methods have been on databases which contained faces with only one frontal view. The images we have tested with in this report have had very varying poses (See figure~\ref{fig:pose}). This may be the cause of these algorithms poor performance.
+The Eigenfaces and Fisherfaces methods have been reported to have a 4\%\cite{turk1991eigenfaces} and 4.6\%\cite{belhumeur1997eigenfaces} failure rate respectively, however our testing showed only 40.45\% and 32.58\% respectively. The reason for this discrepancy is likely because both of these methods are sensitive to pose \cite{turk1991eigenfaces}\cite{belhumeur1997eigenfaces}. The reported good performance of these methods have been on databases which contained faces with only one frontal view. The images we have tested with in this report have had very varying poses (See figure~\ref{fig:pose}). This may be the cause of these algorithms poor performance.
 
 Although the Eigenfaces and Fisherfaces implementations used in this report are sensitive to variance of pose, there exist modern modifications to these algorithms to reduce that sensitivity \cite{jaiswal2012local}.
 
@@ -331,32 +312,31 @@ Overall, the LID algorithm for face recognition performed very poorly. Of the fo
 I believe the alternative method of computing spacial histograms, as outlined in section~\ref{sec:alternativeLID}, would result in much better performance as we would be comparing corresponding regions of images in the same way LBP does.
 
 
+\section{Conclusion}
+
+
 \section{Recommendation}
-conc
+
+
+
+\hl{All these faces were trained with the same illumination and facial hair etc on the same day. It will likely not perform well on images of different illumination.
+
+We found that eigen and fisher took significantly longer to train and compute
+
+
+
+Notes on our training data: Variations in pose, no variation in lighting, some people put on glasses, variations in facial expression
+
+FIXME: Explain what happened when you reduced the resolution to 128*128: Fisher and eigen sped up immensely and lbp performed more poorly.
+
+
+
 
 When implementing the airline actual thingo, you should constantly add to your training data.
 So when you see a person and you confidently classify them as known, add that image to the training data.
 If you see the same unknown face, calculate its characteristics and make it known. This is what they want because then they would be able to tell who is frequent without having to manually train.
 The implementation you are looking for would be to use the face counter and then send each face into the second algorithm which will attempt to identify them.
-It is critical that the camera have a frontal face view as the training data for the Haar cascade classifier was frontal faces.
-
-
-\section{Conclusion}
-All these faces were trained with the same illumination and facial hair etc on the same day. It will likely not perform well on images of different illumination.
-
-We found that eigen and fisher took significantly longer to train and compute
-
-FIXME: The VERY LARGE DISTANCES for eigen and fisher could be due to the variation in pose. This is why it performs significantly poorer than in the papers as they dealt with fixed pose
-
-Our results found that both the Eigenfaces and Fisherfaces algorithms performed very poorly in terms of performance. When tuning parameters, we had the problem that if we reduced to too few dimensions, it would classify things incorrectly. On the other hand, if we chose too many dimensions, the distances between classifications would be far too large - normally in the thousands (rephrase - explain maths - higher dimensionality=bigger distances).
-
-Because the distances were so large, it tended to misclassify confidently rather than classify as unknown.
-
-This could be due to the face that both algorithms are intolerant of variations in pose. When one looks at the images, all individuals hand different head rotations and angles which may explain the poor performance compared to experiments in other papers\cite{belhumeur1997eigenfaces}. There are several modifications to the algorithm that would make this method deal with pose variation such as CITATION.
-
-Notes on our training data: Variations in pose, no variation in lighting, some people put on glasses, variations in facial expression
-
-FIXME: Explain what happened when you reduced the resolution to 128*128: Fisher and eigen sped up immensely and lbp performed more poorly.
+It is critical that the camera have a frontal face view as the training data for the Haar cascade classifier was frontal faces.}
 
 
 \bibliographystyle{plain}
