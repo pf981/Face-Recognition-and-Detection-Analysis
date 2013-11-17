@@ -4,7 +4,7 @@
 \usepackage{caption}
 \usepackage{color}
 \usepackage{float}
-\usepackage[margin=0.5in]{geometry} % FIXME: Choose sensible
+\usepackage[margin=0.8in]{geometry} % FIXME: Choose sensible
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
@@ -38,8 +38,6 @@
 \begin{abstract}
 This report evaluates various computer vision technologies for the Gwynville Airport Authority's security and surveillance system. Haar cascade classifiers were used to detect faces of a photo of students and several face recognition algorithms (Eigenfaces, Fisherfaces, Local Binary Patterns (LBP) and Local Intensity Distribution (LID)) where applied to individual photos of students. The results indicate that Haar cascade classifiers are effective in real-time accurate face detection and would be ideal for a people-counting surveillance system. After testing several face-recognition algorithms it finds that LBP provides efficient and accurate results that are less sensitive to variance in pose. The report recommends that the Haar cascade classifiers should be used to count passengers and then the faces obtain from that should be used with LBP to determine identities. These identities can be used to update "Frequent Users" cards and also be used to add to the LBP training data.
 \end{abstract}
-
-Definitions: face space
 
 \section{Introduction}
 Face detection and face recognition are two actively-researched and important topics in computer vision. Both of these tasks are performed frequently and easily by humans however no current automated system exists that can be deployed effectively in an unconstrained setting \cite{sinha2006face}.
@@ -283,9 +281,7 @@ Many enhancements have been proposed for LBP. These include considering neighbou
 Data Prepsssss
 
 \subsection{Local Intensity Distribution}
-\hl{Insert diagram to illustrate what neighboring pixels are in LID. Do the same for LBP.
-
-Local Intensity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similar to LBP descriptors, LID descriptors are insensitive to illumination changes} \cite{nguyen2011local}.
+Local Intensity Distribution (LID) descriptors can be used to describe the features of an intensity image by capturing the distribution of local intensity differences. Similar to LBP descriptors, LID descriptors are insensitive to illumination changes.
 
 \subsubsection{The LID Descriptor}
 Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of an image/patch with $N$ pixels and let $p = (x,y) \in \mathbb{Z}^2$ be an arbitrary point in the domain of $I$. We define $LID_{N,R}(p) : \mathbb{Z}^2 \rightarrow \mathbb{R}^N$ as
@@ -293,9 +289,7 @@ Let $I(x,y) : \mathbb{Z}^2 \rightarrow \mathbb{R}$ denote the intensity image of
    % \label{simple_equation}
    LID_{N,R}(p) = \langle d(p_1,p), \ldots, d(p_n,p)\rangle
 \end{equation}
-where $d(p_i,p) = I(p_i) - I(p)$ (quantised uniformly into $M$ levels) and $p_i = (x_i, y_i) \in \mathbb{Z}$ is such that $max\{|x_i - x|, |y_i - y|\} = R$. % FIXME: There must be a better way to describe this rectangle (perimeter) than using this max.
-\hl{Insert image of the descriptor - THIS IS NOT THE DESCRIPTOR - just the LID FUNCTIOn}
-
+where $d(p_i,p) = I(p_i) - I(p)$ (quantised uniformly into $M$ levels) and $p_i = (x_i, y_i) \in \mathbb{Z}$ is such that $max\{|x_i - x|, |y_i - y|\} = R$.
 For all $p_i$ in the patch, we calculate $ LID_{N,R}(p_i)$.
 We determine the probability density function of $v=\{v_1,\ldots,v_N\}$ over the entire patch and call it $u(v)$ where $d(p_i,p)$ is a realisation of $v_i$. $u(v)$ is the LID descriptor for the patch $I$.
 %We group together the first elements of all $LID_{N,R}(p)$ for each point into a normalised histogram and call it $u_1$. We group together the second elements of all $LID_{N,R}(p)$ for each point into a normalised histogram and call it $u_2$. We do the same for all elements of $LID_{N,R}$ to get $u=(u_1,\ldots,u_N)$ where $u_i$ is a normalised histogram representing the probability distribution of the $d(p_i,p)$ for all $p$ in the patch. $u$ is our LID descriptor for the patch.
@@ -305,7 +299,7 @@ We wish to train a codebook, $C=\{c_1, \ldots, c_N\}$, where $c_i$ is an equalis
 
 $c_i$ is calculated in the following way. A set of keypoints, $\{k_1, \ldots, k_n\}$, are generated using SIFT detector on the $i$th image training image. The LID descriptor for the $(2L+1)\times(2L+1)$ region centred at each of these keypoints are calculated.
 
-The descriptors are then clustered using a K-means algorithm using the chi-squared distance measure. \hl{Note that the code will use euclidean. FUDGE - this NEEDS to be chi-squared as euclidean will be biased to the larger dimensions}
+The descriptors are then clustered using a K-means algorithm using the chi-squared distance measure.
 
 We store the resulting centroids as they will be needed for the face recognition stage.
 
