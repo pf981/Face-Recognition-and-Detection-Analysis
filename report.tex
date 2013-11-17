@@ -97,6 +97,7 @@ The individual face data given consisted of between 9 and 14 photos each of the 
 For group photos, where we wanted to use the face-counting algorithm, the photo was uniformly scaled such that its area was approximately 640*480 to reduce computation.
 
 \subsubsection{Training/Testing Split}
+\label{sec:split}
 The student photos were split into two sets: a training set and a validation set. They were used to train the classification model and measure the performance of the model respectively. There can be no overlap in these two sets as trained images will obviously be classified correctly and will not give accurate real-world performance measures.
 
 The proportion of the size of the training set to the size of the validation set was chosen to be 7:3. The choice of this ratio is a balance between better classification with more training data, or more accurate performance estimates with more test data.
@@ -140,7 +141,7 @@ We construct $L \in \mathbb{R}^{M\times M}$ as $L = A^T A$ such that $L_{mn} = \
 \end{equation}
 Using this method reduces the computation from $\mathcal{O}(D)$ to $\mathcal{O}(M)$ where $M\ll D$.
 
-To reduce the dimensionality, we keep only the eigenvectors with the largest corresponding eigenvalue. These vectors account for the most variation in the images. There are several ways of determining how many vectors to keep, but we chose to keep the eigenvalues that accounted for 90\% of the sum of the eigenvalues. \hl{FIXME: CHECK THIS what does OPENCV do?}
+To reduce the dimensionality, we keep only the eigenvectors with the largest corresponding eigenvalue. These vectors account for the most variation in the images.
 
 \subsubsection{Using Eigenfaces for Face Recognition}
 To classify a face image $\Gamma$, we project it into its "face space" using $\omega_k = u^T_k(\Gamma - \Psi)$, for $k = 1, \ldots, M^\prime$.
@@ -278,6 +279,43 @@ For our LID algorithm, we use the chi-squared measure of distance, however the o
 
 \subsubsection{Parameter Optimisation}
 Data Prep
+
+\subsection{Results}
+The results involved testing the 89 images of the validation set. For how this set was constructed, see Section~\ref{sec:split}.
+\begin{table}
+	\centering
+    \begin{tabular}{|l|l|}
+    \hline
+    Algorithm & Failure Rate (\%) \\
+    \hline
+    Eigenfaces & 40.45\% \\
+    Fisherfaces & 32.58\% \\
+    LBP & 11.25\% \\
+    LID & 94.38\% \\
+    \hline
+    \end{tabular}
+    \caption {Failure rates for face detection algorithms}
+\end{table}
+%\begin{tabular}{ l | c || r }
+%  \hline                        
+%  1 & 2 & 3 \\
+%  4 & 5 & 6 \\
+%  7 & 8 & 9 \\
+%  \hline  
+%\end{tabular
+%\begin{tabular}{|c|c|}
+%\hline Algorithm & Failure Rate (%) \\ 
+%\hline Eigenfaces & 40.45% \\ 
+%\hline Fisherfaces & 32.58% \\ 
+%\hline LBP & 11.24% \\ 
+%\hline LID & 94.38% \\ 
+%\hline 
+%\end{tabular} 
+Eigen failures: 40.4494%
+Fisher failures: 32.5843%
+LBP failures: 11.236%
+LID failures: 94.382%
+
 
 \subsection{Comparison}
 Advantages and disadvantages of each algorithm with side-by-side images after parameter optimisation
