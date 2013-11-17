@@ -24,9 +24,10 @@
 void detectFaces(const cv::Mat& grayscale, std::vector<cv::Rect>& faces)
 {
     cv::CascadeClassifier faceCascade;
-    if(!faceCascade.load("haarcascade_frontalface_alt.xml"))
+    // if(!faceCascade.load("lbpcascade_frontalface.xml"))
+    if(!faceCascade.load("haarcascade_frontalface_alt2.xml"))
     {
-        std::cerr << "Error: Unable to load haarcascade_frontalface_alt.xml.\nExiting.\n";
+        std::cerr << "Error: Unable to load haarcascade_frontalface_alt2.xml.\nExiting.\n";
         exit(1);
     };
 
@@ -37,11 +38,25 @@ void detectFaces(const cv::Mat& grayscale, std::vector<cv::Rect>& faces)
         params::cascadeClassifier::scaleFactor,
         params::cascadeClassifier::minNeighbors,
         params::cascadeClassifier::flags,
-//        cv::Size(1,1), // FIXME
         cv::Size(params::cascadeClassifier::minSize),
-//        params::cascadeClassifier::maxSize);
-//        cv::Size(params::cascadeClassifier::maxSize));
-        cv::Size(10, 10));
+        cv::Size(params::cascadeClassifier::maxSize));
+}
+
+
+// Sets intensity image to the equalised grayscale original
+void computeEqualizedIntensityImage(const cv::Mat& original, cv::Mat& intensityImage)
+{
+    const int COL_BUFFER = 67;
+    const int ROW_BUFFER = 0;
+    cv::cvtColor(
+        original(cv::Rect(
+            0,
+            0,
+            original.cols > COL_BUFFER ? original.cols - COL_BUFFER : original.cols,
+            original.rows > ROW_BUFFER ? original.rows - ROW_BUFFER : original.rows)),
+        intensityImage,
+        CV_BGR2GRAY);
+    equalizeHist(intensityImage, intensityImage); // Haar requires equalisation
 }
 
 
@@ -97,9 +112,8 @@ void detect(const std::string& imageFile)
 
     // Convert to grayscale (required by FaceRecognizer)
     cv::Mat grayscale(groupImage.clone());
-    cv::cvtColor(groupImage, grayscale, CV_BGR2GRAY);
-    equalizeHist(grayscale, grayscale); // Haar requires equalisation
-
+    // Haar requires equalised intensity (grayscale) images
+    computeEqualizedIntensityImage(groupImage, grayscale);
 
     std::vector<cv::Rect> faces;
     detectFaces(grayscale, faces);
@@ -110,7 +124,6 @@ void detect(const std::string& imageFile)
         // Draw the bounding boxes
         for(size_t i = 0; i < faces.size(); i++)
         {
-            cv::Mat faceROI = grayscale(faces[i]);
             int x = faces[i].x;
             int y = faces[i].y;
             int h = y + faces[i].height;
