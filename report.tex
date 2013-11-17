@@ -74,12 +74,14 @@ The proportion of the size of the training set to the size of the validation set
 Data Prep
 
 \subsection{Haar}
-%\begin{figure}[H]
-%\centering
-%\includegraphics[width=0.7\linewidth]{./groupdetected}
-%\caption{Faces detected}
-%\label{fig:group}
-%\end{figure} % FIXME
+Haar classifiers can be used to rapidly detect faces within an image in real time.
+
+\begin{figure}[H] % FIXME: This figure wrecks page numbering
+\centering
+\includegraphics[width=0.7\linewidth]{./groupdetected}
+\caption{Faces detected. $scaleFactor=1.01, minNeighbors=9$}
+\label{fig:group}
+\end{figure} % FIXME
 
 \subsubsection{Parameter Optimisation}
 There were four parameters to consider with the Haar classifier: double scaleFactor, int minNeighbors, Size minSize and Size maxSize.
