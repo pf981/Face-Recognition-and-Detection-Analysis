@@ -14,6 +14,7 @@ This code was tested on Ubuntu 12.04 LTS with OpenCV 2.4.2.
 How to Run
 ----------
 The code can be compiled an run in the following way:
+
     $ make
     $ ./faceDetection [image]
 
