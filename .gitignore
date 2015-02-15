@@ -4,7 +4,6 @@ performanceTest
 face_samples/
 *.o
 *~
-*.pdf
 *.aux
 *.bbl
 *.blg
