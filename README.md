@@ -26,7 +26,7 @@ Please note that I have included the trained XML files in the submission:
  * trained_lbp.xml
  * trained_lid.xml
 
-This means that you do not have to run the training functions. It is important that you don't run them, as it assumes that the face_samples folder is with the executable, and I also had to rename a few iamges.
+This means that you do not have to run the training functions. It is important that you don't run them, as it assumes that the face_samples folder is with the executable, and I also had to rename a few images.
 Similarly, there is no need to run the performance testing functions as the results can be found
 within the report.
 
