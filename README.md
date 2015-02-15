@@ -1,9 +1,11 @@
+This project was a university assignment for Computer Vision that analysed computer vision algorithms. This code trains and runs performance tests several face detection and recognition algorithms. The algorithms examined are Haar Cascade Classifiers for face detection and Eigenfaces, Fisherfaces, Local Binary Patters (LBP) and Local Intensity Distribution (LID) for face recognition.
+
+Please see report.pdf for the complete analysis.
+
 CSCI435 Computer Vision
 =======================
 Project: Facial Recognition
 ===========================
-Readme
-======
 
 Testing Environment
 -------------------
